@@ -17,7 +17,7 @@ import { SafeUser } from "schemas/auth/Auth";
 
 const getBaseUrl = () => {
   if (typeof window !== "undefined") return ""; 
-  if (process.env.VERCEL_URL) return `https://${process.env.VERCEL_URL}`; 
+  if (process.env.APP_URL) return `https://${process.env.APP_URL}`; 
   return `http://localhost:${process.env.PORT ?? 3000}`; 
 };
 const SERVER_ENDPOINT = getBaseUrl()
@@ -42,7 +42,7 @@ export async function apiPreregister(data: {
   email: string;
 }): Promise<PreregisterResponse> {
 
-  console.log("process.env.VERCEL_URL",process.env.VERCEL_URL)
+  
   const response = await fetch(`${SERVER_ENDPOINT}/api/user/preregister`, {
     method: "POST",
     headers: {
