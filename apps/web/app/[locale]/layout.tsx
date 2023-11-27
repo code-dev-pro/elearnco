@@ -5,6 +5,7 @@ import { ReactNode } from "react";
 import { getMessages } from "@/lib/messages";
 
 import { Providers } from "../providers";
+
 type Props = {
   children: ReactNode;
   params: { locale: string; path: string };
