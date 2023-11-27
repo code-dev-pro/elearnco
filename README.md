@@ -58,7 +58,7 @@ $ yarn global add turbo
 
 ```bash
 # Clone the repository
-$ git clone git@github.com:Edukeasy/quizwer.git && cd quizwer
+$ git clone git@github.com:co-dev-pro/elearnco.git && cd elearnco
 
 # Install Node dependencies
 $ yarn install
