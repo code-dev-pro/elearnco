@@ -15,12 +15,13 @@ import { pathApiCourse, pathApiCourses } from "./course/course";
 import { pathApiUser } from "./user/user";
 import { SafeUser } from "schemas/auth/Auth";
 
-//TODO - Move https://elearnco-web.vercel.app in env variables
-
-const SERVER_ENDPOINT =
-  process.env.NODE_ENV === "production"
-    ? "https://elearnco-web.vercel.app"
-    : "http://localhost:3000";
+const getBaseUrl = () => {
+  if (typeof window !== "undefined") return ""; 
+  if (process.env.APP_URL) return `https://${process.env.APP_URL}`; 
+  return `http://localhost:${process.env.PORT ?? 3000}`; 
+};
+const SERVER_ENDPOINT = getBaseUrl()
+ 
 async function handleResponse<T>(response: Response): Promise<T> {
   const contentType = response.headers.get("Content-Type") || "";
   const isJson = contentType.includes("application/json");
@@ -40,6 +41,8 @@ async function handleResponse<T>(response: Response): Promise<T> {
 export async function apiPreregister(data: {
   email: string;
 }): Promise<PreregisterResponse> {
+
+  
   const response = await fetch(`${SERVER_ENDPOINT}/api/user/preregister`, {
     method: "POST",
     headers: {
