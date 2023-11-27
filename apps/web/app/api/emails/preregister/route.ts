@@ -3,17 +3,15 @@ import { Resend } from "resend";
 
 import PregisterEmail from "@/emails/preregister-email";
 
-
-
+//NOTE - SOME PB WITH RESEND WHEN DEPLOYING ON VERCEL
 export async function POST() {
-  
   const resend = new Resend(process.env.RESEND_API_KEY);
   try {
     const { data, error } = await resend.emails.send({
-      from: "laurent.heneman@edukeasy.com",
-      to: ["laurent.heneman@edukeasy.com"],
+      from: "",
+      to: [""],
       subject: "Hello world",
-      react: PregisterEmail({ email: "laurent.heneman@edukeasy.com" }),
+      react: PregisterEmail({ email: "" }),
     });
 
     if (error) {
