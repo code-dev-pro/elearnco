@@ -15,7 +15,8 @@
     "VERCEL_URL",
     "NEXTAUTH_SECRET",
     "UNSPLASH_KEY",
-    "RESEND_API_KEY"
+    "RESEND_API_KEY",
+    "PORT"
   ],
   "pipeline": {
     "build": {
