@@ -5,6 +5,7 @@ import { ERoutes } from "schemas/routes";
 
 import FeatureHome from "@/features/home";
 import { getMessages } from "@/lib/messages";
+import { getBaseUrl } from 'lib/requests/api.request';
 
 export async function generateMetadata({ params },parent: ResolvingMetadata) {
   const { locale } = params;
@@ -22,6 +23,7 @@ export async function generateMetadata({ params },parent: ResolvingMetadata) {
     description: messages.seo.default.description,
     openGraph: {
       images: ['/og-image.png', ...previousImages],
+      url: getBaseUrl(),
     },
   };
 }
