@@ -36,6 +36,7 @@
     "@tiptap/react": "^2.1.12",
     "@tldraw/tldraw": "^2.0.0-alpha.18",
     "@vercel/analytics": "^1.1.1",
+    "@vercel/og": "^0.5.20",
     "bcrypt": "^5.1.1",
     "class-variance-authority": "^0.7.0",
     "collaboration": "*",
