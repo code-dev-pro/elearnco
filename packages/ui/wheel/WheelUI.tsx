@@ -8,7 +8,7 @@ import { DIM, BASE_COLOR_HEX, createDatas } from "./const";
 import PaletteColors from "./colors";
 import { OColor } from "schemas/global";
 import { IWheel, TDataStamp } from "./interface";
-import Sectors from "./sector";
+import Sectors from "./Sector";
 
 
 export const Wheel = (props: IWheel) => {
