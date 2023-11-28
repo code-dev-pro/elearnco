@@ -14,5 +14,14 @@ export enum EColor {
   danger = "danger",
 }
 
+export const OColor =  {
+  default : "default",
+  primary : "#006FEE",
+  secondary : "#7828c8",
+  success : "#17c964",
+  warning : "#f5a524",
+  danger : "#f5a524",
+} as const
+
 export type TColor = keyof typeof EColor;
 export type TPosition = "relative" | "fixed";
