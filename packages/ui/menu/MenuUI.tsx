@@ -6,6 +6,7 @@ import { useRouter } from "next13-progressbar";
 import React, { useMemo } from "react";
 import { TFixedInPosition, TPosition } from "schemas/global";
 
+import { ICON_SIZE } from "../const";
 import { IconUI } from "../icon/IconUI";
 import BarUI from "./BarUI";
 
@@ -55,8 +56,7 @@ const ButtonWithIcon = React.forwardRef<HTMLElement, IItem>((props, ref) => {
         <div className="flex flex-col items-center">
           <IconUI
             color={isActive ? "white" : "black"}
-            width={18}
-            height={18}
+            width={ICON_SIZE.width} height={ICON_SIZE.height}
             name={props.icon ? props.icon : "home"}
           />
         </div>
@@ -66,7 +66,7 @@ const ButtonWithIcon = React.forwardRef<HTMLElement, IItem>((props, ref) => {
 });
 ButtonWithIcon.displayName = "ButtonWithIcon";
 export const MenuUI = (props: IProps) => {
-  const { data, classnames = "", fixedInPosition, position = "fixed" } = props;
+  const { data, fixedInPosition, position = "fixed" } = props;
 
   const _getPosition = () => {
     if (fixedInPosition === "top") return "bottom";

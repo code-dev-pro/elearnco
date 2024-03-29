@@ -1,16 +1,14 @@
-import { useCoursesParams } from "customhooks";
-import { useEffect, useRef } from "react";
-import { CourseDate, CourseStatus, CourseTitle } from "schemas/menus/dropdown";
+"use client";
+import { useEffect } from "react";
 import { useCoursesStore } from "store";
-
-
+import CoursesCollectionList from "../list";
 import CourseAdd from "../add";
 import CourseLoading from "../loading";
-import CoursesCollectionList from "../list";
+import { useCoursesParams } from "customhooks";
 
-
-const CoursesQuery = () => {
-  const { courses, isLoading, error, fetchData } = useCoursesStore();
+// TODO: ERROR
+const CoursesQuery = ({ query }: { query: string }) => {
+  const { fetchData, isLoading, error } = useCoursesStore();
   const {
     getCurrentPage,
     getCurrentStatus,
@@ -19,41 +17,33 @@ const CoursesQuery = () => {
     getCurrentOrder,
   } = useCoursesParams();
 
-  const isMonted = useRef<boolean>(false);
   const currentPage = getCurrentPage();
   const currentStatus = getCurrentStatus();
   const currentFolder = getCurrentFolder();
   const currentDate = getCurrentDate();
   const currentOrder = getCurrentOrder();
 
-  useEffect(() => {
-    fetchData(
+  const _getCourses = async (): Promise<void> =>
+    await fetchData(
       currentPage,
-      currentStatus as CourseStatus,
-      currentOrder as CourseTitle,
+      currentStatus,
+      currentOrder,
       currentFolder,
-      currentDate as CourseDate
+      currentDate
     );
-    isMonted.current = true;
+
+  useEffect(() => {
+    _getCourses();
   }, [currentPage, currentStatus, currentOrder, currentFolder, currentDate]);
 
+  if (error) return <p>error</p>;
   if (isLoading) return <CourseLoading />;
-  if (error) return <>{error}</>;
-  if (
-    (courses && courses.length === 0 && isMonted.current) ||
-    (!courses && isMonted.current)
-  )
-    return <CourseAdd />;
-
-  return courses?.length > 0 ? (
+  return (
     <>
       <CourseAdd />
-      <CoursesCollectionList courses={courses} />
+      <CoursesCollectionList query={query} />
     </>
-  ) : (
-    <CourseLoading />
   );
 };
-
 
 export default CoursesQuery;

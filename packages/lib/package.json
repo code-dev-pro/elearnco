@@ -5,7 +5,8 @@
   "types": "./index.ts",
   "license": "MIT",
   "scripts": {
-    "lint": "eslint \"**/*.ts*\""
+    "lint": "eslint \"**/*.ts*\"",
+    "test": "jest"
   },
   "devDependencies": {
     "tsconfig": "*",

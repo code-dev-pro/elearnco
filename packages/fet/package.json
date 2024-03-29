@@ -1,0 +1,16 @@
+{
+  "name": "fetchers",
+  "version": "0.0.1",
+  "main": "./index.ts",
+  "license": "MIT",
+  "dependencies": {
+    "customhooks": "*",
+    "lib": "*",
+    "schemas": "*",
+    "text-encoding": "^0.7.0"
+  },
+  "devDependencies": {
+    "tsconfig": "*",
+    "typescript": "^5.2.2"
+  }
+}

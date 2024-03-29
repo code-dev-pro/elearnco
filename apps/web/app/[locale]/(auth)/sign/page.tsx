@@ -1,5 +1,5 @@
 import FeatureAuthSign from "@/features/auth/featureAuthSign";
 
-export default function SigninPage() {
+export default function Page() {
   return <FeatureAuthSign />;
 }

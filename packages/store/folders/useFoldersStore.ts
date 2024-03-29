@@ -1,32 +1,29 @@
-import { getFolders } from "lib/requests/folder/folder";
+import { FolderService } from "lib";
+import { getFolders } from "lib/requests/api.request";
 import { filterFolderAlphabetic } from "lib/utils";
-import { TFolder } from "schemas";
+import { CompleteFolder } from "schemas";
 import { create } from "zustand";
 
-// Define the interface of the Folders state
 interface State {
-  folders: TFolder[];
+  folders: CompleteFolder[];
   totalFolders: number;
   isLoading: boolean;
   error: unknown;
 }
 
-// Define the interface of the actions that can be performed in the Folders
 interface Actions {
-  addFolder: (Item: TFolder) => void;
-  removeFolder: (Item: TFolder) => void;
+  addFolder: (folder:Partial<CompleteFolder>) => void;
+  deleteFolder: (folder: CompleteFolder) => void;
   fetchDataFolders: () => Promise<void>;
 }
 
-// Initialize a default state
 const INITIAL_STATE: State = {
   folders: [],
   totalFolders: 0,
-  isLoading: false,
+  isLoading: true,
   error: null,
 };
 
-// Create the store with Zustand, combining the status interface and actions
 export const useFoldersStore = create<State & Actions>((set, get) => ({
   folders: INITIAL_STATE.folders,
   totalFolders: INITIAL_STATE.totalFolders,
@@ -37,11 +34,15 @@ export const useFoldersStore = create<State & Actions>((set, get) => ({
     try {
       set({ isLoading: true, error: null });
       const folders = await getFolders();
-      const data = folders;
+      const { data } = folders as { data: CompleteFolder[] };
+      const updateData = [
+        ...data,
+        { name: "All", id: "All", userId: "clq5fwoj60002090jih4fjzzd"},
+      ] as CompleteFolder[];
 
-      if (data) {
+      if (updateData) {
         set({
-          folders: filterFolderAlphabetic(data),
+          folders: filterFolderAlphabetic(updateData) as CompleteFolder[],
           isLoading: false,
           totalFolders: data.length,
         });
@@ -51,15 +52,19 @@ export const useFoldersStore = create<State & Actions>((set, get) => ({
     }
   },
 
-  addFolder: (Folder: TFolder): void => {
-    const folders = get().folders;
-    folders.push(Folder);
+  addFolder: async (folder: Partial<CompleteFolder>): Promise<void> => {
+    const response = await FolderService.addFolder(folder);
+    const { status, data } = response as {
+      status: string;
+      data: CompleteFolder;
+    };
+
     set((state) => ({
-      folders: folders.reverse(),
+      folders: [...state.folders, data].reverse(),
       totalFolders: state.totalFolders + 1,
     }));
   },
-  removeFolder: (Folder: TFolder): void => {
+  deleteFolder: (Folder: Partial<CompleteFolder>): void => {
     set((state) => ({
       folders: state.folders.filter((item) => item.id !== Folder.id),
       totalFolders: state.totalFolders - 1,

@@ -2,7 +2,7 @@
 import { Pagination } from "@nextui-org/react";
 import useLocalStorage from "customhooks/use-local-storage";
 import React, { useEffect, useState } from "react";
-import { EActionsMedia } from "schemas";
+import { EActionsMedia, GenericObject } from "schemas";
 import { useCourseStore } from "store";
 
 import { LoadingSpinnerUI } from "../../loading";
@@ -18,11 +18,13 @@ interface Photo {
 
 interface IProps {
   action: string;
-  onClose: () => void;
+  onClose?: () => void;
+  callback?: (data: GenericObject) => void;
 }
 
 export const LibraryUI = (props: IProps) => {
-  const { onClose, action } = props;
+  const { action, callback, onClose } = props;
+  //TODO REMOVE THIS DEPENDANCE AND ADD CALLBACK FOR NOT HAVING RELATIONSHIP
   const { updateBanner } = useCourseStore();
   const [isSearch, setSearch] = useLocalStorage<string>(
     "search_in_library",
@@ -34,18 +36,20 @@ export const LibraryUI = (props: IProps) => {
   const [totalPages, setTotalPages] = useState<number>(1);
   const [isLoading, setIsLoading] = useState<boolean>(false);
 
-  const _handleClick = (id: string): void => {
+  const _handleClick = (url: string, title: string, user: string): void => {
     if (action === (EActionsMedia.UPDATE_IMAGE_BANNER as string)) {
-      updateBanner(id);
+      updateBanner(url);
     }
-    onClose();
+
+    callback?.({ content: url, title: title, copyright: user });
+    onClose?.();
   };
 
   const _handleChange = async (value: string): Promise<void> => {
     await _handleSearch(value);
   };
 
-  const fetchData = async (query, page, perpage) => {
+  const fetchData = async (query: string, page: number, perpage: number) => {
     try {
       const response = await fetch(
         `/api/unsplash?query=${query}&page=${page}&perPage=${perpage}`
@@ -53,6 +57,7 @@ export const LibraryUI = (props: IProps) => {
       if (!response.ok) {
         throw new Error(`Error: ${response.statusText}`);
       }
+
       const { photos: fetchedPhotos, totalPages: fetchedTotalPages } =
         await response.json();
 
@@ -77,27 +82,31 @@ export const LibraryUI = (props: IProps) => {
 
   useEffect(() => {
     _handleSearch(isSearch ? isSearch : "dog");
-    // eslint-disable-next-line react-hooks/exhaustive-deps
   }, []);
 
   if (error !== "") return error;
 
   return (
-    <>
+    <div style={{ minHeight: "560px" }}>
       <div className="sticky top-0 bg-default-50 z-50 p-2 flex items-center justify-between">
         <SearchUI placeholder="Search an image" callback={_handleChange} />
-
-        <Pagination
-          onChange={_handlePageChange}
-          total={totalPages}
-          initialPage={1}
-          page={currentPage}
-          size="sm"
-          radius="full"
-        />
+        {totalPages === 0 ? (
+          <></>
+        ) : (
+          <Pagination
+            onChange={_handlePageChange}
+            total={totalPages}
+            initialPage={1}
+            page={currentPage}
+            size="sm"
+            radius="full"
+          />
+        )}
       </div>
       {isLoading ? (
-        <LoadingSpinnerUI />
+        <LoadingSpinnerUI isIndiv />
+      ) : totalPages === 0 ? (
+        <p>Nothing...</p>
       ) : (
         <Collection
           {...{
@@ -109,7 +118,7 @@ export const LibraryUI = (props: IProps) => {
           }}
         />
       )}
-    </>
+    </div>
   );
 };
 

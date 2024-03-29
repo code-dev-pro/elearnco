@@ -1,6 +1,6 @@
 import { zodResolver } from "@hookform/resolvers/zod";
 import { Button, Input, Link, Spacer } from "@nextui-org/react";
-import React from "react";
+import React, { useEffect } from "react";
 import { Controller, useForm } from "react-hook-form";
 import { userAuthSigninSchema } from "schemas/auth/Auth";
 import { useLoadingStore } from "store";
@@ -16,7 +16,7 @@ interface IProps {
 
 export const SigninUI = (props: IProps) => {
   const { authSignin, switchVue, authForgetPassword } = props;
-  const { isLoading } = useLoadingStore();
+  const { isLoading, onStopLoading } = useLoadingStore();
 
   const {
     handleSubmit,
@@ -31,6 +31,10 @@ export const SigninUI = (props: IProps) => {
     authSignin?.(data);
     reset();
   };
+
+  useEffect(() => {
+    onStopLoading();
+  }, []);
 
   return (
     <form
@@ -52,6 +56,7 @@ export const SigninUI = (props: IProps) => {
             autoCorrect="off"
             color={errors?.email ? "danger" : "default"}
             autoCapitalize="none"
+            autoComplete="current-email"
             errorMessage={
               errors?.email ? (errors.email.message as unknown as string) : ""
             }
@@ -69,6 +74,7 @@ export const SigninUI = (props: IProps) => {
             label="Password"
             placeholder="Enter your password"
             type="password"
+            autoComplete="current-password"
             description="Enter your password to sign in to your account"
             color={errors?.password ? "danger" : "default"}
             errorMessage={
@@ -83,7 +89,11 @@ export const SigninUI = (props: IProps) => {
       <Spacer y={4} />
       <p className="text-center text-small">
         Need to create an account?{" "}
-        <Link className="cursor-pointer" size="sm" onPress={(): void => switchVue?.("sign-up")}>
+        <Link
+          className="cursor-pointer"
+          size="sm"
+          onPress={(): void => switchVue?.("sign-up")}
+        >
           Sign up
         </Link>
       </p>
@@ -91,7 +101,11 @@ export const SigninUI = (props: IProps) => {
 
       <p className="text-center text-small">
         Forgot password?{" "}
-        <Link className="cursor-pointer" size="sm" onPress={(): void => authForgetPassword?.()}>
+        <Link
+          className="cursor-pointer"
+          size="sm"
+          onPress={(): void => authForgetPassword?.()}
+        >
           Click here
         </Link>
       </p>

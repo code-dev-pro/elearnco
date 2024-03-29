@@ -18,6 +18,6 @@ export async function generateMetadata({ params }) {
   };
 }
 
-export default function DashboardPage() {
+export default async function Page() {
   return <FeatureDashboard />;
 }

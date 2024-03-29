@@ -1,6 +1,6 @@
 import { prisma } from "database";
 import { redirect } from "next/navigation";
-import {  NextResponse } from "next/server";
+import { NextResponse } from "next/server";
 import { CourseResponse, ERoutes } from "schemas";
 
 import { getServerSession } from "@/lib/auth.options";
@@ -17,7 +17,7 @@ export async function GET(): Promise<NextResponse<CourseResponse>> {
     redirect(`/${ERoutes.SIGN}`);
   }
   try {
-    const course = await prisma.course.findFirst({
+    const course = await prisma.course.findMany({
       where: {
         userId: session?.user?.id,
       },
@@ -25,6 +25,10 @@ export async function GET(): Promise<NextResponse<CourseResponse>> {
         author: true,
         folder: true,
       },
+      orderBy: {
+        createdAt: "desc",
+      },
+      take: 1,
     });
 
     const json_response = {

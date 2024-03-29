@@ -3,8 +3,8 @@ import Link from "next/link";
 const RenderSvg = () => {
   return (
     <svg
-      id="Layer_1"
-      data-name="Layer 1"
+     
+      
       width="520"
       height="520"
       viewBox="0 0 520 520"

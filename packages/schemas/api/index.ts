@@ -1,41 +1,18 @@
-import { Page, Course, Folder } from "@prisma/client";
-import { SafeUser } from "schemas/auth/Auth";
+import { SafeUser } from "../auth/Auth";
+import { CompleteCourse, CompleteFolder } from "../zod";
+
+type TData = Partial<SafeUser> | CompleteFolder[] | CompleteCourse[] | CompleteCourse| unknown;
+export type TStatus = "success" | "failed" | "error";
 export type ErrorResponse = {
-  status: string;
-  message: string;
+  status: TStatus;
+  data: { message: string };
 };
-export type PageResponse = {
-  status: string;
-  data: { page: Page };
-};
-export type CourseResponse = {
-  status: string;
-  data: { course: Course };
+export type FetchResponse = {
+  status: TStatus;
+  data: TData;
 };
 
-
-export type FolderResponse = {
-  status: string;
-  data: { folder: Folder };
-};
-
-export type FoldersResponse = {
-  status: string;
-  data: [{ folder: Folder }];
-};
-
-export type CoursesResponse = {
-  status: string;
-  data: [{ course: Course }];
-};
-
-export type UserResponse = {
-  status: string;
-  data: { user: SafeUser };
-};
-export type PreregisterResponse = {
-  status: string;
-  data: { email: string };
-};
-
-export type TPartialFolder = Omit<Folder, "id" | "updatedAt" | "createdAt">;
+export type TPartialFolder = Omit<
+  CompleteFolder,
+  "id" | "updatedAt" | "createdAt"
+>;

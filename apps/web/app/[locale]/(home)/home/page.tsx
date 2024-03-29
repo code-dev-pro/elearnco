@@ -1,3 +1,4 @@
+import { getBaseUrl } from 'lib/requests/api.request';
 import {ResolvingMetadata} from 'next'
 import { redirect } from "next/navigation";
 import { getServerSession } from "next-auth/next";
@@ -5,7 +6,6 @@ import { ERoutes } from "schemas/routes";
 
 import FeatureHome from "@/features/home";
 import { getMessages } from "@/lib/messages";
-import { getBaseUrl } from 'lib/requests/api.request';
 
 export async function generateMetadata({ params },parent: ResolvingMetadata) {
   const { locale } = params;
@@ -17,7 +17,7 @@ export async function generateMetadata({ params },parent: ResolvingMetadata) {
       };
     };
   };
-  const previousImages = (await parent).openGraph?.images || []
+  const previousImages = (await parent).openGraph?.images ?? []
   return {
     title: messages.seo.default.title,
     description: messages.seo.default.description,
@@ -28,10 +28,10 @@ export async function generateMetadata({ params },parent: ResolvingMetadata) {
   };
 }
 
-export default async function HomedPage() {
+export default async function Page() {
   const session = await getServerSession();
   if (session) {
-    redirect(`/${ERoutes.DASHBOARD}`);
+    redirect(`/${ERoutes.HOME}`);
   }
 
   return <FeatureHome />;

@@ -82,10 +82,9 @@ export default function WelcomeEmail({
               Thanks for signing up{name && `, ${name}`}!
             </Text>
             <Text className="text-sm leading-6 text-black">
-              My name is Heneman, and I'm the founder of Elearnco - The platform
-              that allows you to create engaging educational paths and give your
-              learners a hand in creating their content. I'm excited to have you
-              on board!
+              Elearnco is the opensource platform that allows you to create
+              engaging educational paths and give your learners a hand in
+              creating their content. I'm excited to have you on board!
             </Text>
             <Text className="text-sm leading-6 text-black">
               Here are a few things you can do:
@@ -122,7 +121,7 @@ export default function WelcomeEmail({
             </Text>
             <Hr style={hr} />
             <Text className="text-sm font-light leading-6 text-gray-400">
-              Laurent from Edukeasy
+              Team from Elearnco
             </Text>
           </Container>
         </Body>

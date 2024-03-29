@@ -1,5 +1,5 @@
 import FeatureAuthValidateAccount from "@/features/auth/featureAuthValidateAccount";
 
-export default function ValidateAccountPage() {
+export default function Page() {
   return <FeatureAuthValidateAccount />;
 }

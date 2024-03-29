@@ -8,7 +8,7 @@
     "signup": {
       "title": "Super !",
       "message": "Bienvenue sur Elearnco !",
-      "info": "Entrez le code à 6 chiffres reçu par email pour valider votre compte.",
+      "info": "Entrez le code reçu par email pour valider votre compte.",
       "success": "Vous allez recevoir une email pour valider votre compte.<br/>Pensez à regarder dans vos spams..."
     },
     "resetpassword": {
@@ -19,7 +19,7 @@
     "validation": {
       "title": "Validation de votre compte",
       "message": "Oh Oh, vous y êtes presque !",
-      "info": "Entrez le code à 6 chiffres reçu par email pour valider votre compte.",
+      "info": "Entrez le code reçu par email pour valider votre compte.",
       "errors": {
         "required": ""
       }
@@ -148,7 +148,9 @@
     "cancel": "Annuler",
     "confirm": "Confirmer",
     "preregister": "Se pré-enregistrer",
-    "loading" : "Chargement..."
+    "loading" : "Chargement...",
+    "signin" : "Tester",
+    "test": "Tester un cours"
   
   },
   "tooltip": {

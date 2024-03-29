@@ -1,6 +1,6 @@
 import { PropsWithChildren } from "react";
 
-import { ParentModalUI } from "@/components/parentModalUI";
+import { ParentModalUI } from "@/components/parentModal";
 export default async function Layout({
   children,
 }: Readonly<PropsWithChildren>) {

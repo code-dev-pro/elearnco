@@ -3,20 +3,21 @@ import { useRouter } from "next/navigation";
 import React, { useEffect, useMemo, useState } from "react";
 import { EActionsUser, ERoutes } from "schemas";
 import { useGlobalModalStore } from "store";
+import { ICON_SIZE } from "ui/const";
 import { IconUI } from "ui/icon/IconUI";
 
 //TODO - Translation
 
 export interface MenuOption {
+  action: (ctrl: boolean) => void | Promise<void>;
   icon: React.ReactNode;
+  isLoading?: boolean;
+  label?: string;
+  loadable?: boolean;
   name: string;
   searchableName?: string;
-  label?: string;
-  action: (ctrl: boolean) => void | Promise<void>;
-  sortableDate?: Date;
   shouldShow?: () => boolean;
-  loadable?: boolean;
-  isLoading?: boolean;
+  sortableDate?: Date;
 }
 
 const Tips = ({ onClose }: { onClose: () => void }) => {
@@ -25,7 +26,9 @@ const Tips = ({ onClose }: { onClose: () => void }) => {
   const [query, setQuery] = useState<string>("");
   const [selectionIndex, setSelectionIndex] = useState<number>(0);
   const [options, setOptions] = useState<MenuOption[]>([]);
-  const openLink = (link: string, ctrl: boolean) => {
+
+  // Methods ----------------------------------------------------------------
+  const openLink = (link: string, ctrl: boolean): void => {
     void (async () => {
       if (ctrl) {
         window.open(link, "_blank");
@@ -38,21 +41,39 @@ const Tips = ({ onClose }: { onClose: () => void }) => {
   const total: MenuOption[] = useMemo(
     () => [
       {
-        icon: <IconUI name="home" width={18} />,
+        icon: (
+          <IconUI
+            name="home"
+            width={ICON_SIZE.width}
+            height={ICON_SIZE.height}
+          />
+        ),
         name: "Dashboard",
         label: "Navigate dashboard",
         action: (ctrl: boolean): void => openLink(`/dashboard`, ctrl),
         shouldShow: (): boolean => window.location.pathname !== "/dashboard",
       },
       {
-        icon: <IconUI name="user" width={18} />,
+        icon: (
+          <IconUI
+            name="user"
+            width={ICON_SIZE.width}
+            height={ICON_SIZE.height}
+          />
+        ),
         name: "Profile",
         label: "Navigate to your profile",
         action: (): void => modalStore.onOpen(EActionsUser.EDIT_PROFIL),
         shouldShow: (): boolean => window.location.pathname !== "/profile",
       },
       {
-        icon: <IconUI name="setting" width={18} />,
+        icon: (
+          <IconUI
+            name="setting"
+            width={ICON_SIZE.width}
+            height={ICON_SIZE.height}
+          />
+        ),
         name: "Settings",
         label: "Navigate to settings",
         action: (): void => modalStore.onOpen(EActionsUser.SETTINGS as string),
@@ -60,7 +81,13 @@ const Tips = ({ onClose }: { onClose: () => void }) => {
           window.location.pathname !== (ERoutes.SETTINGS as string),
       },
       {
-        icon: <IconUI name="users" width={18} />,
+        icon: (
+          <IconUI
+            name="users"
+            width={ICON_SIZE.width}
+            height={ICON_SIZE.height}
+          />
+        ),
         name: "Learners",
         label: "Navigate to learners",
         action: (ctrl: boolean): void => openLink(`/learners`, ctrl),
@@ -68,7 +95,13 @@ const Tips = ({ onClose }: { onClose: () => void }) => {
           window.location.pathname !== `/${ERoutes.LEARNERS}`,
       },
       {
-        icon: <IconUI name="cards" width={18} />,
+        icon: (
+          <IconUI
+            name="cards"
+            width={ICON_SIZE.width}
+            height={ICON_SIZE.height}
+          />
+        ),
         name: "Courses",
         label: "Navigate to courses",
         action: (ctrl: boolean): void => openLink(`/courses`, ctrl),
@@ -84,8 +117,10 @@ const Tips = ({ onClose }: { onClose: () => void }) => {
       (e.searchableName ?? e.name).toLowerCase().includes(query.toLowerCase())
     );
 
-  const onActionHandler = (i: number):void | Promise<void> => filteredOptions[i].action(false);
+  const _onActionHandler = (i: number): void | Promise<void> =>
+    filteredOptions[i].action(false);
 
+  // Effect ----------------------------------------------------------------
   useEffect(() => {
     setQuery("");
     setSelectionIndex(0);
@@ -104,7 +139,13 @@ const Tips = ({ onClose }: { onClose: () => void }) => {
         }}
         placeholder="Where do you want to go ?"
         size="sm"
-        startContent={<IconUI name="search" width={18} />}
+        startContent={
+          <IconUI
+            name="search"
+            width={ICON_SIZE.width}
+            height={ICON_SIZE.height}
+          />
+        }
         type="search"
         value={query}
         onValueChange={setQuery}
@@ -128,7 +169,7 @@ const Tips = ({ onClose }: { onClose: () => void }) => {
           itemClasses={{
             base: "px-3 gap-3 data-[hover=true]:bg-default-100/0 rounded-none",
           }}
-          onAction={(key) => onActionHandler(key as number)}
+          onAction={(key) => _onActionHandler(key as number)}
         >
           {filteredOptions.map((o, i) => (
             <ListboxItem

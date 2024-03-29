@@ -1,27 +1,37 @@
 "use client";
 import { useEventListener } from "customhooks";
-import { Block } from "database";
 import {
   changeCursor,
   computeNearestPlaceholderIndex,
   getBlockColor,
 } from "lib/utils";
 import React, { useMemo, useRef, useState } from "react";
-import { TPoint } from "schemas";
+import { CompleteBlock, TPoint } from "schemas";
 import { usePageStore } from "store";
 
+import { ICON_SIZE } from "../const";
 import { IconUI } from "../icon/IconUI";
 import { useBlockDnd } from "../providers/WorkspaceDndProvider";
 import { BlockNodeUI } from "./BlockNodeUI";
+import { DRAG_BLOCK_STYLE, WRAPPER_STYLE } from "./const";
 import { PlaceholderNodeUI } from "./PlaceholderNodeUI";
+// import { useCollaboration, useYMapItem } from "collaboration";
+// import { actionAddBlock, mockBlockData } from "store/editor/page/actions";
 
-interface IProps {
-  data: Partial<Block>[];
-}
+// const ParentComponent = () => {
 
-export const BlockNodesListUI = (props: IProps) => {
-  const { data } = props;
-  const { addBlock, reorderBlock } = usePageStore();
+//   const { doc } = useCollaboration();
+//    const { blocks: localBlocks } = usePageStore();
+//   const [blocks=localBlocks, setBlocks] = useYMapItem<any[]>(doc?.getMap("blocks"), "blocks");
+//   return <BlockNodesListUI bloc={blocks} setBlocks={setBlocks}  />;
+// };
+
+const BlockNodesListUI = () => {
+  // Hooks & States, blocks
+  //const isCollaboration = useIsCollaboration("collaboration");
+  //const { doc } = useCollaboration();
+  const { addBlock, reorderBlock, blocks } = usePageStore();
+  // const [blocks=[], setBlocks] = useYMapItem<any[]>(doc?.getMap("blocks"), "blocks");
 
   const [mousePositionInElement, setMousePositionInElement] = useState({
     x: 0,
@@ -41,16 +51,19 @@ export const BlockNodesListUI = (props: IProps) => {
   const [expandedPlaceholderIndex, setExpandedPlaceholderIndex] = useState<
     number | undefined
   >();
+  // Refs
   const placeholderRefs = useRef<HTMLDivElement[]>([]);
-  const groupRef = useRef<HTMLDivElement>(null);
-  const showSortPlaceholders = !!(draggedBlockType || draggedBlock);
-  const isDraggingOnCurrentGroup = draggedBlock || draggedBlockType;
+  const groupRef = useRef<HTMLDivElement | null>(null);
+  const showSortPlaceholders = !!(draggedBlockType ?? draggedBlock);
+  const isDraggingOnCurrentGroup = draggedBlock ?? draggedBlockType;
 
   const handlePushElementRef =
     (idx: number) =>
     (elem: HTMLDivElement | null): void => {
       elem && (placeholderRefs.current[idx] = elem);
     };
+
+  // Methods
   const handleMouseMoveGlobal = (event: MouseEvent): void => {
     if (!draggedBlock) return;
 
@@ -65,7 +78,7 @@ export const BlockNodesListUI = (props: IProps) => {
     (blockIndex: number) =>
     (
       { relative, absolute }: { absolute: TPoint; relative: TPoint },
-      block: Partial<Block>
+      block: Partial<CompleteBlock>
     ) => {
       placeholderRefs.current.splice(blockIndex + 1, 1);
       setMousePositionInElement(relative);
@@ -89,17 +102,26 @@ export const BlockNodesListUI = (props: IProps) => {
       event.clientY,
       placeholderRefs
     );
+
     //Reorder group
-    if (draggedBlock && draggedBlock.index !== undefined) {
+    if (draggedBlock?.index != undefined) {
       const _index =
         draggedBlock.index > blockIndex ? blockIndex : blockIndex - 1;
+
       reorderBlock(_index, draggedBlock);
     }
 
     //Add in group
     if (draggedBlockType && !draggedBlock) {
-      //TODO - WHY UNKNOW ?
-      addBlock?.(blockIndex, draggedBlockType as unknown as Block);
+      addBlock?.(blockIndex, draggedBlockType);
+      // if(isCollaboration){
+      //   const { BLOCK_DATA } = mockBlockData(blockIndex, draggedBlockType, page.id);
+      //    const te= actionAddBlock(blocks,BLOCK_DATA,blockIndex)
+      //    setBlocks(te)
+
+      // } else {
+
+      // }
     }
 
     setDraggedBlock(undefined);
@@ -123,93 +145,38 @@ export const BlockNodesListUI = (props: IProps) => {
     groupRef
   );
 
-  const totalBlocks = useMemo(() => data.length, [data]);
+  const totalBlocks = useMemo(() => blocks?.length, [blocks]);
 
   if (draggedBlock) {
     changeCursor("grabbing");
   }
 
-  //TODO - Refacto Cognitive Complexity
   return (
     <>
-      <div className="w-full bg-black" ref={groupRef}>
-        {data?.map((bloc: Partial<Block>, index: number) => {
-          return (
-            <React.Fragment key={bloc.uuid}>
-              {index === 0 ? (
-                <>
-                  {draggedBlock && draggedBlock.index === bloc.index ? (
-                    <></>
-                  ) : (
-                    <>
-                      <PlaceholderNodeUI
-                        index={index}
-                        type={
-                          (draggedBlockType as string) ||
-                          (draggedBlock?.type as string)
-                        }
-                        isVisible={showSortPlaceholders}
-                        isExpanded={
-                          (expandedPlaceholderIndex === bloc.index &&
-                            (draggedBlockType || draggedBlock)) as boolean
-                        }
-                        onRef={handlePushElementRef(bloc.index as number)}
-                      />
-                      <BlockNodeUI
-                        bloc={bloc}
-                        onMouseDown={handleBlockMouseDown(bloc.index as number)}
-                        showSortPlaceholders={showSortPlaceholders}
-                        totalBlocks={totalBlocks}
-                      />
-                    </>
-                  )}
-                </>
-              ) : index === totalBlocks - 1 ? (
-                <>
-                  <PlaceholderNodeUI
-                    type={
-                      (draggedBlockType as string) ||
-                      (draggedBlock?.type as string)
-                    }
-                    index={index}
-                    isVisible={showSortPlaceholders}
-                    isExpanded={
-                      (expandedPlaceholderIndex === bloc.index &&
-                        (draggedBlockType || draggedBlock)) as boolean
-                    }
-                    onRef={handlePushElementRef(bloc.index as number)}
-                  />
-                  {draggedBlock && draggedBlock.index === bloc.index ? (
-                    <></>
-                  ) : (
-                    <>
-                      <BlockNodeUI
-                        bloc={bloc}
-                        onMouseDown={handleBlockMouseDown(bloc.index as number)}
-                        showSortPlaceholders={showSortPlaceholders}
-                        totalBlocks={totalBlocks}
-                      />
-                      <PlaceholderNodeUI
-                        type={
-                          (draggedBlockType as string) ||
-                          (draggedBlock?.type as string)
-                        }
-                        index={index + 1}
-                        isVisible={showSortPlaceholders}
-                        isExpanded={
-                          (expandedPlaceholderIndex ===
-                            (bloc.index as number) + 1 &&
-                            (draggedBlockType || draggedBlock)) as boolean
-                        }
-                        onRef={handlePushElementRef((bloc.index as number) + 1)}
-                      />
-                    </>
-                  )}
-                </>
-              ) : draggedBlock && draggedBlock.index === bloc.index ? (
-                <></>
-              ) : (
-                <span>
+      <div className="w-full" ref={groupRef} style={WRAPPER_STYLE}>
+        {blocks?.length === 0 ? (
+          <PlaceholderNodeUI
+            index={0}
+            type={
+              (draggedBlockType as string) || (draggedBlock?.type as string)
+            }
+            isVisible
+            isExpanded
+            onRef={handlePushElementRef(0 as number)}
+            IsInit
+          />
+        ) : (
+          blocks?.map((block: Partial<CompleteBlock>, index: number) => {
+            return (
+              <div
+                id={block.uuid}
+                key={block.uuid}
+                style={{
+                  pointerEvents: draggedBlock ? "none" : "auto",
+                  userSelect: draggedBlock ? "none" : "auto",
+                }}
+              >
+                {index === 0 ? (
                   <PlaceholderNodeUI
                     index={index}
                     type={
@@ -218,36 +185,47 @@ export const BlockNodesListUI = (props: IProps) => {
                     }
                     isVisible={showSortPlaceholders}
                     isExpanded={
-                      (expandedPlaceholderIndex === bloc.index &&
+                      (expandedPlaceholderIndex === block.index &&
                         (draggedBlockType || draggedBlock)) as boolean
                     }
-                    onRef={handlePushElementRef(bloc.index as number)}
+                    onRef={handlePushElementRef(block.index as number)}
                   />
+                ) : (
+                  <></>
+                )}
+                {draggedBlock && draggedBlock.uuid === block.uuid ? (
+                  <></>
+                ) : (
                   <BlockNodeUI
-                    bloc={bloc}
-                    onMouseDown={handleBlockMouseDown(bloc.index as number)}
+                    block={block}
+                    onMouseDown={handleBlockMouseDown(block.index as number)}
                     showSortPlaceholders={showSortPlaceholders}
                     totalBlocks={totalBlocks}
                   />
-                </span>
-              )}
-            </React.Fragment>
-          );
-        })}
+                )}
+                <PlaceholderNodeUI
+                  index={index + 1}
+                  type={
+                    (draggedBlockType as string) ||
+                    (draggedBlock?.type as string)
+                  }
+                  isVisible={showSortPlaceholders}
+                  isExpanded={
+                    (expandedPlaceholderIndex === Number(block.index) + 1 &&
+                      (draggedBlockType || draggedBlock)) as boolean
+                  }
+                  onRef={handlePushElementRef(Number(block.index) + 1)}
+                />
+              </div>
+            );
+          })
+        )}
       </div>
       {draggedBlock && (
         <div
-          className="flex items-start"
+          className="flex items-start fixed w-full top-0 left-0"
           style={{
-            zIndex: 500,
-            position: "fixed",
-            userSelect: "none",
-            top: 0,
-            left: 0,
-            maxWidth: "500px",
-            width: "100%",
-            height: "67px",
-            pointerEvents: "none",
+            ...DRAG_BLOCK_STYLE,
             transform: `translate(${position.x}px, ${position.y}px) rotate(-2deg) scale(1)`,
           }}
         >
@@ -256,23 +234,31 @@ export const BlockNodesListUI = (props: IProps) => {
               backgroundColor: getBlockColor(draggedBlock.type as string).color,
             }}
           >
-            <IconUI name="drag" width={20} height={20} />
+            <IconUI
+              name="drag"
+              width={ICON_SIZE.width}
+              height={ICON_SIZE.height}
+            />
           </div>
           <div
-            className="rounded-md flex p-5"
+            className="flex p-5"
             style={{
               width: "100%",
               height: "100%",
-              borderRadius: "5px",
+              borderTopRightRadius: "5px",
+              borderBottomRightRadius: "5px",
+              borderBottomLeftRadius: "5px",
               backgroundColor: getBlockColor(draggedBlock.type as string).color,
             }}
           >
-            <span style={{ userSelect: "none" }}>
-              {draggedBlock ? JSON.stringify(draggedBlock.content) : ""}
-            </span>
+            {draggedBlock
+              ? `You drag your ${draggedBlock.type?.toUpperCase()}`
+              : ""}
           </div>
         </div>
       )}
     </>
   );
 };
+
+export default BlockNodesListUI;

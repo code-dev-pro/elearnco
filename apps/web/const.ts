@@ -1,6 +1,9 @@
 import { CourseDate, CourseStatus, CourseTitle } from "schemas/menus/dropdown";
 
 export const IS_DEBUG = false;
+export const IS_LOG_NODE = true;
+export const IS_LOG_AUTOSAVE=true
+
 export const ID_USER = "";
 export const MAX_CARDS = 9;
 
@@ -9,7 +12,7 @@ export const PARENT_CSS = {
   flex: "1 1 auto",
   position: "relative",
   overflow: "hidden",
-  minHeight: "calc(100vh - 64px)",
+  minHeight: "100vh",
 } as const;
 
 export const WIDTH_SIDEBAR = 350;

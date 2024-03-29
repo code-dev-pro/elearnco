@@ -33,15 +33,14 @@ export const sendEmail = async ({
       subject,
       react,
     });
-    console.log("sucess", data);
-    console.log(error);
+   
     if (error) {
       return Promise.resolve(error);
     } else {
       return Promise.resolve("Success");
     }
   } catch (error) {
-    console.log("Error sending", error);
+   // console.log("Error sending", error);
     Promise.resolve(error);
   }
 };

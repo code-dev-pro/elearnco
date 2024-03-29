@@ -1,42 +1,87 @@
 "use client";
-import { Pagination } from "@nextui-org/react";
+import { cn, PaginationItemType, usePagination } from "@nextui-org/react";
+import { useIsCompletion } from "customhooks";
 import React, { useEffect } from "react";
 
-import BarUI from "../menu/BarUI";
-
-type TPosition = "top" | "bottom" | "left" | "right";
-
 interface IProps {
-  fixedInPosition: TPosition;
   onChange?: (page: number) => void;
   total: number;
-  activePage: number;
+  initialPage: number;
+  isValidate?: number[];
 }
 
 export const PaginationUI = (props: React.PropsWithChildren<IProps>) => {
-  const {
-    fixedInPosition,
-    onChange,
-    total = 10,
-    activePage = 1,
-    children,
-  } = props;
+  const { children, onChange, total, initialPage, isValidate } = props;
+  const isCompletion = useIsCompletion("completion");
+  const { activePage, range, setPage } = usePagination({
+    total: total,
+    showControls: false,
+    siblings: 1,
+    boundaries: 1,
+    page: initialPage,
+  });
+
+  const _onChange = (page: number): void => {
+    setPage(page);
+    if (isCompletion) {
+      onChange?.(page);
+      return;
+    }
+
+    if (activePage !== page) {
+      onChange?.(page);
+    }
+  };
 
   useEffect(() => {
     void 0;
-  }, [total]);
+  }, [total, isValidate]);
 
   return (
-    <BarUI fixedInPosition={fixedInPosition} position="fixed">
-      <Pagination
-        onChange={(page) => onChange?.(page)}
-        total={total}
-        initialPage={1}
-        page={activePage}
-        size="sm"
-        radius="full"
-      />
+    <div className="flex gap-2">
+      <ul className="flex gap-2 items-center">
+        {range.map((page, index) => {
+          if (page === PaginationItemType.DOTS) {
+            return (
+              <li key={`${page}_${index}`} className="w-8 h-8">
+                <button
+                  disabled
+                  className="w-full h-full bg-default rounded-full"
+                >
+                  ...
+                </button>
+              </li>
+            );
+          }
+
+          return (
+            <li key={page} aria-label={`page ${page}`} className="w-8 h-8">
+              <button
+                className={cn(
+                  "flex justify-center items-center w-full h-full bg-default rounded-full",
+                  activePage === page && !isCompletion ? "bg-foreground" : ""
+                )}
+                onClick={() => _onChange(page as number)}
+              >
+                <span
+                  className={cn(
+                    "flex justify-center items-center w-7 h-7 rounded-full",
+                    isValidate?.includes(page as number)
+                      ? "bg-success"
+                      : "bg-default",
+                    isValidate?.includes(page as number)
+                      ? "text-black"
+                      : "text-white"
+                  )}
+                >
+                  {page}
+                </span>
+              </button>
+            </li>
+          );
+        })}
+      </ul>
       {children}
-    </BarUI>
+    </div>
   );
 };

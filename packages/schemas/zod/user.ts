@@ -1,6 +1,6 @@
 import * as z from "zod"
 import { Role } from "@prisma/client"
-import { CompleteFolder, RelatedFolderModel, CompleteCourse, RelatedCourseModel, CompleteLearner, RelatedLearnerModel, CompleteCollaborator, RelatedCollaboratorModel, CompletePasswordResetToken, RelatedPasswordResetTokenModel, CompleteEmailVerificationToken, RelatedEmailVerificationTokenModel, CompleteAccount, RelatedAccountModel, CompleteSession, RelatedSessionModel, CompleteAuthor, RelatedAuthorModel } from "./index"
+import { CompleteFolder, RelatedFolderModel, CompleteCourse, RelatedCourseModel, CompleteLearner, RelatedLearnerModel, CompleteCollaborator, RelatedCollaboratorModel, CompletePasswordResetToken, RelatedPasswordResetTokenModel, CompleteEmailVerificationToken, RelatedEmailVerificationTokenModel, CompleteAccount, RelatedAccountModel, CompleteSession, RelatedSessionModel, CompleteAuthor, RelatedAuthorModel, CompleteComment, RelatedCommentModel, CompleteDrawing, RelatedDrawingModel, CompleteTagUser, RelatedTagUserModel } from "./index"
 
 export const UserModel = z.object({
   id: z.string(),
@@ -14,6 +14,8 @@ export const UserModel = z.object({
   lastActivityAt: z.date(),
   updatedAt: z.date(),
   role: z.nativeEnum(Role),
+  resetToken: z.string().nullish(),
+  resetTokenExpiry: z.date().nullish(),
 })
 
 export interface CompleteUser extends z.infer<typeof UserModel> {
@@ -26,6 +28,9 @@ export interface CompleteUser extends z.infer<typeof UserModel> {
   accounts: CompleteAccount[]
   sessions: CompleteSession[]
   author: CompleteAuthor[]
+  comments: CompleteComment[]
+  Drawing: CompleteDrawing[]
+  Tag: CompleteTagUser[]
 }
 
 /**
@@ -43,4 +48,7 @@ export const RelatedUserModel: z.ZodSchema<CompleteUser> = z.lazy(() => UserMode
   accounts: RelatedAccountModel.array(),
   sessions: RelatedSessionModel.array(),
   author: RelatedAuthorModel.array(),
+  comments: RelatedCommentModel.array(),
+  Drawing: RelatedDrawingModel.array(),
+  Tag: RelatedTagUserModel.array(),
 }))

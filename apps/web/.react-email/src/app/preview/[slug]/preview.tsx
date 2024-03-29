@@ -42,8 +42,8 @@ export default function Preview({
     router.push(`${pathname}?view=source&lang=${lang}`);
   };
 
-  return (
-    <Shell
+  return (<></>
+   /*  <Shell
       navItems={navItems}
       title={slug}
       markup={markup}
@@ -67,6 +67,6 @@ export default function Preview({
           </Tooltip.Provider>
         </div>
       )}
-    </Shell>
+    </Shell> */
   );
 }

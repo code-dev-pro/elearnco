@@ -10,7 +10,7 @@ import {
   Spacer,
   useDisclosure,
 } from "@nextui-org/react";
-import { apiPreregister } from "lib/requests/api.request";
+import { authPreregister } from "lib/requests/api.request";
 import { useTranslations } from "next-intl";
 import { useState } from "react";
 import { Controller, useForm } from "react-hook-form";
@@ -19,22 +19,31 @@ import { toast } from "sonner";
 import * as z from "zod";
 
 import PreviewFeature from "../previewVideo";
+import { ERoutes } from "schemas";
+import { useRouter } from "next/navigation";
 type UserAuthPreregisterSchema = z.infer<typeof userAuthPreregisterSchema>;
 
 const PreregisterFeature = () => {
   const t = useTranslations("");
   const te = useTranslations("errors");
+  const router = useRouter();
   const [isLoading, setLoading] = useState<boolean>(false);
   const { isOpen, onOpen, onClose } = useDisclosure();
   const SUCCESS = t("auth.form.preregister.success");
   const TITLE = t("auth.form.preregister.title");
   const BUTTON_REGISTER = t("button.preregister");
+  const BUTTON_SIGNIN = t("button.signin");
+  const BUTTON_TEST_COURSE = t("button.test");
   const LOADING = t("button.loading");
   const EMAIL_PLACEHOLDER = t("auth.form.email.placeholder");
   const DESCRIPTION = t("auth.form.preregister.description");
   const PREVIEW_IS_READY = false;
 
-  const handleOpen = (): void => {
+  const _handleTest = (): void => {
+    router.push(ERoutes.SIGN);
+  };
+
+  const _handleOpen = (): void => {
     onOpen();
   };
   const {
@@ -48,7 +57,7 @@ const PreregisterFeature = () => {
 
   const onSubmit = async (data: UserAuthPreregisterSchema): Promise<void> => {
     setLoading(true);
-    const user = await apiPreregister?.(data);
+    const user = await authPreregister?.(data);
 
     if (user.status === "success") {
       toast.success(SUCCESS);
@@ -118,8 +127,14 @@ const PreregisterFeature = () => {
         </ModalContent>
       </Modal>
       <div className="flex gap-4 items-center">
-        <Button onClick={handleOpen} size="md" color="primary">
+        <Button onClick={_handleOpen} size="md" color="primary">
           {BUTTON_REGISTER}
+        </Button>
+        <Button onClick={_handleTest} size="md" color="primary">
+          {BUTTON_SIGNIN}
+        </Button>
+        <Button onClick={_handleTest} size="md" color="primary">
+          {BUTTON_TEST_COURSE}
         </Button>
         {PREVIEW_IS_READY && (
           <>

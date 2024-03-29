@@ -1,27 +1,30 @@
-import { Course, Page } from "@prisma/client";
+import { Block,Page } from "@prisma/client";
 import {
-  CourseResponse,
-  CoursesResponse,
-  ErrorResponse,
-  FolderResponse,
-  FoldersResponse,
-  PageResponse,
-  PreregisterResponse,
-  TPartialFolder,
-  UserResponse,
-} from "schemas/api";
-import { pathApiFolder, pathApiFolders } from "./folder/folder";
-import { pathApiCourse, pathApiCourses } from "./course/course";
-import { pathApiUser } from "./user/user";
+  CompleteBlock,
+  CompleteComment,
+  CompleteCourse,
+  CompleteFolder,
+  CompletePage,
+} from "schemas";
+import { ErrorResponse, FetchResponse } from "schemas/api";
 import { SafeUser } from "schemas/auth/Auth";
-
-export const getBaseUrl = () => {
-  if (typeof window !== "undefined") return ""; 
-  if (process.env.VERCEL_URL) return `https://${process.env.VERCEL_URL}`; 
-  return `http://localhost:${process.env.PORT ?? 3000}`; 
+const segment = "api";
+const pathApiFolders = `/${segment}/folders`;
+const pathApiFolder = `/${segment}/folder`;
+const pathApiCourses = `/${segment}/courses`;
+const pathApiCourse = `/${segment}/course`;
+const pathApiBlockNode = `/${segment}/blockNode`;
+const pathApiBlock = `/${segment}/block`;
+const pathApiPage = `/${segment}/page`;
+const pathApiUser = `/${segment}/user`;
+const pathApiUserTags = `/${segment}/user/tags`;
+const pathApiComments = `/${segment}/comments`;
+export const getBaseUrl = (): string => {
+  if (typeof window !== "undefined") return location.origin;
+  if (process.env.VERCEL_URL) return `https://${process.env.VERCEL_URL}`;
+  return `http://localhost:${process.env.PORT ?? 3000}`;
 };
-const SERVER_ENDPOINT = getBaseUrl()
- 
+const SERVER_ENDPOINT = getBaseUrl();
 async function handleResponse<T>(response: Response): Promise<T> {
   const contentType = response.headers.get("Content-Type") || "";
   const isJson = contentType.includes("application/json");
@@ -36,14 +39,22 @@ async function handleResponse<T>(response: Response): Promise<T> {
 
   return data as T;
 }
+function handleFailResponse(response: Response): ErrorResponse {
+  return {
+    status: "error",
+    data: { message: "fail" },
+  };
+}
 
-/** USER */
-export async function apiPreregister(data: {
+/**
+ * *******************
+ * USER
+ * *******************
+ */
+export async function authPreregister(data: {
   email: string;
-}): Promise<PreregisterResponse> {
-
-  
-  const response = await fetch(`${SERVER_ENDPOINT}/api/user/preregister`, {
+}): Promise<FetchResponse> {
+  const response = await fetch(`${SERVER_ENDPOINT}${pathApiUser}/preregister`, {
     method: "POST",
     headers: {
       "Content-Type": "application/json",
@@ -51,20 +62,22 @@ export async function apiPreregister(data: {
     body: JSON.stringify({ data }),
   });
 
-  return handleResponse<PreregisterResponse>(response).then((data) => data);
+  return handleResponse<FetchResponse>(response).then((data) => data);
 }
-export async function apiSignup(data: unknown): Promise<UserResponse> {
-  const response = await fetch(`${SERVER_ENDPOINT}/api/user/signup`, {
+export async function authSignup(
+  data: Partial<SafeUser>
+): Promise<FetchResponse> {
+  const response = await fetch(`${SERVER_ENDPOINT}${pathApiUser}/signup`, {
     method: "POST",
     headers: {
       "Content-Type": "application/json",
     },
     body: JSON.stringify({ data }),
   });
-  return handleResponse<UserResponse>(response).then((data) => data);
+  return handleResponse<FetchResponse>(response).then((data) => data);
 }
-export async function apiValidate(data: unknown): Promise<UserResponse> {
-  const response = await fetch(`${SERVER_ENDPOINT}/api/user/validate`, {
+export async function authValidate(data: unknown): Promise<FetchResponse> {
+  const response = await fetch(`${SERVER_ENDPOINT}${pathApiUser}/validate`, {
     method: "POST",
     headers: {
       "Content-Type": "application/json",
@@ -72,20 +85,51 @@ export async function apiValidate(data: unknown): Promise<UserResponse> {
     body: JSON.stringify({ data }),
   });
 
-  return handleResponse<UserResponse>(response).then((data) => data);
+  return handleResponse<FetchResponse>(response).then((data) => data);
 }
+export async function authForgetPassword(data: {
+  email: string;
+}): Promise<FetchResponse> {
+  const response = await fetch(
+    `${SERVER_ENDPOINT}${pathApiUser}/forgot-password`,
+    {
+      method: "POST",
+      headers: {
+        "Content-Type": "application/json",
+      },
+      body: JSON.stringify({ data }),
+    }
+  );
 
-export async function apiGetUser(id: string): Promise<UserResponse> {
+  return handleResponse<FetchResponse>(response).then((data) => data);
+}
+export async function authResetPassword(data: {
+  password: string;
+  token: string;
+}): Promise<FetchResponse> {
+  const response = await fetch(
+    `${SERVER_ENDPOINT}${pathApiUser}/reset-password/${data.token}`,
+    {
+      method: "POST",
+      headers: {
+        "Content-Type": "application/json",
+      },
+      body: JSON.stringify({ data }),
+    }
+  );
+
+  return handleResponse<FetchResponse>(response).then((data) => data);
+}
+export async function authGetUser(id: string): Promise<FetchResponse> {
   const response = await fetch(`${SERVER_ENDPOINT}${pathApiUser}/${id}`, {
     method: "GET",
   });
 
-  return handleResponse<UserResponse>(response).then((data) => data);
+  return handleResponse<FetchResponse>(response).then((data) => data);
 }
-
-export async function apiUpdateUser(
+export async function authUpdateUser(
   data: Partial<SafeUser>
-): Promise<UserResponse> {
+): Promise<FetchResponse> {
   const { id, ...rest } = data;
   const response = await fetch(`${SERVER_ENDPOINT}${pathApiUser}/${data.id}`, {
     method: "PATCH",
@@ -94,21 +138,24 @@ export async function apiUpdateUser(
     },
     body: JSON.stringify({ data: rest }),
   });
-  return handleResponse<UserResponse>(response).then((data) => data);
+  return handleResponse<FetchResponse>(response).then((data) => data);
 }
-
-export async function apiDeleteUser(id: string): Promise<UserResponse> {
+export async function authDeleteUser(id: string): Promise<FetchResponse> {
   const response = await fetch(`${SERVER_ENDPOINT}${pathApiUser}/${id}`, {
     method: "DELETE",
   });
 
-  return handleResponse<UserResponse>(response).then((data) => data);
+  return handleResponse<FetchResponse>(response).then((data) => data);
 }
 
-/** FOLDERS */
-export async function apiCreateFolder(
-  FolderData: TPartialFolder
-): Promise<FolderResponse> {
+/**
+ * *******************
+ * FOLDERS
+ * *******************
+ */
+export async function addFolder(
+  FolderData: Partial<CompleteFolder>
+): Promise<FetchResponse> {
   const response = await fetch(`${SERVER_ENDPOINT}${pathApiFolders}`, {
     method: "POST",
     headers: {
@@ -117,23 +164,18 @@ export async function apiCreateFolder(
     body: JSON.stringify({ ...FolderData }),
   });
 
-  return handleResponse<FolderResponse>(response).then((data) => data);
+  return handleResponse<FetchResponse>(response).then((data) => data);
 }
-export async function apiDeleteFolder(
-  folderId: string
-): Promise<FolderResponse> {
-  const response = await fetch(
-    `${SERVER_ENDPOINT}${pathApiFolder}/${folderId}`,
-    {
-      method: "DELETE",
-    }
-  );
-  return handleResponse<FolderResponse>(response).then((data) => data);
+export async function deleteFolder(id: string): Promise<FetchResponse> {
+  const response = await fetch(`${SERVER_ENDPOINT}${pathApiFolder}/${id}`, {
+    method: "DELETE",
+  });
+  return handleResponse<FetchResponse>(response).then((data) => data);
 }
-export async function apiUpdateFolder(data: {
+export async function updateFolder(data: {
   id: string;
   name: string;
-}): Promise<FolderResponse> {
+}): Promise<FetchResponse> {
   const response = await fetch(
     `${SERVER_ENDPOINT}${pathApiFolder}/${data.id}`,
     {
@@ -144,41 +186,84 @@ export async function apiUpdateFolder(data: {
       body: JSON.stringify({ name: data.name }),
     }
   );
-  return handleResponse<FolderResponse>(response).then((data) => data);
+  return handleResponse<FetchResponse>(response).then((data) => data);
 }
-export async function apiGetFolders(): Promise<FoldersResponse> {
+export async function getFolders(): Promise<FetchResponse | ErrorResponse> {
   const response = await fetch(`${SERVER_ENDPOINT}${pathApiFolders}`, {
     method: "GET",
   });
 
-  return handleResponse<FoldersResponse>(response).then((data) => data);
+  return handleResponse<FetchResponse>(response).then((data) => data);
 }
+/**
+ * *******************
+ * TAGS
+ * *******************
+ */
 
-/** COURSES */
-export async function apiGetCourses(): Promise<CoursesResponse> {
-  const response = await fetch(`${SERVER_ENDPOINT}${pathApiCourses}`, {
+export async function getTags(
+  id: string
+): Promise<FetchResponse | ErrorResponse> {
+  const response = await fetch(`${SERVER_ENDPOINT}${pathApiUserTags}/${id}`, {
     method: "GET",
   });
 
-  return handleResponse<CoursesResponse>(response).then((data) => data);
+  return handleResponse<FetchResponse>(response).then((data) => data);
 }
-export async function apiGetMoreRecentCourse(): Promise<CoursesResponse> {
+/**
+ * *******************
+ * COURSES
+ * *******************
+ */
+export async function getCourses(query: string): Promise<
+  | {
+      status: string;
+      data: [CompleteCourse[], number];
+    }
+  | ErrorResponse
+> {
+  const response = await fetch(`${SERVER_ENDPOINT}${pathApiCourses}/${query}`, {
+    method: "GET",
+  });
+
+  if (response.status === 201) {
+    return handleResponse<
+      | {
+          status: string;
+          data: [CompleteCourse[], number];
+        }
+      | ErrorResponse
+    >(response).then((data) => data);
+  } else {
+    return handleFailResponse(response);
+  }
+}
+export async function getCourseMoreRecent(): Promise<
+  FetchResponse | ErrorResponse
+> {
   const response = await fetch(`${SERVER_ENDPOINT}${pathApiCourses}/latest`, {
     method: "GET",
   });
-
-  return handleResponse<CoursesResponse>(response).then((data) => data);
+  if (response.status === 201) {
+    return handleResponse<FetchResponse | ErrorResponse>(response).then(
+      (data) => data
+    );
+  } else {
+    return handleFailResponse(response);
+  }
 }
-export async function apiGetCourse(id: string): Promise<CoursesResponse> {
+export async function getCourse(
+  id: string
+): Promise<FetchResponse | ErrorResponse> {
   const response = await fetch(`${SERVER_ENDPOINT}${pathApiCourse}/${id}`, {
     method: "GET",
   });
-  return handleResponse<CoursesResponse>(response).then((data) => data);
+  return handleResponse<FetchResponse>(response).then((data) => data);
 }
-export async function apiCreateCourse(
+export async function addCourse(
   courseData: any
-): Promise<CourseResponse> {
-  const response = await fetch(`${SERVER_ENDPOINT}/api/courses`, {
+): Promise<FetchResponse | ErrorResponse> {
+  const response = await fetch(`${SERVER_ENDPOINT}${pathApiCourses}`, {
     method: "POST",
     headers: {
       "Content-Type": "application/json",
@@ -186,12 +271,18 @@ export async function apiCreateCourse(
     body: JSON.stringify({ ...courseData }),
   });
 
-  return handleResponse<CourseResponse>(response).then((data) => data);
+  if (response.status === 201) {
+    return handleResponse<FetchResponse | ErrorResponse>(response).then(
+      (data) => data
+    );
+  } else {
+    return handleFailResponse(response);
+  }
 }
-export async function apiUpdateCourse(
+export async function updateCourse(
   id: string,
-  props: Partial<Course>
-): Promise<CourseResponse> {
+  props: Partial<CompleteCourse>
+): Promise<FetchResponse | ErrorResponse> {
   const response = await fetch(`${SERVER_ENDPOINT}${pathApiCourse}/${id}`, {
     method: "PATCH",
     headers: {
@@ -199,43 +290,447 @@ export async function apiUpdateCourse(
     },
     body: JSON.stringify({ ...props }),
   });
-  return handleResponse<CourseResponse>(response).then((data) => data);
+
+  if (response.status === 201) {
+    return handleResponse<FetchResponse | ErrorResponse>(response).then(
+      (data) => data
+    );
+  } else {
+    return handleFailResponse(response);
+  }
 }
-export async function apiDeleteCourse(
-  courseId: string
-): Promise<CoursesResponse> {
-  const response = await fetch(
-    `${SERVER_ENDPOINT}${pathApiCourse}/${courseId}`,
-    {
-      method: "DELETE",
-    }
-  );
-  return handleResponse<CoursesResponse>(response).then((data) => data);
+export async function deleteCourse(
+  id: string
+): Promise<FetchResponse | ErrorResponse> {
+  const response = await fetch(`${SERVER_ENDPOINT}${pathApiCourse}/${id}`, {
+    method: "DELETE",
+  });
+
+  if (response.status === 201) {
+    return handleResponse<FetchResponse | ErrorResponse>(response).then(
+      (data) => data
+    );
+  } else {
+    return handleFailResponse(response);
+  }
 }
 
-/** PAGE */
-export async function apiCreatePage(pageData: string): Promise<Page> {
-  const response = await fetch(`${SERVER_ENDPOINT}/api/page/:id`, {
+/**
+ * **************************************
+ * PAGE
+ * **************************************
+ */
+
+export async function getPage(
+  id: string
+): Promise<FetchResponse | ErrorResponse> {
+  const response = await fetch(`${SERVER_ENDPOINT}${pathApiPage}/${id}`, {
+    method: "GET",
+  });
+  if (response.status === 201) {
+    return handleResponse<FetchResponse | ErrorResponse>(response).then(
+      (data) => data
+    );
+  } else {
+    return handleFailResponse(response);
+  }
+}
+export async function addPage(
+  pageData: Partial<Page>
+): Promise<FetchResponse | ErrorResponse> {
+  const response = await fetch(`${SERVER_ENDPOINT}${pathApiPage}/:id`, {
     method: "POST",
     headers: {
       "Content-Type": "application/json",
     },
-    body: pageData,
+    body: JSON.stringify(pageData),
   });
 
-  return handleResponse<PageResponse>(response).then((data) => data.data.page);
+  if (response.status === 201) {
+    return handleResponse<FetchResponse | ErrorResponse>(response).then(
+      (data) => data
+    );
+  } else {
+    return handleFailResponse(response);
+  }
 }
-export async function apiDeletePage(pageId: string): Promise<void> {
-  const response = await fetch(`${SERVER_ENDPOINT}/api/page/${pageId}`, {
-    method: "DELETE",
+
+export async function reorderPage(
+  pageData: CompletePage[]
+): Promise<FetchResponse | ErrorResponse> {
+  const response = await fetch(`${SERVER_ENDPOINT}${pathApiPage}`, {
+    method: "PATCH",
+    headers: {
+      "Content-Type": "application/json",
+    },
+    body: JSON.stringify(pageData),
   });
 
-  if (response.status !== 204) {
-    const errorResponse: ErrorResponse = await response.json();
-    if (errorResponse) {
-      throw new Error(errorResponse.message);
+  if (response.status === 201) {
+    return handleResponse<FetchResponse | ErrorResponse>(response).then(
+      (data) => data
+    );
+  } else {
+    return handleFailResponse(response);
+  }
+}
+
+export async function deletePage(
+  courseID: string,
+  id: string,
+  index: number
+): Promise<FetchResponse | ErrorResponse> {
+  const response = await fetch(`${SERVER_ENDPOINT}${pathApiPage}/${id}`, {
+    method: "DELETE",
+    body: JSON.stringify({ courseID: courseID, index: index }),
+  });
+
+  if (response.status === 201) {
+    return handleResponse<FetchResponse | ErrorResponse>(response).then(
+      (data) => data
+    );
+  } else {
+    return handleFailResponse(response);
+  }
+}
+export async function updatePage(
+  id: string,
+  props: Partial<Page>
+): Promise<FetchResponse | ErrorResponse> {
+  const response = await fetch(`${SERVER_ENDPOINT}${pathApiPage}/${id}`, {
+    method: "PATCH",
+    headers: {
+      "Content-Type": "application/json",
+    },
+    body: JSON.stringify({ ...props }),
+  });
+  if (response.status === 201) {
+    return handleResponse<FetchResponse | ErrorResponse>(response).then(
+      (data) => data
+    );
+  } else {
+    return handleFailResponse(response);
+  }
+}
+
+/**
+ * **************************************
+ * BLOCK
+ * **************************************
+ */
+export async function addBlock(
+  blockData: Partial<Block>
+): Promise<FetchResponse | ErrorResponse> {
+  const response = await fetch(`${SERVER_ENDPOINT}${pathApiBlock}/:id`, {
+    method: "POST",
+    headers: {
+      "Content-Type": "application/json",
+    },
+    body: JSON.stringify(blockData),
+  });
+
+  if (response.status === 201) {
+    return handleResponse<FetchResponse | ErrorResponse>(response).then(
+      (data) => data
+    );
+  } else {
+    return handleFailResponse(response);
+  }
+}
+//TODO RENAME updateBlock TO updateBlockNode
+export async function updateBlockNode(
+  blockData: Partial<Block>
+): Promise<FetchResponse | ErrorResponse> {
+  if (blockData?.id) {
+    const { id, ...rest } = blockData;
+    if (id) {
+      const response = await fetch(
+        `${SERVER_ENDPOINT}${pathApiBlockNode}/${id}`,
+        {
+          method: "POST",
+          headers: {
+            "Content-Type": "application/json",
+          },
+          body: JSON.stringify(rest),
+        }
+      );
+
+      if (response.status === 201) {
+        return handleResponse<FetchResponse | ErrorResponse>(response).then(
+          (data) => data
+        );
+      } else {
+        return handleFailResponse(response);
+      }
     } else {
-      throw new Error(`API error: ${response.status}`);
+      return { status: "success", data: { message: "" } };
     }
+  } else {
+    return { status: "success", data: { message: "" } };
+  }
+}
+export async function updateManyBlock({
+  modifiedBlocks,
+  deletedBlockIds,
+}: {
+  modifiedBlocks: Partial<CompleteBlock>[];
+  deletedBlockIds: string[];
+}): Promise<FetchResponse | ErrorResponse> {
+  const response = await fetch(`${SERVER_ENDPOINT}${pathApiBlock}`, {
+    method: "POST",
+    headers: {
+      "Content-Type": "application/json",
+    },
+    body: JSON.stringify({
+      modifiedBlocks,
+      deletedBlockIds,
+    }),
+  });
+
+  if (response.status === 201) {
+    return handleResponse<FetchResponse | ErrorResponse>(response).then(
+      (data) => data
+    );
+  } else {
+    return handleFailResponse(response);
+  }
+}
+export async function deleteBlock(
+  id: string
+): Promise<FetchResponse | ErrorResponse> {
+  const response = await fetch(`${SERVER_ENDPOINT}${pathApiBlock}/${id}`, {
+    method: "DELETE",
+    headers: {
+      "Content-Type": "application/json",
+    },
+  });
+
+  if (response.status === 201) {
+    return handleResponse<FetchResponse | ErrorResponse>(response).then(
+      (data) => data
+    );
+  } else {
+    return handleFailResponse(response);
+  }
+}
+
+/**
+ * **************************************
+ * NODE
+ * **************************************
+ */
+export async function getBlockNode(
+  id: string
+): Promise<FetchResponse | ErrorResponse> {
+  const response = await fetch(`${SERVER_ENDPOINT}${pathApiBlockNode}/${id}`, {
+    method: "GET",
+  });
+
+  if (response.status === 201) {
+    return handleResponse<FetchResponse | ErrorResponse>(response).then(
+      (data) => data
+    );
+  } else {
+    return handleFailResponse(response);
+  }
+}
+export async function addBlockNode(
+  data: Partial<Block>
+): Promise<FetchResponse | ErrorResponse> {
+  const response = await fetch(`${SERVER_ENDPOINT}${pathApiBlockNode}/:id`, {
+    method: "POST",
+    headers: {
+      "Content-Type": "application/json",
+    },
+    body: JSON.stringify(data),
+  });
+
+  if (response.status === 201) {
+    return handleResponse<FetchResponse | ErrorResponse>(response).then(
+      (data) => data
+    );
+  } else {
+    return handleFailResponse(response);
+  }
+}
+export async function deleteBlockNode(
+  id: string
+): Promise<FetchResponse | ErrorResponse> {
+  const response = await fetch(`${SERVER_ENDPOINT}${pathApiBlockNode}/${id}`, {
+    method: "DELETE",
+    headers: {
+      "Content-Type": "application/json",
+    },
+  });
+
+  if (response.status === 201) {
+    return handleResponse<FetchResponse | ErrorResponse>(response).then(
+      (data) => data
+    );
+  } else {
+    return handleFailResponse(response);
+  }
+}
+// export async function updateBlockNode(
+//   data: Partial<Block>
+// ): Promise<FetchResponse | ErrorResponse> {
+//   const response = await fetch(`${SERVER_ENDPOINT}${pathApiBlockNode}/:id`, {
+//     method: "PATCH",
+//     headers: {
+//       "Content-Type": "application/json",
+//     },
+//     body: JSON.stringify(data),
+//   });
+
+//   if (response.status === 201) {
+//     return handleResponse<FetchResponse | ErrorResponse>(response).then(
+//       (data) => data
+//     );
+//   } else {
+//     return handleFailResponse(response);
+//   }
+// }
+
+/**
+ * **************************************
+ * COMMENTS
+ * **************************************
+ */
+export async function getComments(
+  id: string
+): Promise<FetchResponse | ErrorResponse> {
+  const response = await fetch(`${SERVER_ENDPOINT}${pathApiComments}/${id}`, {
+    method: "GET",
+  });
+
+  if (response.status === 201) {
+    return handleResponse<FetchResponse | ErrorResponse>(response).then(
+      (data) => data
+    );
+  } else {
+    return handleFailResponse(response);
+  }
+}
+export async function addComment(
+  data: Partial<CompleteComment>
+): Promise<FetchResponse | ErrorResponse> {
+  const response = await fetch(`${SERVER_ENDPOINT}${pathApiComments}`, {
+    method: "POST",
+    headers: {
+      "Content-Type": "application/json",
+    },
+    body: JSON.stringify(data),
+  });
+
+  if (response.status === 201) {
+    return handleResponse<FetchResponse | ErrorResponse>(response).then(
+      (data) => data
+    );
+  } else {
+    return handleFailResponse(response);
+  }
+}
+export async function deleteComment(
+  id: string
+): Promise<FetchResponse | ErrorResponse> {
+  const response = await fetch(`${SERVER_ENDPOINT}${pathApiBlockNode}/${id}`, {
+    method: "DELETE",
+    headers: {
+      "Content-Type": "application/json",
+    },
+  });
+
+  if (response.status === 201) {
+    return handleResponse<FetchResponse | ErrorResponse>(response).then(
+      (data) => data
+    );
+  } else {
+    return handleFailResponse(response);
+  }
+}
+export async function deleteThread(
+  id: string
+): Promise<FetchResponse | ErrorResponse> {
+  const response = await fetch(`${SERVER_ENDPOINT}${pathApiComments}/${id}`, {
+    method: "DELETE",
+    headers: {
+      "Content-Type": "application/json",
+    },
+  });
+
+  if (response.status === 201) {
+    return handleResponse<FetchResponse | ErrorResponse>(response).then(
+      (data) => data
+    );
+  } else {
+    return handleFailResponse(response);
+  }
+}
+export async function updateComment(
+  id: string,
+  content: CompleteComment[]
+): Promise<FetchResponse | ErrorResponse> {
+  const response = await fetch(`${SERVER_ENDPOINT}${pathApiComments}/${id}`, {
+    method: "PATCH",
+    headers: {
+      "Content-Type": "application/json",
+    },
+    body: JSON.stringify(content),
+  });
+
+  if (response.status === 201) {
+    return handleResponse<FetchResponse | ErrorResponse>(response).then(
+      (data) => data
+    );
+  } else {
+    return handleFailResponse(response);
+  }
+}
+// AI
+export async function apiGPT(
+  prompt: string
+): Promise<FetchResponse | ErrorResponse> {
+  if (prompt === "") {
+    return {
+      status: "failed",
+      data: { message: "no prompt" },
+    };
+  }
+
+  const response = await fetch(`http://localhost:1337/v1/chat/completions`, {
+    method: "POST",
+    headers: {
+      "Content-Type": "application/json",
+      accept: "application/json",
+    },
+    body: JSON.stringify({
+      messages: [
+        {
+          content:
+            "Tu es un assistant en français et tu dois formuler de manière précise et concise chaque réponse en français sans phrase d'introduction.",
+          role: "system",
+        },
+        {
+          content: prompt,
+          role: "user",
+        },
+      ],
+      model: "mistral-ins-7b-q4",
+      stream: true,
+      max_tokens: 2048,
+      stop: [],
+      frequency_penalty: 0,
+      presence_penalty: 0,
+      temperature: 0.7,
+      top_p: 0.95,
+    }),
+  });
+
+  if (response.status === 200) {
+    return handleResponse<FetchResponse | ErrorResponse>(response).then(
+      (data) => data
+    );
+  } else {
+    return handleFailResponse(response);
   }
 }

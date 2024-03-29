@@ -8,7 +8,6 @@ export enum MediaBlockType {
   FLASHCARD = 'flashcard',
   HOTSPOT = 'hotspot',
   TIMELINE = 'timeline',
-  WHEEL = 'wheel',
   EMBED = 'embed',
   DOCUMENT_UPLOAD = 'upload',
   SLIDESHOW = 'slideshow',

@@ -1,6 +1,6 @@
 import * as z from "zod"
 import { CourseStatus, CourseType, CourseMode } from "@prisma/client"
-import { CompleteUser, RelatedUserModel, CompleteFolder, RelatedFolderModel, CompleteAuthor, RelatedAuthorModel, CompletePage, RelatedPageModel } from "./index"
+import { CompleteUser, RelatedUserModel, CompleteFolder, RelatedFolderModel, CompleteAuthor, RelatedAuthorModel, CompletePage, RelatedPageModel, CompleteTagCourse, RelatedTagCourseModel } from "./index"
 
 export const CourseModel = z.object({
   id: z.string(),
@@ -22,6 +22,7 @@ export interface CompleteCourse extends z.infer<typeof CourseModel> {
   folder?: CompleteFolder | null
   author: CompleteAuthor
   pages: CompletePage[]
+  tags: CompleteTagCourse[]
 }
 
 /**
@@ -34,4 +35,5 @@ export const RelatedCourseModel: z.ZodSchema<CompleteCourse> = z.lazy(() => Cour
   folder: RelatedFolderModel.nullish(),
   author: RelatedAuthorModel,
   pages: RelatedPageModel.array(),
+  tags: RelatedTagCourseModel.array(),
 }))

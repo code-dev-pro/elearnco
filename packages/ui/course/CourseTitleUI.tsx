@@ -5,5 +5,5 @@ import { useCourseStore } from "store";
 export const CourseTitleUI = () => {
   const { course } = useCourseStore();
 
-  return <span className="select-none">{course.title}</span>;
+  return <div className="select-none ml-2">{course.title}</div>;
 };

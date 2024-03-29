@@ -1,8 +1,12 @@
-import * as DOMPurify from "isomorphic-dompurify";
 import { KbdKey } from "@nextui-org/react";
+import { type ClassValue, clsx } from "clsx";
+import * as DOMPurify from "isomorphic-dompurify";
 import { customAlphabet } from "nanoid";
 import { ChangeEvent } from "react";
+// import * as CryptoJS from 'crypto-js';
 import {
+  ActivityBlockType,
+  BLOCK_ACTIVITY_LIST,
   BLOCK_LOGIC_LIST,
   BLOCK_MEDIA_LIST,
   BLOCK_TEXT_LIST,
@@ -12,10 +16,9 @@ import {
   IBlobReturnType,
   LogicBlockType,
   MediaBlockType,
-  TFolder,
   TextBlockType,
+  TFolder,
 } from "schemas";
-import { type ClassValue, clsx } from "clsx";
 import { twMerge } from "tailwind-merge";
 const sanitizer = DOMPurify.sanitize;
 export const PATTERNS = [
@@ -44,7 +47,9 @@ export const isNotEmpty = (value: string | undefined | null): value is string =>
 export const nanoid = customAlphabet(
   "0123456789ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz",
   7
-); // 7-character random string
+);
+//export const nanoid= (n:number)=>  "0123456789ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz"
+
 export const patternsObjects = PATTERNS.map((name) => ({
   id: nanoid(7),
   name: name,
@@ -180,8 +185,8 @@ export function filterKeysFromString(inputString: string): {
 }
 
 export function createCollectionFromEnums(
-  actionsEnum: any,
-  keysEnum: any
+  actionsEnum: Record<string, string>,
+  keysEnum: Record<string, string>
 ): { action: string; key: string }[] {
   const actionsKeys = Object.keys(actionsEnum);
 
@@ -229,7 +234,7 @@ export const getId = (data: GenericObject[], name: string): string => {
   }
   return "";
 };
-export function convertBytesToKB(bytes: number):number {
+export function convertBytesToKB(bytes: number): number {
   const kb = bytes / 1024;
   return kb;
 }
@@ -237,7 +242,7 @@ export function convertBytesToKB(bytes: number):number {
 interface IParseType {
   blob: GenericObject;
   name: string;
-  data: any;
+  data: GenericObject;
 }
 
 export function getGreeting(): string {
@@ -369,15 +374,15 @@ export const handleFileTypeValidations = ({
     });
     throw new Error("Invalid file Type");
   } catch (error) {
-     throw new Error("Error")
+    throw new Error("Error");
   }
 };
 
 interface MaxFileValidationType {
   maxFile: number;
-  fileState: any;
+  fileState: GenericObject;
   name: string;
-  handleError: (props: any) => void;
+  handleError: (props: GenericObject) => void;
 }
 
 export const handleMaxFileLimitError = (props: MaxFileValidationType) => {
@@ -397,7 +402,7 @@ export const handleMaxFileLimitError = (props: MaxFileValidationType) => {
 
 interface IGenericErrorType {
   message: string;
-  handleError: (props: any) => void;
+  handleError: (props: GenericObject) => void;
 }
 
 export const handleGenericError = (props: IGenericErrorType) => {
@@ -427,11 +432,11 @@ export function getAspectRatio(image: HTMLImageElement): number {
 
   return aspectRatio;
 }
-
+const httpsRegex = /^https:\/\//;
+const blobRegex = /^blob:/;
+const base64Regex = /^data:image\/\w+;base64,/;
 export function checkHttps(url: string): boolean {
-  const httpsRegex = /^https:\/\//;
-
-  return httpsRegex.test(url);
+  return httpsRegex.test(url) || blobRegex.test(url) || base64Regex.test(url);
 }
 
 export function getParamsFromUrlImage(url: string): {
@@ -445,6 +450,28 @@ export function getParamsFromUrlImage(url: string): {
     y: Number(urlParams.get("y")) || 0,
     mode: (urlParams.get("mode") as "fit") || "fill",
   };
+}
+
+export function updateImageUrl(
+  originalUrl: string,
+  newX: number,
+  newY: number,
+  newMode: string
+): string {
+  let updatedUrl = "";
+  if (base64Regex.test(originalUrl)) {
+    updatedUrl = `${originalUrl}?x=${newX}&y=${newY}&mode=${newMode}`;
+  } else {
+    const url = new URL(originalUrl);
+    const searchParams = new URLSearchParams(url.search);
+    searchParams.set("x", newX.toString());
+    searchParams.set("y", newY.toString());
+    searchParams.set("mode", newMode);
+    url.search = searchParams.toString();
+    updatedUrl = url.toString();
+  }
+
+  return updatedUrl;
 }
 
 export const getBlockColor = (
@@ -461,7 +488,7 @@ export const getBlockColor = (
     | undefined;
 } => {
   if (
-    category === BlockCategories.text as string ||
+    category === (BlockCategories.text as string) ||
     BLOCK_TEXT_LIST.includes(category as TextBlockType)
   ) {
     return {
@@ -469,7 +496,7 @@ export const getBlockColor = (
       backgroundColor: "primary",
     };
   } else if (
-    category === BlockCategories.media as string ||
+    category === (BlockCategories.media as string) ||
     BLOCK_MEDIA_LIST.includes(category as MediaBlockType)
   ) {
     return {
@@ -477,19 +504,35 @@ export const getBlockColor = (
       backgroundColor: "secondary",
     };
   } else if (
-    category === BlockCategories.logic as string ||
+    category === (BlockCategories.logic as string) ||
     BLOCK_LOGIC_LIST.includes(category as LogicBlockType)
   ) {
     return {
       color: "#eea743",
       backgroundColor: "warning",
     };
+  } else if (
+    category === (BlockCategories.activity as string) ||
+    BLOCK_ACTIVITY_LIST.includes(category as ActivityBlockType)
+  ) {
+    return {
+      color: "#51c46f",
+      backgroundColor: "success",
+    };
   }
   return {
-    color: "#51c46f",
+    color: "#fff",
     backgroundColor: "success",
   };
 };
+
+export function reorganizePerIndex(
+  collection: GenericObject[]
+): GenericObject[] {
+  const sortedCollection = collection.sort((a, b) => a.index - b.index);
+
+  return sortedCollection;
+}
 
 // Function to add an object at a specific index
 export function addObjectAtIndex<T extends GenericObject>(
@@ -499,7 +542,7 @@ export function addObjectAtIndex<T extends GenericObject>(
 ): T[] {
   const newArray = [...array];
   newArray.splice(index, 0, newObject);
-  return newArray;
+  return newArray.map((object, index) => ({ ...object, index }));
 }
 
 // Function to remove an object by its id
@@ -507,7 +550,7 @@ export function removeObjectById<T extends GenericObject>(
   array: T[],
   id: string
 ): T[] {
-  return array.filter((object) => object.uuid !== id);
+  return array.filter((object) => object.uuid !== id && object.id !== id);
 }
 
 // Function to update an object by its id
@@ -517,13 +560,18 @@ export function updateObjectById<T extends GenericObject>(
   newProperties: Partial<T>
 ): T[] {
   return array.map((object) =>
-    object.uuid === id ? { ...object, ...newProperties } : object
+    object.uuid === id || object.id === id
+      ? { ...object, ...newProperties }
+      : object
   );
 }
 
 // Function to reorganize the indexes in the array
-export function reorganizeIndexes<T extends GenericObject>(array: T[]): T[] {
-  return array.map((object, index) => ({ ...object, index }));
+export function reorganizeIndexes<T extends GenericObject>(
+  array: T[],
+  n: number = 0
+): T[] {
+  return array.map((object, index) => ({ ...object, index: index + n }));
 }
 
 // Function to find an object by its id
@@ -531,27 +579,26 @@ export function findObjectById<T extends GenericObject>(
   array: T[],
   id: string
 ): T | undefined {
-  return array.find((object) => object.uuid === id);
+  return array.find((obj) => obj.uuid === id || obj.id === id);
 }
 
-export // Function to reorder an object in the array by its id
-function reorderObjectById<T extends GenericObject>(
+export function reorderObjectById<T extends GenericObject>(
   array: T[],
   id: string,
   newIndex: number
 ) {
-  const objectToReorder = array.find((object) => object.uuid === id);
+  const objectToReorder = array.find(
+    (object) => (object.uuid || object.id) === id
+  );
   if (objectToReorder) {
     const newArray = [...array];
     const currentIndex = newArray.indexOf(objectToReorder);
 
     if (currentIndex !== -1) {
-      newArray.splice(currentIndex, 1); // Remove the object from its current position
+      newArray.splice(currentIndex, 1);
 
-      // Insert the object at the new index without adjusting other indexes
       newArray.splice(newIndex, 0, objectToReorder);
 
-      // Update the indexes based on the new order
       return newArray.map((object, index) => ({ ...object, index }));
     }
   }
@@ -565,7 +612,7 @@ export function swapObjectsById(
   id: string,
   direction: "up" | "down"
 ): GenericObject[] {
-  const objectToSwap = array.find((obj) => obj.uuid === id);
+  const objectToSwap = array.find((obj) => obj.uuid === id || obj.id === id);
 
   if (objectToSwap) {
     const currentIndex = array.indexOf(objectToSwap);
@@ -576,14 +623,13 @@ export function swapObjectsById(
       [newArray[currentIndex], newArray[swapIndex]] = [
         newArray[swapIndex],
         newArray[currentIndex],
-      ]; // Swap elements
+      ];
 
-      // Update the indexes based on the new order
       return newArray.map((object, index) => ({ ...object, index }));
     }
   }
 
-  return array; // Return the original array if the object is not found or an error occurs
+  return array;
 }
 
 export const changeCursor = (newCursor: string): void => {
@@ -601,3 +647,128 @@ export const resetCursor = (): void => {
 export const clean = (str: string): string => {
   return sanitizer(str);
 };
+
+/**
+ * The function `getCourseId` takes a string representing a URL pathname and returns the last segment
+ * of the pathname, which is assumed to be a course ID.
+ * @param {string} pathname - The `pathname` parameter is a string that represents the current URL
+ * path.
+ * @returns the course ID, which is extracted from the given pathname.
+ */
+export const getCourseId = (pathname: string): string => {
+  return pathname?.substring(pathname.lastIndexOf("/") + 1);
+};
+
+/**
+ * The function `isFileImage` checks if a given file is an image by checking its file extension or if
+ * it contains specific image-related strings.
+ * @param {string} file - The `file` parameter is a string that represents the file name or file path.
+ * @returns a boolean value.
+ */
+export const isFileImage = (file: string): boolean => {
+  return (
+    file?.match(/\.(jpeg|jpg|gif|png|svg)$/) !== null ||
+    file.includes("data:image/jpeg;base64") ||
+    file.includes("data:image/png;base64") ||
+    file.includes("images.unsplash.com")
+  );
+};
+export const isFileVideo = (file: string): boolean => {
+  return file?.match(/\.(mp4|mov)$/) !== null || file.includes("youtube");
+};
+/**
+ * The function `videoGetID` takes a YouTube video URL as input and returns the video ID.
+ * @param {string} url - The `url` parameter is a string that represents the URL of a YouTube video.
+ * @returns the ID of a YouTube video based on the provided URL.
+ */
+export const videoGetID = (url: string): string => {
+  const url_split = url.split(/(vi\/|v=|\/v\/|youtu\.be\/|\/embed\/)/);
+  return url_split[2] !== undefined
+    ? url_split[2].split(/[^0-9a-z_-]/i)[0]
+    : url_split[0];
+};
+
+/**
+ * The function appends a unit (default is "px") to a number or string value.
+ * @param {number | string} value - The `value` parameter can be either a number or a string.
+ * @param [unit=px] - The `unit` parameter is a string that represents the unit of measurement to be
+ * appended to the `value`. By default, it is set to "px", which stands for pixels. However, you can
+ * provide a different unit if needed.
+ * @returns a string that concatenates the value and the unit.
+ */
+export const appendUnit = (value: number | string, unit = "px") => {
+  return `${value}${unit}`;
+};
+
+export function compareCollections(
+  collection1: GenericObject[],
+  collection2: GenericObject[]
+): GenericObject[] {
+  const mapCollection1 = new Map<string, GenericObject>();
+
+  collection1.forEach((obj) => {
+    mapCollection1.set(obj.uuid, obj);
+  });
+
+  const differentIndexObjects = collection2.filter((obj) => {
+    const correspondingObjInCollection1 = mapCollection1.get(obj.uuid);
+
+    return (
+      correspondingObjInCollection1 &&
+      correspondingObjInCollection1.index !== obj.index
+    );
+  });
+
+  return differentIndexObjects;
+}
+
+export const cleanBase64String = (base64String: string) => {
+  const cleanString = base64String.replace(/^data:video\/mp4;base64,/, "");
+  const validBase64Chars =
+    "ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz0123456789+/=";
+  const cleanedBase64 = cleanString
+    .split("")
+    .filter((char) => validBase64Chars.includes(char))
+    .join("");
+
+  return cleanedBase64;
+};
+export const base64toBlob = (base64Data: string): Blob => {
+  const byteCharacters = atob(cleanBase64String(base64Data));
+  const byteArrays = [];
+
+  for (let i = 0; i < byteCharacters.length; i++) {
+    byteArrays.push(byteCharacters.charCodeAt(i));
+  }
+
+  const byteArray = new Uint8Array(byteArrays);
+  return new Blob([byteArray], { type: "video/mp4" });
+};
+
+export const removeHTMLTagsAndQuotes = (text: string): string => {
+  const regex = /<\/?[^>]+>|^"|"$|"/g;
+  return text?.replace(regex, "");
+};
+
+export function randomDraw(min: number, max: number): number {
+  return Math.floor(Math.random() * (max - min + 1)) + min;
+}
+
+// export function encryptKey(key: string, password: string): string {
+//   return CryptoJS.AES.encrypt(key, password).toString();
+// }
+
+// export function decryptKey(encryptedKey: string, password: string): string {
+//   const bytes = CryptoJS.AES.decrypt(encryptedKey, password);
+//   return bytes.toString(CryptoJS.enc.Utf8);
+// }
+
+// A wrapper for "JSON.parse()"" to support "undefined" value
+export function parseJSON<T>(value: string | null): T | undefined {
+  try {
+    const val = value === "undefined" ? undefined : JSON.parse(value ?? "");
+    return val as undefined | T;
+  } catch {
+    return undefined;
+  }
+}

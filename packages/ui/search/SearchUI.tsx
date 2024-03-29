@@ -2,6 +2,7 @@
 import { Input } from "@nextui-org/react";
 import React, { useState } from "react";
 
+import { ICON_SIZE } from "../const";
 import { IconUI } from "../icon/IconUI";
 
 interface IProps {
@@ -27,7 +28,13 @@ const SearchUI = (props: IProps) => {
         value={value}
         onValueChange={changeHandler}
         placeholder={placeholder}
-        startContent={<IconUI width={20} height={20} name="search" />}
+        startContent={
+          <IconUI
+            width={ICON_SIZE.width}
+            height={ICON_SIZE.height}
+            name="search"
+          />
+        }
       />
     </div>
   );

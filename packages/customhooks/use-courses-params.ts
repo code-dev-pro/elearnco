@@ -5,18 +5,25 @@ import { CourseDate, CourseStatus, CourseTitle, ERoutes } from "schemas";
 export function useCoursesParams() {
   const searchParams = useSearchParams();
   const router = useRouter();
+  const currentUserCollaboration =searchParams.get("collaborator") || undefined;
+  const currentCourseMode =searchParams.get("mode") || 'authoring';
   const currentPage = Number(searchParams.get("page")) || 1;
-  const currentStatus = searchParams.get("status") || CourseStatus.ACTIVE;
+  const currentStatus =
+    (searchParams.get("status") as CourseStatus) || CourseStatus.ACTIVE;
   const currentFolder = searchParams.get("folder") || "Default";
-  const currentDate = searchParams.get("date") || CourseDate.RECENT;
-  const currentOrder = searchParams.get("order") || CourseTitle.AZ;
+  const currentDate =
+    (searchParams.get("date") as CourseDate) || CourseDate.RECENT;
+  const currentOrder =
+    (searchParams.get("order") as CourseTitle) || CourseTitle.AZ;
 
-  const getCurrentStatus = (): string => currentStatus || CourseStatus.ACTIVE;
+  const getCurrentStatus = (): CourseStatus =>
+    currentStatus || CourseStatus.ACTIVE;
   const getCurrentFolder = (): string => currentFolder || "Default";
-  const getCurrentDate = (): string => currentDate || CourseDate.RECENT;
-  const getCurrentOrder = (): string => currentOrder || CourseTitle.AZ;
+  const getCurrentCourseMode = (): string => currentCourseMode || "authoring";
+  const getCurrentDate = (): CourseDate => currentDate || CourseDate.RECENT;
+  const getCurrentOrder = (): CourseTitle => currentOrder || CourseTitle.AZ;
   const getCurrentPage = (): number => currentPage || 1;
-
+  const getCurrentUserCollaboration = (): string |undefined => currentUserCollaboration || undefined;
   const setNewSearchParamsInCurrentPage = (
     statusParam: string,
     folderParam: string,
@@ -28,7 +35,7 @@ export function useCoursesParams() {
     );
   };
 
-  const setNewSearchParams = (pageParam: string) => {
+  const setNewSearchParams = (pageParam: string): void => {
     router.push(
       `/${
         ERoutes.COURSES
@@ -42,6 +49,10 @@ export function useCoursesParams() {
     currentFolder,
     currentDate,
     currentOrder,
+    currentUserCollaboration,
+    currentCourseMode,
+    getCurrentCourseMode,
+    getCurrentUserCollaboration,
     setNewSearchParamsInCurrentPage,
     setNewSearchParams,
     getCurrentPage,

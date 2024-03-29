@@ -28,21 +28,32 @@ export enum BlockCategories {
   "logic" = "logic",
 }
 
+export  interface IBlock {
+  blockID:string;
+  type:string
+} 
+
 /*----------------------------------------------------------------
 /** we can unlock the Blocks At Each End Of Development Of This 
 ----------------------------------------------------------------*/
 export const isBlockIsDev = [
   "title",
   "paragraph",
-  "subhead",
-  "image",
-  "conclusion",
-  "alert",
-  "definition",
-  "remind",
-  "theorem",
-  "audio",
-  "drawing",
-  "video",
+   "title",
+   "subtitle",
+  "paragraph",
+   "citation",
+   "warning",
+   "conclusion",
+   "definition",
+   "memorisation",
+  "theoreme",
+   "example",
+  /* 'maths',
+   "link", */
   "wheel",
+  "multiple choice",
+  "image",
+  "video",
+  "audio"
 ];

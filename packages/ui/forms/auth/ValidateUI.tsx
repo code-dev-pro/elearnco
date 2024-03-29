@@ -4,12 +4,11 @@ import { PinInputActions, usePinInput } from "customhooks";
 import { concatElementsToString } from "lib";
 import { useSearchParams } from "next/navigation";
 import React, { useState } from "react";
-import { userAuthValidationSchema } from "schemas/auth/Auth";
-import * as z from "zod";
-export type AuthValidationFormData = z.infer<typeof userAuthValidationSchema>;
+import { FetchResponse } from "schemas";
+import { AuthValidationFormData } from "schemas/forms";
 
 interface IProps {
-  authValidate?: (data: AuthValidationFormData) => void;
+  authValidate?: (data: AuthValidationFormData) => Promise<FetchResponse>;
   switchVue?: (key: React.Key) => void;
 }
 
@@ -23,16 +22,16 @@ export const ValidateUI = (props: IProps) => {
   const token = searchParams?.get("token");
   const id = searchParams?.get("id");
 
-  const setErrors = ():void => {
+  const setErrors = (): void => {
     setError(true);
     setLoading(false);
     actionRef.current?.focus();
   };
-  const onSubmit = async (e:React.FormEvent):Promise<void> => {
+  const onSubmit = async (e: React.FormEvent): Promise<void> => {
     e.preventDefault();
     setLoading(true);
 
-    if (values.includes("")/*  && id == null && token == null */) {
+    if (values.includes("") /*  && id == null && token == null */) {
       setErrors();
     } else {
       const _code = concatElementsToString(values);
@@ -43,7 +42,7 @@ export const ValidateUI = (props: IProps) => {
         code: transformedString,
         token: token as string,
         id: id as string,
-      })
+      });
       setLoading(false);
       /* const response = (await authValidate?.({
         code: transformedString,

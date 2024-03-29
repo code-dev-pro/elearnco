@@ -1,15 +1,16 @@
 import { Chip } from "@nextui-org/react";
 import { getBlockColor } from "lib";
-import React, { useMemo } from "react";
+import React, { CSSProperties, useMemo } from "react";
 import { DraggableBlockType } from "schemas";
 
+import { ICON_SIZE } from "../const";
 import { IconUI } from "../icon/IconUI";
 
 export const BlockCardOverlayUI = ({
   type,
   onMouseUp,
   ...props
-}: { style } & { onMouseUp: () => void } & {
+}: { style: CSSProperties } & { onMouseUp: () => void } & {
   type: DraggableBlockType | undefined;
 }) => {
   const BACKGROUND_COLOR = useMemo(
@@ -20,7 +21,7 @@ export const BlockCardOverlayUI = ({
 
   return (
     <Chip
-      startContent={<IconUI name={ICON ? ICON : ""} width={20} height={20} />}
+      startContent={<IconUI name={ICON ?? ""} width={ICON_SIZE.width} height={ICON_SIZE.height} />}
       style={{ ...props.style }}
       className="fixed top-0 left-0 select-none pointer-events-none"
       size="lg"

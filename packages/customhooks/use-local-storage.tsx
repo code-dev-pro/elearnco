@@ -1,3 +1,4 @@
+import { parseJSON } from "lib/utils";
 import {
   Dispatch,
   SetStateAction,
@@ -75,14 +76,3 @@ function useLocalStorage<T>(key: string, initialValue: T): [T, SetValue<T>] {
 }
 
 export default useLocalStorage;
-
-// A wrapper for "JSON.parse()"" to support "undefined" value
-function parseJSON<T>(value: string | null): T | undefined {
-  try {
-    const val = value === "undefined" ? undefined : JSON.parse(value ?? "");
-    return val as undefined | T;
-  } catch {
-    console.log("parsing error on", { value });
-    return undefined;
-  }
-}

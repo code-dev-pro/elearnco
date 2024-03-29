@@ -5,19 +5,15 @@ const Collection = (props: {
   collection: GenericObject[];
   totalPages: number;
   currentPage: number;
-  _handleClick: (str: string) => void;
+  _handleClick: (url: string, description: string, copyright: string) => void;
   _handlePageChange: (val: number) => void;
 }) => {
-  const {
-    collection,
-    _handleClick,
-  } = props;
+  const { collection, _handleClick } = props;
 
   return (
-    <div className="relative">
-     
-      <div className="grid grid-cols-4 gap-4 mx-auto">
-        {collection?.map((image)=> {
+    <div className="relative flex gap-2">
+      <div className="grid grid-cols-4 gap-4 mx-auto h-full">
+        {collection?.map((image) => {
           return (
             <div
               key={image.id}
@@ -26,13 +22,16 @@ const Collection = (props: {
                 _handleClick(
                   image?.urls?.regular
                     ? image.urls.regular
-                    : image.largeImageURL
+                    : image.largeImageURL,
+                  image.description,
+                  image.user.name
                 )
               }
             >
               <Image
-                width="100%"
-                height="auto"
+                height="100%"
+                removeWrapper
+                className="object-cover h-full"
                 src={
                   image?.urls?.regular ? image.urls.regular : image.previewURL
                 }

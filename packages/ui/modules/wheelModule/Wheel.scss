@@ -1,0 +1,26 @@
+.wheel_center {
+  backdrop-filter: blur(8px);
+  align-items: center;
+  border-radius: 100%;
+  position: absolute;
+  background-color: #fff;
+  z-index: 10;
+  width: 72px;
+  height: 72px;
+  min-height: 72px;
+  min-width: 72px;
+  opacity: 0.4;
+  box-shadow: rgba(100, 100, 111, 0.2) 0px 7px 29px 0px;
+}
+
+.wheel_center::after {
+  content: " ";
+  position: absolute;
+  right: -6px;
+  top: 28px;
+  width: 16px;
+  height: 16px;
+  z-index: 200;
+  background-color: #fff;
+  transform: rotate(45deg);
+}

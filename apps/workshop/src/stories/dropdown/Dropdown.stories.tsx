@@ -1,7 +1,9 @@
 import type { Meta } from "@storybook/react";
 import { DropdownUI } from "ui";
 import { Button } from "@nextui-org/react";
-import { dataWithNoSection, dataWithSection } from "./mock";
+import { DATA_USER } from "schemas/mocks";
+
+
 const meta = {
   title: "Components/Dropdown",
   component: DropdownUI,
@@ -23,12 +25,10 @@ const defaultChild = (
 export const Dropdown = {
   render: () => (
     <div className="p-2">
-      <DropdownUI showArrow data={dataWithSection}>
+      <DropdownUI showArrow data={DATA_USER} placement='bottom'>
         {defaultChild}
       </DropdownUI>
-      <DropdownUI showArrow data={dataWithNoSection}>
-        {defaultChild}
-      </DropdownUI>
+     
     </div>
   ),
 };

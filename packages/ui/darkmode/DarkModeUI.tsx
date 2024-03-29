@@ -1,10 +1,11 @@
 "use client";
 import { useTheme } from "next-themes";
 import { useState } from "react";
+import React from "react";
 
+import { ICON_SIZE } from "../const";
 import { IconUI } from "../icon/IconUI";
 import { SwitchUI } from "../switch/SwitchUI";
-import React from "react";
 
 export const DarkModeUI = () => {
   const { theme, setTheme } = useTheme();
@@ -22,8 +23,8 @@ export const DarkModeUI = () => {
       setHandler={(val: boolean): void => {
         _setSelectedTheme(val);
       }}
-      startContent={<IconUI name="sun" width={20} height={20} />}
-      endContent={<IconUI name="moon" width={20} height={20} />}
+      startContent={<IconUI name="sun" width={ICON_SIZE.width} height={ICON_SIZE.height} />}
+      endContent={<IconUI name="moon" width={ICON_SIZE.width} height={ICON_SIZE.height} />}
     />
   );
 };

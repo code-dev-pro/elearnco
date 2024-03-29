@@ -10,5 +10,6 @@ export enum ActivityBlockType {
   DRAG_AND_DROP = "drag and drop",
   MEMORY = "memory",
   TELL_HISTORY = "tell history",
+  WHEEL = 'wheel',
 }
 export const BLOCK_ACTIVITY_LIST = Object.values(ActivityBlockType);

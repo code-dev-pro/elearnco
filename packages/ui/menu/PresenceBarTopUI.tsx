@@ -1,37 +1,31 @@
 "use client";
-import { Avatar, Navbar, NavbarBrand, NavbarContent } from "@nextui-org/react";
-import React, { useEffect } from "react";
+import { Avatar } from "@nextui-org/react";
+import React from "react";
+import { SafeUser } from "schemas/auth/Auth";
 
-
-export const PresenceBarTopUI = (props) => {
-  const [usernames] = [props];
-
-  useEffect(() => {}, [usernames]);
-
-  return (
-    <Navbar height="2rem" maxWidth="full">
-      <NavbarContent justify="start">
-        <NavbarBrand className="mr-4">
-         
-          <p className="hidden sm:block font-bold text-inherit">Elearnco</p>
-        </NavbarBrand>
-      </NavbarContent>
-
-      <NavbarContent as="div" className="items-center" justify="end">
-        {Object.entries(usernames?.users)?.map(([clientId, username]) => {
-          return (
-            <Avatar
-              key={clientId}
-              size="sm"
-              isBordered
-              name={username ? username as string : "username"}
-              color="primary"
-              src="https://i.pravatar.cc/150?u=a04258a2462d826712d"
-            />
-          );
-        })}
-        
-      </NavbarContent>
-    </Navbar>
+export const PresenceBarTopUI = ({
+  user,
+  isLeader,
+}: {
+  user: { [key: number]: (SafeUser & { color: string }) | undefined };
+  isLeader: boolean;
+}) => {
+  return user ? (
+    <div className="absolute left-5 top-1/2 -translate-y-1/2 z-50">
+      {Object.entries(user)?.map(([clientId, user]) => {
+        return (
+          <Avatar
+            key={clientId}
+            className="bg-default mb-2"
+            size="md"
+            name={user?.name ? user.name : "username"}
+            src={user?.image ? `/avatars/${user.image}.svg` : ""}
+            style={{ border: `2px solid ${user?.color}`, padding: 4 }}
+          />
+        );
+      })}
+    </div>
+  ) : (
+    <></>
   );
 };

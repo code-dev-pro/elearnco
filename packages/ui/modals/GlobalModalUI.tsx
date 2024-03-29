@@ -31,8 +31,8 @@ interface IProps {
   isDismissable: boolean;
   isOpen: boolean;
   placement: EPlacement;
-  body: JSX.Element;
-  footer?: JSX.Element;
+  Body: JSX.Element;
+  Footer?: JSX.Element;
   title: string;
   shouldBlockScroll?: boolean;
   scrollBehavior?: EScrollBehavior;
@@ -58,13 +58,13 @@ export const GlobalModalUI = (props: IProps) => {
   const {
     isOpen,
     placement,
-    body,
-    footer,
+    Body,
+    Footer,
     title,
     scrollBehavior = "inside",
     backdrop,
     isDismissable,
-    size,
+    size = "md",
     onClose,
     onOpenChange,
     shouldBlockScroll = true,
@@ -79,18 +79,14 @@ export const GlobalModalUI = (props: IProps) => {
       scrollBehavior={scrollBehavior}
       backdrop={backdrop}
       size={size}
-      onClose={():void => onClose?.()}
+      onClose={(): void => onClose?.()}
       onOpenChange={onOpenChange}
       shouldBlockScroll={shouldBlockScroll}
     >
       <ModalContent>
-        {(onClose) => (
-          <>
-            <ModalHeader className="flex flex-col gap-1">{title}</ModalHeader>
-            <ModalBody className={classNames}>{body}</ModalBody>
-            <ModalFooter>{footer}</ModalFooter>
-          </>
-        )}
+        <ModalHeader className="flex flex-col gap-1">{title}</ModalHeader>
+        <ModalBody className={classNames}>{Body}</ModalBody>
+        <ModalFooter>{Footer}</ModalFooter>
       </ModalContent>
     </Modal>
   );

@@ -1,17 +1,58 @@
 import {
+  EActionPreview,
   EActionsBloc,
-  EActionsCourse,
   EActionsMedia,
-  EActionsPage,
   EActionsUser,
   EActionskeysMedia,
   EActionskeysUser,
 } from "../actions/enums";
-import {EColor} from "../../schemas/global"
+import { EColor } from "../../schemas/global";
 import { CourseDate, CourseStatus, CourseTitle } from "../menus";
 import { ERoutes } from "../routes";
 
-export const DATAS_MENU_MEDIA = [
+export const DATA_MENU_PREVIEW = [
+  {
+    id: "xd6c49c2-8973-22uu-b962-0242ac120005",
+    label: EActionPreview.DESKTOP,
+    shortcut: {
+      name: "",
+      action: EActionPreview.DESKTOP + "M",
+    },
+    description: "",
+    icon: EActionPreview.DESKTOP.toLocaleLowerCase(),
+    hastooltip: true,
+    isdisabled: "false",
+    isvisible: "true",
+  },
+  {
+    id: "f9997838-934c-11ee-b9d1-0242ac120002",
+    label: EActionPreview.TABLET,
+    shortcut: {
+      name: "",
+      action: EActionPreview.TABLET,
+    },
+    description: "",
+    icon: EActionPreview.TABLET.toLocaleLowerCase(),
+    hastooltip: true,
+    isdisabled: "false",
+    isvisible: "true",
+  },
+  {
+    id: "01cbf882-934d-11ee-b9d1-0242ac120002",
+    label: EActionPreview.MOBILE,
+    shortcut: {
+      name: "",
+      action: EActionPreview.MOBILE + "M",
+    },
+    description: "",
+    icon: EActionPreview.MOBILE.toLocaleLowerCase(),
+    hastooltip: true,
+    isdisabled: "false",
+    isvisible: "true",
+  },
+];
+
+export const DATA_MENU_MEDIA = [
   {
     id: "ab6c49c2-8273-11ee-b962-0242ac120002",
     label: EActionsMedia.ADD_FROM_USER,
@@ -53,7 +94,7 @@ export const DATAS_MENU_MEDIA = [
   },
 ];
 
-export const DATAS_MENU_IMAGE = [
+export const DATA_MENU_IMAGE = [
   {
     id: "8b34c0e4-8273-11ee-b962-0242ac120002",
     label: EActionsMedia.FILL_IMAGE,
@@ -173,7 +214,7 @@ export const DATA_MENU_BLOCK = [
     hastooltip: true,
     isdisabled: "false",
     isvisible: "true",
-  },
+  }
 ];
 
 export const DATA_MENU_UI = [
@@ -198,7 +239,7 @@ export const DATA_MENU_UI = [
       name: "mod+J",
       action: "",
     },
-    route: `${ERoutes.COURSES}?page=1&status=${CourseStatus.DRAFT}&folder=all&date=${CourseDate.RECENT}&order=${CourseTitle.AZ}`,
+    route: `${ERoutes.COURSES}?page=1&status=${CourseStatus.DRAFT}&folder=All&date=${CourseDate.RECENT}&order=${CourseTitle.AZ}`,
     description: "",
     icon: "cards",
     hastooltip: true,
@@ -230,9 +271,6 @@ export const DATA_MENU_UI = [
   },
 ];
 
-
-
-
 export const DATA_SECTION_1 = [
   {
     id: "76331b28-8273-11ee-b962-0242ac120002",
@@ -244,7 +282,7 @@ export const DATA_SECTION_1 = [
     description: "",
     startContent: "profil",
     action: EActionsUser.EDIT_PROFIL,
-    color:  EColor.default,
+    color: EColor.default,
     isdisabled: "false",
     isvisible: "true",
     route: "",
@@ -259,11 +297,26 @@ export const DATA_SECTION_1 = [
     description: "",
     action: EActionsUser.LOGOUT,
     startContent: "logout",
-    color:  EColor.danger,
+    color: EColor.default,
     isdisabled: "false",
     isvisible: "true",
     route: "",
   },
+  {
+    id: "7569da60-8273-22ee-H962-0242ac120002",
+    label: "Delete account",
+    shortcut: {
+      name: EActionskeysUser.DELETE,
+      action: EActionsUser.DELETE,
+    },
+    description: "",
+    startContent: "delete",
+    action: EActionsUser.DELETE,
+    color: EColor.danger,
+    isdisabled: "false",
+    isvisible: "true",
+    route: "",
+  }
 ];
 export const DATA_SECTION_2 = [
   {
@@ -277,7 +330,7 @@ export const DATA_SECTION_2 = [
     description: "",
     startContent: "help",
     action: EActionsUser.HELP,
-    color:  EColor.default,
+    color: EColor.default,
     isdisabled: "false",
     isvisible: "true",
     route: "",
@@ -292,11 +345,12 @@ export const DATA_SECTION_2 = [
     description: "",
     startContent: "setting",
     action: EActionsUser.SETTINGS,
-    color:  EColor.default,
+    color: EColor.default,
     isdisabled: "false",
     isvisible: "true",
     route: "",
-  },
+  }
+
 ];
 export const DATA_USER = [
   {
@@ -306,124 +360,7 @@ export const DATA_USER = [
   },
   {
     data: DATA_SECTION_2,
-    title: "App",
-    id: "b5bc9d50-820f-11ee-b962-0242ac120002",
-  },
-];
-
-
-
-const DATA_MENU_PAGES_SECTION_1 = [
-  {
-    id: "49b15a2c-da97-4a5d-bedc-a33ae64e2588",
-    label: "Preview",
-    shortcut: { name: "", action: "" },
-    description: "",
-    startContent: "preview",
-    action: EActionsPage.PREVIEW,
-    color:  EColor.default,
-    isdisabled: "false",
-    isvisible: "true",
-    route: "",
-  },
-  {
-    id: "19e58ff2-8211-11ee-b962-0242ac120002",
-    label: "Duplicate",
-    shortcut: { name: "", action: "" },
-    description: "",
-    startContent: "duplicate",
-    action: EActionsPage.DUPLICATE,
-    color:  EColor.default,
-    isdisabled: "false",
-    isvisible: "true",
-    route: "",
-  },
-  {
-    id: "1e815460-8211-11ee-b962-0242ac120002",
-    label: "Validate",
-    shortcut: { name: "", action: "" },
-    description: "",
-    startContent: "checkbadge",
-    action: EActionsPage.VALIDATE,
-    color:  EColor.default,
-    isdisabled: "false",
-    isvisible: "true",
-    route: "",
-  },
-  {
-    id: "ea204064-821f-11ee-b962-0242ac120002",
-    label: "Reorder",
-    shortcut: { name: "", action: "" },
-    description: "",
-    startContent: "scrollist",
-    action: EActionsPage.REORDER,
-    color:  EColor.default,
-    isdisabled: "false",
-    isvisible: "true",
-    route: "",
-  },
-  {
-    id: "22c55c7e-8211-11ee-b962-0242ac120002",
-    label: "Delete",
-    shortcut: { name: "", action: "" },
-    description: "",
-    startContent: "delete",
-    action: EActionsPage.DELETE,
-    color:  EColor.default,
-    isdisabled: "false",
-    isvisible: "true",
-    route: "",
-  },
-];
-const DATA_MENU_PAGES_SECTION_2 = [
-  {
-    id: "ea204064-821f-11ee-b962-0242ac120002",
-    label: "Preview as student",
-    shortcut: { name: "", action: "" },
-    description: "",
-    startContent: "preview",
-    action: EActionsCourse.PREVIEW,
-    color:  EColor.default,
-    isdisabled: "false",
-    isvisible: "true",
-    route: "",
-  },
-
-  {
-    id: "63ad7b18-8211-11ee-b962-0242ac120002",
-    label: "Share",
-    shortcut: { name: "", action: "" },
-    description: "",
-    startContent: "share",
-    action: EActionsCourse.SHARE,
-    color:  EColor.default,
-    isdisabled: "false",
-    isvisible: "true",
-    route: "",
-  },
-  {
-    id: "cbba7db6-82be-11ee-b962-0242ac120002",
-    label: "Preview path",
-    shortcut: { name: "", action: "" },
-    description: "",
-    startContent: "share",
-    action: EActionsCourse.SHARE,
-    color:  EColor.default,
-    isdisabled: "false",
-    isvisible: "true",
-    route: "",
-  },
-];
-
-export const DATA_MENU_PAGES = [
-  {
-    data: DATA_MENU_PAGES_SECTION_1,
-    title: "Page",
-    id: "b01c74ce-820f-11ee-b962-0242ac120002",
-  },
-  {
-    data: DATA_MENU_PAGES_SECTION_2,
-    title: "Course",
+    title: "Application",
     id: "b5bc9d50-820f-11ee-b962-0242ac120002",
   },
 ];

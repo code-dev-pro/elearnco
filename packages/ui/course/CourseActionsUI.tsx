@@ -1,36 +1,26 @@
 "use client";
 import { Folder } from "database";
-import {
-  createCourseFromApi,
-  deleteCourseFromApi,
-  updateCourseFromApi,
-} from "lib";
 import React, { FormEvent, useEffect } from "react";
-import { CourseStatus, EActionsCourse, EActionsCourseInDrop, TotalCourse } from "schemas";
+import {
+  CompleteCourse,
+  CourseStatus,
+  EActionsCourse,
+  EActionsCourseInDrop,
+  EActionsUser,
+  IModal,
+} from "schemas";
 import { useCoursesStore, useDisabledStore } from "store";
 
-const MessageToArchiveCourse = ({
-  title,
-  id,
-  action,
-  onClose,
-}: {
-  title: string;
-  id: string;
-  action: string;
-  onClose: () => void;
-}) => {
+import DeleteAccountUI from "../forms/auth/DeleteAccountUI";
+const MessageToArchiveCourse = (props: IModal) => {
   const courses = useCoursesStore();
   const { onStopDisabled, onBeginDisabled } = useDisabledStore();
+  const { onClose, action, ...rest } = props;
+  const { id, title } = rest as Partial<CompleteCourse>;
 
   const onSubmit = async (event: FormEvent<HTMLFormElement>): Promise<void> => {
     event.preventDefault();
-    await updateCourseFromApi({
-      id: id,
-      status: CourseStatus.ARCHIVED,
-    });
-
-    courses.updateCourse(id, { status: CourseStatus.ARCHIVED });
+    courses.updateCourse(id as string, { status: CourseStatus.ARCHIVED });
     onBeginDisabled();
     onClose();
   };
@@ -53,28 +43,15 @@ const MessageToArchiveCourse = ({
   );
 };
 
-const MessageToUnArchiveCourse = ({
-  title,
-  id,
-  action,
-  onClose,
-}: {
-  title: string;
-  id: string;
-  action: string;
-  onClose: () => void;
-}) => {
+const MessageToUnArchiveCourse = (props: IModal) => {
   const courses = useCoursesStore();
   const { onStopDisabled, onBeginDisabled } = useDisabledStore();
-
+  const { onClose, action, ...rest } = props;
+  const { id, title } = rest as Partial<CompleteCourse>;
   const onSubmit = async (event: FormEvent<HTMLFormElement>): Promise<void> => {
     event.preventDefault();
-    await updateCourseFromApi({
-      id: id,
-      status: CourseStatus.DRAFT,
-    });
 
-    courses.updateCourse(id, { status: CourseStatus.DRAFT });
+    courses.updateCourse(id as string, { status: CourseStatus.DRAFT });
     onBeginDisabled();
     onClose();
   };
@@ -97,24 +74,16 @@ const MessageToUnArchiveCourse = ({
   );
 };
 
-const MessageToDeleteCourse = ({
-  title,
-  id,
-  action,
-  onClose,
-}: {
-  title: string;
-  id: string;
-  action: string;
-  onClose: () => void;
-}) => {
+const MessageToDeleteCourse = (props: IModal) => {
   const courses = useCoursesStore();
+  const { onClose, action, ...rest } = props;
+  const { id, title } = rest as Partial<CompleteCourse>;
+
   const { onStopDisabled, onBeginDisabled } = useDisabledStore();
 
   const onSubmit = async (event: FormEvent<HTMLFormElement>): Promise<void> => {
     event.preventDefault();
-    await deleteCourseFromApi(id);
-    courses.deleteCourse(id);
+    courses.deleteCourse(id as string);
     onBeginDisabled();
     onClose();
   };
@@ -134,27 +103,19 @@ const MessageToDeleteCourse = ({
   );
 };
 
-const MessageToDuplicateCourse = ({
-  title,
-  id,
-  action,
-  onClose,
-}: {
-  title: string;
-  id: string;
-  action: string;
-  onClose: () => void;
-}) => {
+const MessageToDuplicateCourse = (props: IModal) => {
   const courses = useCoursesStore();
   const { onStopDisabled, onBeginDisabled } = useDisabledStore();
+  const { onClose, action, ...rest } = props;
+  const { id, title } = rest as Partial<CompleteCourse>;
   const _id = id;
 
   const onSubmit = async (event: FormEvent<HTMLFormElement>): Promise<void> => {
     event.preventDefault();
     const data = courses.courses.find((c) => c.id === _id);
-    const { id, folder, updatedAt, createdAt, author, ...rest } = data as unknown as TotalCourse & Folder;
-    const newCourse = await createCourseFromApi(rest);
-    courses.addCourse(newCourse as TotalCourse);
+    const { id, folder, updatedAt, createdAt, author, ...rest } =
+      data as unknown as CompleteCourse & Folder;
+    courses.addCourse(rest);
     onBeginDisabled();
     onClose();
   };
@@ -169,46 +130,52 @@ const MessageToDuplicateCourse = ({
       <div>
         <p className="bg-default-100 p-2 rounded-small mb-2 mt-2">{title}</p>
       </div>
-      <p>
-        This course will be duplicate in the same folder.
-       
-      </p>
+      <p>This course will be duplicate in the same folder.</p>
     </form>
   );
 };
+const MessageToDeleteUser = (props: IModal) => {
 
-const CourseActionsUI = (course) => {
-  const { title, id, action, onClose } = course;
+ return <DeleteAccountUI {...props}/>
+ 
+};
+const CourseActionsUI = (props: IModal) => {
+  const { action, onClose, ...rest } = props;
 
-  return action === EActionsCourse.UNARCHIVE ? (
-    <MessageToUnArchiveCourse
-      onClose={onClose}
-      id={id}
-      action={action}
-      title={title}
-    />
-  ) : action === EActionsCourseInDrop.DELETE ? (
-    <MessageToDeleteCourse
-      onClose={onClose}
-      id={id}
-      action={action}
-      title={title}
-    />
-  ) : action === EActionsCourseInDrop.DUPLICATE ? (
-    <MessageToDuplicateCourse
-      onClose={onClose}
-      id={id}
-      action={action}
-      title={title}
-    />
-  ) : (
-    <MessageToArchiveCourse
-      onClose={onClose}
-      id={id}
-      action={action}
-      title={title}
-    />
-  );
+  const getComponentByAction = (action: string) => {
+    switch (action) {
+      case EActionsCourse.UNARCHIVE:
+        return (
+          <MessageToUnArchiveCourse
+            onClose={onClose}
+            action={action}
+            {...rest}
+          />
+        );
+      case EActionsCourseInDrop.DELETE:
+        return (
+          <MessageToDeleteCourse onClose={onClose} action={action} {...rest} />
+        );
+      case EActionsUser.DELETE:
+        return (
+          <MessageToDeleteUser onClose={onClose} action={action} {...rest} />
+        );
+      case EActionsCourseInDrop.DUPLICATE:
+        return (
+          <MessageToDuplicateCourse
+            onClose={onClose}
+            action={action}
+            {...rest}
+          />
+        );
+      default:
+        return (
+          <MessageToArchiveCourse onClose={onClose} action={action} {...rest} />
+        );
+    }
+  };
+
+  return getComponentByAction(action);
 };
 
 export default CourseActionsUI;

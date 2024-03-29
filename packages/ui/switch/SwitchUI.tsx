@@ -1,7 +1,6 @@
 "use client";
 import { Switch } from "@nextui-org/react";
-import React, {  useEffect } from "react";
-
+import React, { useEffect } from "react";
 
 interface IProps {
   initialState: boolean;
@@ -37,12 +36,12 @@ export const SwitchUI = (props: IProps) => {
       isSelected={isSelected}
       onValueChange={_setIsSelected}
       defaultSelected={isSelected}
-      size="lg"
+      size="sm"
       color="primary"
       startContent={startContent}
       endContent={endContent}
     >
-      {content && content}
+      {content ?? <></>}
     </Switch>
   );
 };

@@ -2,7 +2,7 @@
 import { RefObject, useEffect, useRef } from "react";
 
 import { useIsomorphicLayoutEffect } from "./use-isomorphic-layout-effect";
-
+type GestureEvent = "gesturestart" | "gesturechange" | "gestureend";
 // MediaQueryList Event based useEventListener interface
 function useEventListener<K extends keyof MediaQueryListEventMap>(
   eventName: K,
@@ -13,8 +13,8 @@ function useEventListener<K extends keyof MediaQueryListEventMap>(
 
 // Window Event based useEventListener interface
 function useEventListener<K extends keyof WindowEventMap>(
-  eventName: K,
-  handler: (event: WindowEventMap[K]) => void,
+  eventName: K | GestureEvent,
+  handler: (event: WindowEventMap[K]| GestureEvent) => void,
   element?: undefined,
   options?: boolean | AddEventListenerOptions
 ): void;
@@ -30,9 +30,16 @@ function useEventListener<
   options?: boolean | AddEventListenerOptions
 ): void;
 
+function useEventListener<K extends keyof GlobalEventHandlersEventMap>(
+  eventName: K,
+  handler: (event: GlobalEventHandlersEventMap[K]) => void,
+  element?: undefined,
+  options?: boolean | AddEventListenerOptions
+): void
+
 // Document Event based useEventListener interface
 function useEventListener<K extends keyof DocumentEventMap>(
-  eventName: K,
+  eventName: K  ,
   handler: (event: DocumentEventMap[K]) => void,
   element: RefObject<Document>,
   options?: boolean | AddEventListenerOptions
@@ -44,13 +51,14 @@ function useEventListener<
   KM extends keyof MediaQueryListEventMap,
   T extends HTMLElement | MediaQueryList | void = void
 >(
-  eventName: KW | KH | KM,
+  eventName: KW | KH | KM | GestureEvent,
   handler: (
     event:
       | WindowEventMap[KW]
       | HTMLElementEventMap[KH]
       | MediaQueryListEventMap[KM]
       | Event
+      | GestureEvent
   ) => void,
   element?: RefObject<T>,
   options?: boolean | AddEventListenerOptions

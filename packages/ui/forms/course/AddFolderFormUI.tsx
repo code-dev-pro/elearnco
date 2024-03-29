@@ -2,7 +2,6 @@
 import { zodResolver } from "@hookform/resolvers/zod";
 import { Input } from "@nextui-org/react";
 import { useUser } from "lib/providers/auth.provider";
-import { createFolderFromApi } from "lib/requests/folder/folder";
 import React, { useEffect } from "react";
 import { Controller, useForm } from "react-hook-form";
 import { FolderSchema } from "schemas/folder";
@@ -11,11 +10,10 @@ import { useDisabledStore } from "store/disabled/useDisabledStore";
 import { useLoadingStore } from "store/loading/useLoadingStore";
 import * as z from "zod";
 
-//We need data folder if exist else default folder name is default
 type FormData = z.infer<typeof FolderSchema>;
 const AddFolderFormUI = ({ formId }: { formId: string }) => {
   const user = useUser();
-  const { addFolder, totalFolders } = useFoldersStore();
+  const { addFolder } = useFoldersStore();
   const { onBeginLoading, onStopLoading } = useLoadingStore();
   const { onStopDisabled } = useDisabledStore();
   const {
@@ -29,15 +27,10 @@ const AddFolderFormUI = ({ formId }: { formId: string }) => {
 
   const onSubmit = async (data: FormData): Promise<void> => {
     onBeginLoading();
-    const folder = await createFolderFromApi({
+    addFolder({
       name: data.title,
       userId: user.id,
     });
-    if (totalFolders === 0) {
-      useFoldersStore.getState().fetchDataFolders();
-    } else {
-      if (folder) addFolder(folder);
-    }
 
     onStopLoading();
     reset();

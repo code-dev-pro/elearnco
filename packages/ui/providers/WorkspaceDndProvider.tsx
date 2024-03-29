@@ -1,6 +1,5 @@
 "use client";
 import { useEventListener } from "customhooks";
-import { Block } from "database";
 import { changeCursor, resetCursor } from "lib";
 import React, {
   createContext,
@@ -13,19 +12,18 @@ import React, {
   useRef,
   useState,
 } from "react";
-import { DraggableBlockType, IdMap, TPoint } from "schemas";
+import { CompleteBlock, DraggableBlockType, IdMap, TPoint } from "schemas";
 export type GroupsCoordinates = IdMap<TPoint>;
 type NodeElement = {
   id: string;
   element: HTMLDivElement;
 };
-/*  DraggableBlock, */
 
 const workspaceDndContext = createContext<{
   draggedBlockType?: DraggableBlockType;
   setDraggedBlockType: Dispatch<SetStateAction<DraggableBlockType | undefined>>;
-  draggedBlock?: Partial<Block>;
-  setDraggedBlock: Dispatch<SetStateAction<Partial<Block> | undefined>>;
+  draggedBlock?: Partial<CompleteBlock>;
+  setDraggedBlock: Dispatch<SetStateAction<Partial<CompleteBlock> | undefined>>;
   mouseOverGroup?: NodeElement;
   setMouseOverGroup: (node: NodeElement | undefined) => void;
   mouseOverBlock?: NodeElement;
@@ -37,7 +35,7 @@ const workspaceDndContext = createContext<{
 export type NodePosition = { absolute: TPoint; relative: TPoint };
 
 export const WorkspaceDndProvider = ({ children }: { children: ReactNode }) => {
-  const [draggedBlock, setDraggedBlock] = useState<Partial<Block>>();
+  const [draggedBlock, setDraggedBlock] = useState<Partial<CompleteBlock>>();
   const [draggedBlockType, setDraggedBlockType] = useState<
     DraggableBlockType | undefined
   >();

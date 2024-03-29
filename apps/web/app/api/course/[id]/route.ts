@@ -1,11 +1,53 @@
-import { prisma } from "database";
+import { Prisma, prisma } from "database";
 import { redirect } from "next/navigation";
 import { NextRequest, NextResponse } from "next/server";
 import { getServerSession } from "next-auth";
 import { ERoutes } from "schemas";
 
+async function addTagsToUser(userId:string, tags: Prisma.TagUserCreateManyInput[]) {
+  await prisma.tagUser.deleteMany({
+    where: { userId: userId },
+  });
+
+  const tagObjects: Prisma.TagUserCreateManyInput[] = tags.map(
+    (tag: Prisma.TagUserCreateManyInput) => ({
+      label: tag.label,
+      color: tag.color,
+      uuid: tag.uuid,
+      userId: userId,
+    })
+  );
+
+  await prisma.tagUser.createMany({
+    data: tagObjects,
+  });
+}
+async function addTagsToCourse(courseId:string, tags: Prisma.TagUserCreateManyInput[]) {
+  await prisma.course.findUnique({
+    where: { id: courseId },
+    include: { tags: true },
+  });
+
+  await prisma.tagCourse.deleteMany({
+    where: { courseId },
+  });
+
+  const tagObjects: Prisma.TagCourseCreateManyInput[] = tags.map(
+    (tag: Prisma.TagUserCreateManyInput) => ({
+      label: tag.label,
+      color: tag.color,
+      uuid: tag.uuid,
+      courseId: courseId,
+    })
+  );
+
+  await prisma.tagCourse.createMany({
+    data: tagObjects,
+  });
+}
+
 export async function GET(
-  request: NextRequest,
+  _: NextRequest,
   { params }: { params: { id: string } }
 ) {
   const session = await getServerSession();
@@ -20,8 +62,32 @@ export async function GET(
         id: id,
       },
       include: {
+        tags: {
+          orderBy: [
+            {
+              label: "asc",
+            },
+          ],
+        },
         pages: {
-          select: { id: true, blocks: true },
+          orderBy: [
+            {
+              index: "asc",
+            },
+          ],
+          select: {
+            id: true,
+            title: true,
+            description: true,
+            cover: true,
+            status: true,
+            index: true,
+            blocks: {
+              include: {
+                content: true,
+              },
+            },
+          },
         },
       },
     });
@@ -67,16 +133,24 @@ export async function PATCH(
   try {
     const id = params.id;
     const json = await request.json();
+    const { tags, tagsUser, userId, ...course } = json;
 
-    const course = await prisma.course.update({
+    await addTagsToCourse(id, tags);
+    await addTagsToUser(userId, tagsUser);
+    const result = await prisma.course.update({
       where: { id: id },
-      data: json,
+      include: {
+        author: true,
+        folder: true,
+        tags: true,
+      },
+      data: course,
     });
 
     return new NextResponse(
       JSON.stringify({
         status: "success",
-        data: { ...course },
+        data: { ...result },
       }),
       { status: 201, headers: { "Content-Type": "application/json" } }
     );
@@ -113,6 +187,7 @@ export async function DELETE(
   }
   try {
     const id = params.id;
+
     const course = await prisma.course.delete({
       where: { id },
     });
@@ -124,7 +199,7 @@ export async function DELETE(
       }),
       { status: 201, headers: { "Content-Type": "application/json" } }
     );
-  } catch (error: any) {
+  } catch (error) {
     if (error.code === "P2025") {
       const error_response = {
         status: "fail",

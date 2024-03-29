@@ -84,8 +84,10 @@ const FeatureHome = () => {
           </div>
         </h1>
         <HomeParagraph />
-
+  
+        
         <PreregisterFeature />
+        
         <div className="flex justify-center relative top-10 w-full -z-0 p-5">
           <FeatureHomeImage theme={theme as string} />
         </div>

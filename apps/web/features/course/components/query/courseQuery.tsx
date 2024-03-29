@@ -11,14 +11,18 @@ export const CourseQuery = ({ courseId }: { courseId: string }) => {
   const { getCurrentPage } = useCoursesParams();
   const page = getCurrentPage();
   const isMonted = useRef<boolean>(false);
-  
+  //const refCurrentPage = useRef<number>(0);
+
   /* FETCH DATA */
   useEffect(() => {
-    fetchData(page, courseId);
-    isMonted.current = true;
+   // if (page !== refCurrentPage.current) {
+      fetchData(page, courseId);
+      //refCurrentPage.current = page;
+      isMonted.current = true;
+   // }
   }, [page]);
 
-  if (isLoading) return <LoadingSpinnerUI />
+  if (isLoading) return <LoadingSpinnerUI />;
   if (error) return <>Error</>;
   if (course && isMonted.current) return <LayoutEditorUI />;
 };

@@ -1,17 +1,17 @@
-import { Input } from "@nextui-org/react";
+"use client";
 import { useCoursesParams } from "customhooks";
 import { getId } from "lib";
-import { useCallback, useState } from "react";
-import { SelectUI } from "ui";
-import { IconUI } from "ui/icon/IconUI";
-
+import { useCallback } from "react";
+import {  SelectUI } from "ui";
 import { DATA_DATE, DATA_STATUS, DATA_TITLE } from "@/const";
-
-import FolderFilter from "../folderFilter";
+import FolderFilter from "./folderFilter";
+import Search  from "./search"
 //TODO - TRANSLATION
-//TODO - ADD SEARCH BY TITLE
+
 
 const CourseFilters = () => {
+  
+  // Hooks & States
   const {
     currentPage,
     currentStatus,
@@ -20,7 +20,8 @@ const CourseFilters = () => {
     currentOrder,
     setNewSearchParamsInCurrentPage,
   } = useCoursesParams();
-  const [value, setValue] = useState<string>("");
+  
+  
 
   const updateSearchParams = useCallback(
     (
@@ -42,7 +43,6 @@ const CourseFilters = () => {
     },
     [currentPage, currentStatus, currentFolder, currentDate, currentOrder]
   );
-
   const _changeHandlerStatus = useCallback(
     (value: string) => {
       const course = DATA_STATUS.filter((item) => value === item.id);
@@ -57,14 +57,12 @@ const CourseFilters = () => {
     },
     [currentFolder, currentDate, currentOrder]
   );
-
   const _changeHandlerFolder = useCallback(
     (value: string) => {
       updateSearchParams(currentStatus, value, currentDate, currentOrder);
     },
-    [currentStatus, currentDate, currentOrder, value]
+    [currentStatus, currentDate, currentOrder]
   );
-
   const _changeHandlerOrder = useCallback(
     (value: string) => {
       const course = DATA_TITLE.filter((item) => value === item.id);
@@ -79,7 +77,6 @@ const CourseFilters = () => {
     },
     [currentStatus, currentFolder, currentDate]
   );
-
   const _changeHandlerDate = useCallback((value: string):void => {
     const course = DATA_DATE.filter((item) => value === item.id);
     if (course.length > 0) {
@@ -92,6 +89,7 @@ const CourseFilters = () => {
     }
   }, []);
 
+  // Render
   return (
     <div className="flex items-center justify-between w-full h-16 sticky z-50 backdrop-blur-sm">
       <div className="flex gap-2 items-center justify-start">
@@ -127,18 +125,8 @@ const CourseFilters = () => {
           selectedKey={getId(DATA_TITLE, currentOrder)}
         />
       </div>
-      <div className="w-[240px] flex justify-center items-center bg-default-50 rounded-xl">
-        <Input
-          label="Search"
-          isClearable
-          radius="lg"
-          value={value}
-          variant="bordered"
-          onValueChange={setValue}
-          placeholder="Type to search a title lesson..."
-          startContent={<IconUI width={20} height={20} name="search" />}
-        />
-      </div>
+      <Search/>
+      
     </div>
   );
 };

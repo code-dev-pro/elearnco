@@ -1,16 +1,17 @@
-import { apiCreatePage, apiDeletePage, updateCourseFromApi } from "lib";
-import { ERoutes } from "schemas";
-import { toast } from "sonner";
+import { CourseService, PageService } from "lib";
+import {
+  CompleteBlock,
+  CompleteBlockNode,
+  CompleteCourse,
+  CompletePage,
+  ERoutes,
+} from "schemas";
 import { create } from "zustand";
-import { Course } from "database";
-import { Page } from "database";
-
-type Tpages = { pages: Page[] };
-type CourseExtend = Course & Tpages;
+import { PageStatus } from "@prisma/client";
 
 interface State {
-  course: CourseExtend;
-  pages: Page[];
+  course: CompleteCourse;
+  pages: CompletePage[];
   isLoading: boolean;
   error: unknown;
   currentPage: number;
@@ -18,19 +19,19 @@ interface State {
   banner: string;
 }
 
-// Define the interface of the actions that can be performed in the Courses
 interface Actions {
   fetchData: (numPage: number, id: string) => Promise<void>;
   updateBanner: (banner: string) => void;
-  addPage: () => void;
-  deletePage: (page: number) => void;
-  updatePage: (page: number) => void;
-  duplicatePage: (page: number) => void;
+  addPage: (courseID: string, index: number) => void;
+  addCompletionPage: (courseID?: string) => void;
+  deletePage: (courseID: string, numPage: number) => void;
+  updatePage: (numPage: number, data: Partial<CompletePage>) => void;
+  duplicatePage: (numPage: number, index: number) => void;
+  reorderPage: (pages: CompletePage[]) => void;
 }
 
-// Initialize a default state
 const INITIAL_STATE: State = {
-  course: {} as CourseExtend,
+  course: {} as CompleteCourse,
   pages: [],
   isLoading: false,
   error: null,
@@ -39,7 +40,6 @@ const INITIAL_STATE: State = {
   banner: "",
 };
 
-// Create the store with Zustand, combining the status interface and actions
 export const useCourseStore = create<State & Actions>((set, get) => ({
   course: INITIAL_STATE.course,
   pages: INITIAL_STATE.pages,
@@ -70,52 +70,168 @@ export const useCourseStore = create<State & Actions>((set, get) => ({
     }
   },
 
-  //NOTE -  we need to update the image course only if banner !==""
-  updateBanner: async (banner) => {
+  updateBanner: async (banner): Promise<void> => {
     const currentIdCourse = get().course.id;
-    await updateCourseFromApi({
-      id: currentIdCourse,
-      image: banner,
-    });
-
-    set((state) => ({
-      ...state,
-      banner,
-    }));
-  },
-
-  addPage: async (): Promise<any> => {
-    const id = get().course.id;
-    const totalPage = get().totalPages;
-    const pageData = JSON.stringify({
-      course: { connect: { id: id } },
-      index: totalPage,
-    });
     try {
-      const page = await apiCreatePage(pageData);
-      const pages = [...get().course.pages]
-      set((state) => ({ ...state, ...{pages:[...pages,page]}  }));
-      toast.success("page created successfully !");
-    
-    } catch (error: any) {
-      toast.error(error);
+      await CourseService.updateCourse(currentIdCourse, { image: banner });
+      set((state) => ({
+        ...state,
+        banner,
+      }));
+    } catch (error) {
+      set({ error, isLoading: false });
+    }
+  },
+  addPage: async (courseID: string, index: number): Promise<boolean> => {
+    const id = courseID ?? get().course.id;
+    const totalPage = get().totalPages ?? 1;
+    const pageData = {
+      course: { connect: { id: id } },
+      index: index,
+      title: "",
+      description: "",
+    };
+
+    try {
+      const response = await PageService.addPage(pageData);
+      const { status, data } = response;
+      //const { page } = data as { page: CompletePage };
+      const { message } = data as { message: string };
+      if (status === "success") {
+        // we don't need to update state because we have refetch data by changing url
+        //set((state) => ({ ...state, ...{ ...page } }));
+        return true;
+      } else {
+        const error = message;
+        return false;
+        //set({ error, isLoading: false });
+      }
+    } catch (error) {
+      //set({ error, isLoading: false });
+      return false;
     }
   },
 
-  updatePage: async (): Promise<void> => {},
-  duplicatePage: async (): Promise<void> => {},
+  addCompletionPage: async (courseID): Promise<void> => {},
 
-  deletePage: async (page): Promise<void> => {
+  updatePage: async (
+    page: number,
+    data: Partial<CompletePage>
+  ): Promise<void> => {
     const pages = get().course.pages;
     const pageFinded = pages[page - 1];
-    const pageFindedId = pageFinded.id;
-    try {
-      const pages = await apiDeletePage(pageFindedId);
+    const newData = data;
 
-      //set((state) => ({ ...state, ...{ ...pages } }));
-      toast.success("page deleted successfully !");
+    try {
+      const response = await PageService.updatePage(pageFinded.id, newData);
+      const { status, data } = response;
+      //const { page } = data as { page: CompletePage[] };
+      const newPage = data as CompletePage;
+
+      if (status === "success") {
+        set((state) => ({
+          pages: state.pages.map((page) =>
+            page.id === newPage.id ? { ...newPage } : page
+          ),
+          course: {
+            ...state.course,
+            pages: state.pages.map((page) =>
+              page.id === newPage.id ? { ...newPage } : page
+            ),
+          },
+        }));
+      } else {
+        const { message } = data as { message: string };
+        const error = message;
+        set({ error, isLoading: false });
+      }
+    } catch (error) {}
+  },
+  duplicatePage: async (page: number, index: number): Promise<void> => {
+    const pages = get().course.pages;
+    const courseID = get().course.id;
+    const totalPage = get().totalPages ?? 1;
+    const pageFinded = pages[page - 1];
+    const blocksFinded = pageFinded?.blocks;
+    const newdata = {
+      course: { connect: { id: courseID } },
+      index: totalPage,
+      status: PageStatus.DRAFT,
+      blocks: {
+        create: blocksFinded.map((block: CompleteBlock) => ({
+          index: block.index,
+          title: block.title,
+          type: block.type,
+          uuid: block.uuid,
+          groupId: block.groupId,
+          description: block.description,
+          content: {
+            create: blocksFinded[0]?.content.map((node: CompleteBlockNode) => ({
+              title: node.title,
+              description: node.description,
+              type: node.type,
+              uuid: node.uuid,
+              content: node.content,
+            })),
+          },
+        })),
+      },
+    };
+
+    try {
+      const response = await PageService.addPage(newdata);
+      const { status, data } = response;
+      const { page } = data as { page: CompletePage };
+      const { message } = data as { message: string };
+      if (status === "success") {
+        // we don't need to update state because we have refetch data by changing url
+        //set((state) => ({ ...state, ...{ ...page } }));
+      } else {
+        const error = message;
+        set({ error, isLoading: false });
+      }
     } catch (error) {
-      toast.error("error");
+      set({ error, isLoading: false });
     }
+  },
+  deletePage: async (courseID: string, pageIndex: number): Promise<void> => {
+    const pages = get().course.pages;
+    const index = pageIndex - 1;
+    const pageFinded = pages[index];
+    const pageFindedId = pageFinded.id;
+
+    try {
+      const response = await PageService.deletePage(
+        courseID,
+        pageFindedId,
+        index
+      );
+      const { status, data } = response;
+      //const { page } = data as { page: CompletePage[] };
+
+      if (status === "success") {
+        // we don't need to update state because we have refetch data by changing url
+        // set((state) => ({ ...state, ...{ page: page } }));
+      } else {
+        const { message } = data as { message: string };
+        const error = message;
+        set({ error, isLoading: false });
+      }
+    } catch (error) {
+      set({ error, isLoading: false });
+    }
+  },
+
+  reorderPage: async (pages: CompletePage[]): Promise<void> => {
+    const newdata = pages;
+
+    try {
+      const response = await PageService.reorderPage(newdata);
+      const { status, data } = response;
+   
+      if (status === "success") {
+        set((state) => ({ ...state, ...{ ...newdata } }));
+      }
+    } catch (error) {}
   },
 }));
