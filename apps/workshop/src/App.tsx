@@ -1,4 +1,3 @@
-import "./tailwind.css";
 function App() {
   return <></>;
 }

@@ -30,9 +30,11 @@ export const SelectUI = (props: IProps) => {
     isRequired,
   } = props;
 
-  const [selectedValue, setSelectValue] = useState<string[]>([selectedKey || data[0]?.id]);
+  const [selectedValue, setSelectValue] = useState<string[]>([
+    selectedKey || data[0]?.id,
+  ]);
 
-  const onChangeHandler = (e: React.ChangeEvent<HTMLSelectElement>) => {
+  const onChangeHandler = (e: React.ChangeEvent<HTMLSelectElement>): void => {
     onChange?.(e.target.value);
     setSelectValue([e.target.value]);
   };
@@ -42,6 +44,7 @@ export const SelectUI = (props: IProps) => {
       isRequired={isRequired}
       items={data}
       label={label}
+      aria-label="Select"
       variant={variant}
       disableAnimation
       placeholder={placeholder}

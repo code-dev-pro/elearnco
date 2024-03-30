@@ -12,7 +12,7 @@ export async function GET() {
   }
 
   if (session.user.role !== "ADMIN") {
-    redirect(`/${ERoutes.DASHBOARD}`);
+    redirect(`/${ERoutes.HOME}`);
   }
   const _prismaPreregister = prisma.preregisteredUser;
   const preregisteredUser = await prisma.$transaction([

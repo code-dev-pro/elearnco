@@ -8,8 +8,9 @@ export enum ERoutes {
   "COURSE" = "course",
   "REPORTS" = "reports",
   "SIGN" = "sign",
-  "DASHBOARD" = "dashboard",
   "PAGE" = "page",
   "COLLABORATION" = "collaboration",
   "SETTINGS" = "settings",
+  "BLOCKNODE"= "blockNode",
+  "FORGET"="forgot"
 }

@@ -1,162 +1,276 @@
+import { nanoid } from "lib/utils";
 import {
-  addObjectAtIndex,
-  findObjectById,
-  nanoid,
-  removeObjectById,
-  reorderObjectById,
-  reorganizeIndexes,
-  swapObjectsById,
-} from "lib/utils";
-import { ERoutes } from "schemas";
+  CompleteBlock,
+  CompletePage,
+  DraggableBlockType,
+  ErrorResponse,
+  FetchResponse,
+  TPoint,
+} from "schemas";
 import { create } from "zustand";
-import { Block } from "database";
+import { PageService } from "lib/requests/services/pages";
+import { actionAddBlock, mockBlockData } from "./actions";
 
-interface State {
-  blocks: Partial<Block>[];
+export interface Action {
+  action?: string;
+}
+
+export interface State {
+  blocks: Partial<CompleteBlock & Action>[];
+  activeBlock: string;
+  prevState: Partial<CompleteBlock>[];
   isLoading: boolean;
   error: unknown;
-  page: any;
+  page: CompletePage;
   currentPage: number;
   totalBlocks: number;
+  currentMoveBlock: { isMoving: boolean; id: string; position: TPoint };
+  deletedBlockIds: string[];
 }
 
-// Define the interface of the actions that can be performed in the Courses
 interface Actions {
   fetchData: (id: string) => Promise<void>;
-  addBlock: (blockIndex: number, draggedBlockType: Block) => void;
-  removeBlock: (id: string) => void;
-  duplicateBlock: (id: string) => void;
-  moveDown: (id: string) => void;
-  moveUp: (id: string) => void;
-  reorderBlock: (blockIndex: number, draggedBlockType: Partial<Block>) => void;
+  getBlocksSnapshot: () => void;
+  addBlock: (index: number, draggedBlockType: DraggableBlockType) => void;
+  removeBlock: (uuid: string) => void;
+  duplicateBlock: (uuid: string) => void;
+  updateBlock: (
+    data: Partial<CompleteBlock>,
+    bloc: CompleteBlock
+  ) => Promise<FetchResponse | ErrorResponse>;
+  moveDown: (uuid: string) => void;
+  moveUp: (uuid: string) => void;
+  reorderBlock: (
+    blockIndex: number,
+    draggedBlockType: Partial<CompleteBlock>
+  ) => void;
+  setActiveBlock: (uuid: string) => void;
+  setBlock: (blocks: Partial<CompleteBlock>[]) => void;
+
+  moveStartBlockInGraph: (
+    isMoving: boolean,
+    id: string,
+    position: TPoint
+  ) => void;
 }
 
-// Initialize a default state
 const INITIAL_STATE: State = {
   blocks: [],
+  prevState: [],
   isLoading: false,
   error: null,
   currentPage: 1,
   totalBlocks: 1,
-  page: [],
+  page: {} as CompletePage,
+  activeBlock: "",
+  currentMoveBlock: { isMoving: false, id: "", position: { x: 0, y: 0 } },
+  deletedBlockIds: [],
 };
 
-// Create the store with Zustand, combining the status interface and actions
 export const usePageStore = create<State & Actions>((set, get) => ({
+  prevState: INITIAL_STATE.blocks,
   blocks: INITIAL_STATE.blocks,
   isLoading: INITIAL_STATE.isLoading,
   error: INITIAL_STATE.error,
   currentPage: INITIAL_STATE.currentPage,
   totalBlocks: INITIAL_STATE.totalBlocks,
   page: INITIAL_STATE.page,
+  activeBlock: INITIAL_STATE.activeBlock,
+  currentMoveBlock: INITIAL_STATE.currentMoveBlock,
+  deletedBlockIds: INITIAL_STATE.deletedBlockIds,
 
- 
+  getBlocksSnapshot: (): State => {
+    let prevState: State = get();
+    return prevState;
+  },
   fetchData: async (id: string): Promise<void> => {
     try {
-      set({ isLoading: true, error: null });
-      const response = await fetch(`/api/${ERoutes.PAGE}/${id}`);
-      const data = await response.json();
+      set({ error: null, isLoading: true });
+      const { status, data } = await PageService.getPage(id);
+      const { page } = data as { page: CompletePage[] };
+      const { blocks } = page[0] as CompletePage & { blocks: [] };
 
-      set({
-        page: data[0],
-        blocks: [
-          {
-            index: 0,
-            uuid: "bloc 0",
-            content: "bloc 0",
-            groupId: "group_1",
-            type: "warning",
-          },
-          {
-            index: 1,
-            uuid: "bloc 1",
-            content: "bloc 1",
-            groupId: "group_1",
-            type: "audio",
-          },
-          {
-            index: 2,
-            uuid: "bloc 2",
-            content: "bloc 2",
-            groupId: "group_1",
-            type: "video",
-          },
-          {
-            index: 3,
-            uuid: "bloc 3",
-            content: "bloc 3",
-            groupId: "group_1",
-            type: "timeline",
-          },
-        ],
-        //data[0].blocks,
-        isLoading: false,
-        totalBlocks: Number(data[0]?.blocks?.length),
-      });
+      if (status === "success") {
+        set(() => ({
+          page: page[0],
+          blocks: blocks,
+          isLoading: false,
+          totalBlocks: blocks.length,
+          prevState: blocks,
+        }));
+      } else {
+        set({ error: "error", isLoading: false });
+      }
     } catch (error) {
       set({ error, isLoading: false });
     }
   },
-  addBlock: (index: number, blocType: Partial<Block>): void => {
-   
-    const blocks = get().blocks;
-    const cloneblocks = [...blocks];
-    const newBlocks = addObjectAtIndex(cloneblocks, index, {
-      uuid: nanoid(12),
-      index: blocks.length + 1,
-      content: JSON.stringify(blocType),
-      type: blocType as string,
-    });
 
-    const reorderNewBlocks = reorganizeIndexes(newBlocks);
-    set((state) => ({ state, ...{ blocks: reorderNewBlocks } }));
+  setBlock(blocks):void {
+    set(() => {
+      return { blocks: blocks };
+    });
   },
-  duplicateBlock: (id: string): void => {
-    const blocks = get().blocks;
-    const cloneblocks = [...blocks];
-    const block = findObjectById(cloneblocks, id);
-    const index = block?.index;
-    if (index !== undefined) {
-      const newBlocks = addObjectAtIndex(cloneblocks, index + 1, {
-        ...block,
-        uuid: nanoid(12),
+
+  addBlock: (index: number, blocType: DraggableBlockType):void => {
+    const snapshotPage = get().page;
+    const { BLOCK_DATA } = mockBlockData(index, blocType, snapshotPage.id);
+    set((state) => {
+      const updatedBlocks = actionAddBlock(state.blocks, BLOCK_DATA, index); 
+      return { blocks: updatedBlocks };
+    });
+  },
+  removeBlock: (uuid: string):void => {
+    set((state) => {
+      const blockToRemove = state.blocks.find((block) => block.uuid === uuid);
+      if (!blockToRemove) return state;
+
+      const updatedBlocks = state.blocks
+        .map((block) => {
+          if (block.uuid === uuid) {
+            return { ...block, action: "delete" };
+          }
+          return block;
+        })
+        .filter((block) => block.uuid !== uuid)
+        .map((block, index) => {
+          return { ...block, index, action: "update" };
+        });
+
+      return {
+        blocks: updatedBlocks,
+        deletedBlockIds: [...state.deletedBlockIds, uuid],
+      };
+    });
+  },
+  duplicateBlock: (uuid: string):void => {
+    set((state) => {
+      const originalBlock = state.blocks.find((block) => block.uuid === uuid);
+      if (!originalBlock) return state;
+
+      const index = state.blocks.findIndex((block) => block.uuid === uuid);
+      const nextBlockIndex = index + 1;
+      const updatedBlocks = state.blocks.map((block) => {
+        if (block.index && block.index >= nextBlockIndex) {
+          return { ...block, index: block.index + 1, action: "update" };
+        }
+        return block;
       });
-      const reorderNewBlocks = reorganizeIndexes(newBlocks);
-      set((state) => ({ state, ...{ blocks: reorderNewBlocks } }));
-    }
+
+      updatedBlocks.splice(nextBlockIndex, 0, {
+        ...originalBlock,
+        uuid: nanoid(12),
+        index: nextBlockIndex,
+        action: "create",
+      });
+
+      return { blocks: updatedBlocks };
+    });
   },
   reorderBlock: (
     blockIndex: number,
-    draggedBlockType: Partial<Block>
-  ): void => {
-    const blocks = get().blocks;
-    const cloneblocks = [...blocks];
-    const newBlocks = reorderObjectById(
-      cloneblocks,
-      draggedBlockType.uuid as string,
-      blockIndex
-    );
+    draggedBlockType: Partial<CompleteBlock>
+  ) => {
+    set((state) => {
+      const currentIndex = state.blocks.findIndex(
+        (block) => block.uuid === draggedBlockType.uuid
+      );
+      if (
+        currentIndex === -1 ||
+        blockIndex < 0 ||
+        blockIndex >= state.blocks.length ||
+        currentIndex === blockIndex
+      ) {
+        return state;
+      }
 
-    set((state) => ({ state, ...{ blocks: newBlocks } }));
-  },
-  removeBlock: (id: string): void => {
-    const blocks = get().blocks;
-    const cloneblocks = [...blocks];
-    const newBlocks = removeObjectById(cloneblocks, id);
-    const reorderNewBlocks = reorganizeIndexes(newBlocks);
-    set((state) => ({ state, ...{ blocks: reorderNewBlocks } }));
-  },
-  moveDown: (id: string): void => {
-    const blocks = get().blocks;
-    const cloneblocks = [...blocks];
-    const newBlocks = swapObjectsById(cloneblocks, id, "down");
+      const updatedBlocks = [...state.blocks];
+      const movedBlock = updatedBlocks[currentIndex];
+      updatedBlocks.splice(currentIndex, 1);
+      updatedBlocks.splice(blockIndex, 0, movedBlock);
 
-    set((state) => ({ state, ...{ blocks: newBlocks } }));
+      const startIndex = Math.min(currentIndex, blockIndex);
+      const endIndex = Math.max(currentIndex, blockIndex);
+      for (let i = startIndex; i <= endIndex; i++) {
+        updatedBlocks[i] = { ...updatedBlocks[i], index: i, action: "update" };
+      }
+
+      return { blocks: updatedBlocks };
+    });
   },
-  moveUp: (id: string): void => {
-    const blocks = get().blocks;
-    const cloneblocks = [...blocks];
-    const newBlocks = swapObjectsById(cloneblocks, id, "up");
-    set((state) => ({ state, ...{ blocks: newBlocks } }));
+  moveDown: (uuid: string):void => {
+    set((state) => {
+      const index = state.blocks.findIndex((block) => block.uuid === uuid);
+      if (index === -1 || index === state.blocks.length - 1) return state;
+
+      const updatedBlocks = [...state.blocks];
+      const tempBlock = updatedBlocks[index];
+      updatedBlocks[index] = updatedBlocks[index + 1];
+      updatedBlocks[index + 1] = tempBlock;
+
+      updatedBlocks[index] = { ...updatedBlocks[index], index };
+      updatedBlocks[index + 1] = {
+        ...updatedBlocks[index + 1],
+        index: index + 1,
+      };
+
+      updatedBlocks[index] = { ...updatedBlocks[index], action: "update" };
+      updatedBlocks[index + 1] = {
+        ...updatedBlocks[index + 1],
+        action: "update",
+      };
+
+      return { blocks: updatedBlocks };
+    });
+  },
+  moveUp: (uuid: string):void => {
+    set((state) => {
+      const index = state.blocks.findIndex((block) => block.uuid === uuid);
+      if (index <= 0) return state;
+
+      const updatedBlocks = [...state.blocks];
+      const tempBlock = updatedBlocks[index];
+      updatedBlocks[index] = updatedBlocks[index - 1];
+      updatedBlocks[index - 1] = tempBlock;
+
+      updatedBlocks[index] = { ...updatedBlocks[index], index };
+      updatedBlocks[index - 1] = {
+        ...updatedBlocks[index - 1],
+        index: index - 1,
+      };
+
+      updatedBlocks[index] = { ...updatedBlocks[index], action: "update" };
+      updatedBlocks[index - 1] = {
+        ...updatedBlocks[index - 1],
+        action: "update",
+      };
+
+      return { blocks: updatedBlocks };
+    });
+  },
+  updateBlock: async (
+    data: Partial<CompleteBlock>,
+    block: Partial<CompleteBlock>
+  ): Promise<FetchResponse | ErrorResponse> => {
+    return { status: "success", data: { message: "" } };
+  },
+  setActiveBlock: (uuid: string): void => {
+    set((state) => ({
+      state,
+      ...{
+        activeBlock: uuid,
+      },
+    }));
+  },
+  moveStartBlockInGraph: (isMoving, id: string, position: TPoint): void => {
+    set({
+      currentMoveBlock: {
+        isMoving,
+        position,
+        id,
+      },
+    });
   },
 }));
+
+export default usePageStore;

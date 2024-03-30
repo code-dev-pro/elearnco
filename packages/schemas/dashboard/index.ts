@@ -8,11 +8,11 @@ export type GridItemType =
   | "tips"
   | "project"
   | "user"
-  | "course";
-
+  | "course"
+  | "clock";
 
 export interface GridItemInterface {
-  id:string
+  id: string;
   layout: GridItemLayout;
   type: GridItemType;
   title: string;
@@ -28,10 +28,9 @@ export interface GridItemInterface {
   oldPrice?: string;
   stars?: number;
   image?: string;
-  classNameImage?:string
-  className?:string
+  classNameImage?: string;
+  className?: string;
 }
-
 
 export type GridItemProps = { children: React.ReactNode } & VariantProps<
   typeof variants

@@ -4,6 +4,7 @@ import { SessionProvider } from "next-auth/react";
 import { ThemeProvider as NextThemesProvider } from "next-themes";
 import { ThemeProviderProps } from "next-themes/dist/types";
 import { Next13ProgressBar } from "next13-progressbar";
+import { Suspense } from "react";
 import { Toaster } from "sonner";
 
 export interface ProvidersProps {
@@ -18,12 +19,14 @@ export function Providers({
       <NextThemesProvider attribute="class" defaultTheme="dark" {...themeProps}>
         <SessionProvider>
           <Toaster richColors position="bottom-right" />
-          <Next13ProgressBar
-            height="4px"
-            color="#0A2FFF"
-            options={{ showSpinner: false }}
-            showOnShallow
-          />
+          <Suspense>
+            <Next13ProgressBar
+              height="4px"
+              color="#0A2FFF"
+              options={{ showSpinner: false }}
+              showOnShallow
+            />
+          </Suspense>
           {children}
         </SessionProvider>
       </NextThemesProvider>

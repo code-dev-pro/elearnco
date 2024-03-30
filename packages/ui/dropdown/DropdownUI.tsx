@@ -8,11 +8,9 @@ import {
   DropdownTrigger,
 } from "@nextui-org/react";
 import React, { useCallback } from "react";
-
-import { IconUI } from "../icon/IconUI";
 import { TColor } from "schemas/global";
 
-
+import { IconUI } from "../icon/IconUI";
 
 interface IShortcut {
   name: string;
@@ -43,6 +41,7 @@ interface IProps {
   placement: OverlayPlacement | undefined;
   data: IData[];
   actionHandler?: (action: string) => void;
+  
 }
 
 export const DropdownUI = (props: React.PropsWithChildren<IProps>) => {
@@ -52,7 +51,7 @@ export const DropdownUI = (props: React.PropsWithChildren<IProps>) => {
     data = [],
     placement = "bottom-end",
     actionHandler,
-   
+    
   } = props;
 
   const showDivider = useCallback((index: number) => {
@@ -73,9 +72,12 @@ export const DropdownUI = (props: React.PropsWithChildren<IProps>) => {
               key={section.id}
             >
               {section.data.map((item: IDropdownItem) => {
+              
                 return (
                   <DropdownItem
+                    isDisabled={JSON.parse(item.isdisabled.toLowerCase())}
                     onClick={(): void => actionHandler?.(item.action)}
+                   
                     id={item.id}
                     key={item.id}
                     description={item.description}
@@ -93,7 +95,7 @@ export const DropdownUI = (props: React.PropsWithChildren<IProps>) => {
                     }
                     color={item.color as TColor}
                   >
-                    {item.label}
+                    <span className={item.color==="danger"?"text-danger" : ""}>{item.label}</span>
                   </DropdownItem>
                 );
               })}

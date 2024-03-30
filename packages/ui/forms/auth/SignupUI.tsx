@@ -1,20 +1,21 @@
 import { zodResolver } from "@hookform/resolvers/zod";
 import { Button, Input, Link, Spacer } from "@nextui-org/react";
-import React, { useState } from "react";
+import React, { useEffect } from "react";
 import { Controller, useForm } from "react-hook-form";
 import { userAuthSignupSchema } from "schemas/auth/Auth";
-import * as z from "zod";
+import { UserAuthSignupSchema } from "schemas/forms";
+import { useLoadingStore } from "store/loading";
 
-type UserAuthSignupSchema = z.infer<typeof userAuthSignupSchema>;
+
 
 interface IProps {
-  authSignup?: (data: UserAuthSignupSchema) => void;
+  authSignup?: (data: UserAuthSignupSchema) => Promise<void>;
   switchVue?: (key: React.Key) => void;
 }
 
 export const SignupUI = (props: IProps) => {
   const { authSignup, switchVue } = props;
-  const [isLoading, setLoading] = useState<boolean>(false);
+  const { isLoading, onStopLoading, onBeginLoading } = useLoadingStore();
   const {
     handleSubmit,
     control,
@@ -25,11 +26,14 @@ export const SignupUI = (props: IProps) => {
   });
 
   const onSubmit = async (data: UserAuthSignupSchema): Promise<void> => {
-    setLoading(true);
+    onBeginLoading();
     authSignup?.(data);
-    setLoading(false);
+    onStopLoading();
     reset();
   };
+  useEffect(() => {
+    onStopLoading();
+  }, []);
 
   return (
     <form

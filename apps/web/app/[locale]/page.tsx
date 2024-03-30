@@ -5,7 +5,7 @@ import { ERoutes } from "schemas";
 export default async function IndexPage() {
   const session = await getServerSession();
   if (session) {
-    redirect(`/${ERoutes.DASHBOARD}`);
+    redirect(`/${ERoutes.HOME}`);
   }
 
   redirect(`/${ERoutes.WELCOME}`);

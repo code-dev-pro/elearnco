@@ -1,4 +1,5 @@
-export * from "./blocks";
+
+export * from "./blocks"
 export * from "./blocks/text";
 export * from "./blocks/media";
 export * from "./blocks/logic"
@@ -10,6 +11,10 @@ export * from "./actions/index";
 export * from "./mocks";
 export * from "./menus";
 export * from "./global";
-export * from "./medias";
+export * from "./upload";
 export * from "./api";
 export * from "./dashboard"
+export * from './modal'
+export * from "./forms"
+
+

@@ -3,15 +3,17 @@ import { zodResolver } from "@hookform/resolvers/zod";
 import { Avatar, Button, Input, Link, Spacer } from "@nextui-org/react";
 import { avartarsTotalObjects } from "lib";
 import { useSession } from "next-auth/react";
-import { useEffect, useState } from "react";
+import React, { useEffect, useState } from "react";
 import { Controller, useForm } from "react-hook-form";
 import { userAuthProfilSchema } from "schemas/auth/Auth";
+import { UserAuthProfilSchema } from "schemas/forms";
 import { useDisabledStore, useLoadingStore } from "store";
-import * as z from "zod";
-type UserAuthProfilSchema = z.infer<typeof userAuthProfilSchema>;
 
-export const ProfileUI = (props: any) => {
+export const ProfileUI =(props: { action: string }) => {
   const { action } = props;
+
+  
+
   const { data: session, update } = useSession();
   const user = session?.user;
   const { name = "", image = "", email = "" } = { ...user };
@@ -57,6 +59,7 @@ export const ProfileUI = (props: any) => {
   };
 
   useEffect(() => {
+    onStopLoading();
     onStopDisabled();
   }, []);
 
@@ -115,48 +118,7 @@ export const ProfileUI = (props: any) => {
               />
             )}
           />
-          {/*  <Controller
-            name="password"
-            control={control}
-            defaultValue={user.password}
-            render={({ field }) => (
-              <Input
-                isRequired
-                label="Password"
-                placeholder="Change your password"
-                type="password"
-                description="Enter a new password"
-                color={errors?.password ? "danger" : "default"}
-                errorMessage={
-                  errors?.password
-                    ? (errors.password.message as unknown as string)
-                    : ""
-                }
-                {...field}
-              />
-            )}
-          />
-          <Controller
-            name="confirmPassword"
-            control={control}
-            defaultValue={user.password}
-            render={({ field }) => (
-              <Input
-                isRequired
-                label="Confirm Password"
-                placeholder="Confirm your new password"
-                type="password"
-                description="Confirm your new password"
-                color={errors?.confirmPassword ? "danger" : "default"}
-                errorMessage={
-                  errors?.confirmPassword
-                    ? (errors.confirmPassword.message as unknown as string)
-                    : ""
-                }
-                {...field}
-              />
-            )}
-          /> */}
+        
           <Spacer y={1} />
           <p className="text-center text-small">
             Change your avatar ?{" "}
@@ -171,7 +133,7 @@ export const ProfileUI = (props: any) => {
         </form>
       ) : (
         <div className="flex flex-col">
-          <div className="flex gap-2 justify-start">
+          <div className="flex gap-2 justify-start mb-5 mt-5">
             <Button
               onPress={(): void => switchVue("profil")}
               type="button"
@@ -181,13 +143,13 @@ export const ProfileUI = (props: any) => {
             >
               Back
             </Button>
-          </div>{" "}
+          </div>
           <Spacer y={1} />
           <div className="gap-4 grid grid-cols-4 sm:grid-cols-4">
             {avartarsTotalObjects.map((item) => (
               <Avatar
                 onClick={() => changeAvatar(item.image)}
-                color={item.image === currentAvatar ? "secondary" : "default"}
+                color={item.image === currentAvatar ? "primary" : "default"}
                 isBordered
                 draggable={false}
                 key={item.name}

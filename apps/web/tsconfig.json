@@ -1,6 +1,7 @@
 {
   "extends": "tsconfig/nextjs.json",
   "compilerOptions": {
+   
     "plugins": [
       {
         "name": "next"
@@ -19,7 +20,7 @@
     "**/*.tsx",
     ".next/types/**/*.ts",
     "**/*.svg"
-, "../../packages/ui/modals/GlobalModalUI.tsx", "../../packages/ui/share/shareWithTrainer.tsx", "../../packages/store/index.ts", "../../packages/lib/requests/api.request.ts", "../../packages/lib/providers/auth.provider.tsx", "../../packages/lib/providers/conditionalWrapper.tsx"  ],
+, "../../packages/ui/modals/GlobalModalUI.tsx", "../../packages/ui/share/shareWithTrainer.tsx", "../../packages/store/index.ts", "../../packages/lib/requests/api.request.ts", "../../packages/lib/providers/auth.provider.tsx", "../../packages/lib/providers/conditionalWrapper.tsx", "features/courses/__tests__/courseQuery.test.tsx", "../../packages/ui/editable/EditableUI.tsx"  ],
   "exclude": [
     "node_modules"
   ]

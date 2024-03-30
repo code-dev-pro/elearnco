@@ -1,3 +1,4 @@
+import { Meta } from "@storybook/react";
 import { WallUI } from "ui";
 
 const meta = {
@@ -13,7 +14,7 @@ const meta = {
       control: { type: "select" },
     },
   },
-};
+} satisfies Meta<typeof WallUI>;
 
 export default meta;
 

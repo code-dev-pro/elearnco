@@ -1,5 +1,6 @@
 "use client";
 import { useState } from "react";
+import React from "react";
 
 import { BlockCardSectionsUI } from "../block/BlockCardSectionsUI";
 import { DrawerUI } from "../drawer/DrawerUI";
@@ -14,20 +15,7 @@ const PARENT_CSS = {
   minHeight: "calc(100vh - 64px)",
 } as const;
 
-const Labels = ({ callback }: { callback: () => void }) => {
-  return (
-    <DrawerUI
-      position="absolute"
-      width={350}
-      placeIn="right"
-      classnames="h-full"
-      hasOverlay={false}
-      actionHandler={callback}
-    >
-      <BlockCardSectionsUI />
-    </DrawerUI>
-  );
-};
+
 
 export const EditorUI = () => {
   // Manage Drawer open

@@ -1,35 +1,48 @@
 "use client";
-import { changeCursor } from "lib";
+import { appendUnit,changeCursor } from "lib";
 import React, { useEffect, useRef, useState } from "react";
 import { createPortal } from "react-dom";
-import { BlockCategories, BlockType, POINT, TextBlockType, TPoint } from "schemas";
+import {
+  BlockCategories,
+  BlockType,
+  DraggableBlockType,
+  POINT,
+  TextBlockType,
+  TPoint,
+} from "schemas";
 import { ActivityBlockType } from "schemas/blocks/activity";
-import {LogicBlockType } from "schemas/blocks/logic"
+import { LogicBlockType } from "schemas/blocks/logic";
 import { MediaBlockType } from "schemas/blocks/media";
 
 import { useBlockDnd } from "../providers/WorkspaceDndProvider";
 import { BlockCardList } from "./BlockCardListUI";
 import { BlockCardOverlayUI } from "./BlockCardOverlayUI";
+import { BLOCK_HEIGHT,BLOCK_WIDTH } from "./const";
 
 export const BlockCardSectionsUI = () => {
   const { setDraggedBlockType, draggedBlockType } = useBlockDnd();
   const [position, setPosition] = useState<TPoint>(POINT);
   const relativeCoordinates = useRef<TPoint>(POINT);
   const isDragging = useRef<boolean>(false);
+  const WIDTH = appendUnit(BLOCK_WIDTH);
+  const HEIGHT = appendUnit(BLOCK_HEIGHT);
 
   const _removeAllListeners = (): void => {
     document.removeEventListener("mousemove", handleMouseMove);
     document.removeEventListener("mouseup", handleMouseUp);
-    document.removeEventListener("touchmove", handleMouseMove);
+    document.removeEventListener(
+      "touchmove",
+      (event: MouseEvent | TouchEvent) => handleMouseMove(event)
+    );
     document.removeEventListener("touchend", handleMouseUp);
   };
   const handleMouseDown = (
     event:
       | React.MouseEvent<HTMLDivElement, MouseEvent>
       | React.TouchEvent<HTMLDivElement>,
-    type: TextBlockType | MediaBlockType
+    type: DraggableBlockType
   ): void => {
-    changeCursor('grab')
+    changeCursor("grab");
     if (isDragging.current) return;
     isDragging.current = true;
     let _event;
@@ -60,15 +73,15 @@ export const BlockCardSectionsUI = () => {
     document.addEventListener("mouseup", handleMouseUp);
   };
 
-  const handleMouseMove = (event: MouseEvent): void => {
+  const handleMouseMove = (event: MouseEvent | TouchEvent): void => {
     if (!isDragging.current) return;
     event.preventDefault();
-    changeCursor('grabbing')
+    changeCursor("grabbing");
     let _event;
     let clientX = 0;
     let clientY = 0;
     if (event.type === "mousemove") {
-      _event = event;
+      _event = event as MouseEvent;
       clientX = _event.clientX;
       clientY = _event.clientY;
     } else {
@@ -85,7 +98,6 @@ export const BlockCardSectionsUI = () => {
   };
 
   const handleMouseUp = (): void => {
-    
     if (!isDragging.current) return;
     isDragging.current = false;
     setDraggedBlockType(undefined);
@@ -99,10 +111,7 @@ export const BlockCardSectionsUI = () => {
     return () => {
       _removeAllListeners();
     };
-    // eslint-disable-next-line react-hooks/exhaustive-deps
   }, []);
-
-
 
   return (
     <>
@@ -114,14 +123,14 @@ export const BlockCardSectionsUI = () => {
         category={BlockCategories.text}
       />
       <BlockCardList
-       draggedBlockType={draggedBlockType}
+        draggedBlockType={draggedBlockType}
         blockType={MediaBlockType as unknown as MediaBlockType}
         onMouseDown={handleMouseDown}
         section="Medias"
         category={BlockCategories.media}
       />
       <BlockCardList
-       draggedBlockType={draggedBlockType}
+        draggedBlockType={draggedBlockType}
         blockType={ActivityBlockType as unknown as ActivityBlockType}
         onMouseDown={handleMouseDown}
         section="Activity"
@@ -133,7 +142,7 @@ export const BlockCardSectionsUI = () => {
         onMouseDown={handleMouseDown}
         section="Logic"
         category={BlockCategories.logic}
-      /> 
+      />
       {draggedBlockType &&
         createPortal(
           <BlockCardOverlayUI
@@ -143,9 +152,9 @@ export const BlockCardSectionsUI = () => {
               cursor: "grabbing",
               transform: `translate(${position.x}px, ${position.y}px) rotate(-2deg)`,
               zIndex: 100000,
-              width: "160px",
-              maxWidth: "160px",
-              height: "40px",
+              width: WIDTH,
+              maxWidth: WIDTH,
+              height: HEIGHT,
             }}
           />,
           document.body

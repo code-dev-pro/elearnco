@@ -1,11 +1,12 @@
 import { prisma } from "database";
 import { redirect } from "next/navigation";
 import { NextRequest, NextResponse } from "next/server";
-import { CourseResponse, ERoutes } from "schemas";
-import { CourseStatus, CourseTitle } from "schemas/menus/dropdown";
+import { ERoutes, ErrorResponse, FetchResponse } from "schemas";
+import { CourseDate,CourseStatus, CourseTitle } from "schemas/menus/dropdown";
 
 import { MAX_CARDS } from "@/const";
 import { getServerSession } from "@/lib/auth.options";
+
 
 /**
  * Get user courses
@@ -15,22 +16,32 @@ import { getServerSession } from "@/lib/auth.options";
 
 export async function GET(
   request: NextRequest
-): Promise<NextResponse<CourseResponse>> {
+): Promise<NextResponse<FetchResponse>> {
   const session = await getServerSession();
   if (!session?.user) {
     redirect(`/${ERoutes.SIGN}`);
   }
+
   try {
-    const req = request.nextUrl.searchParams;
+    const req = request?.nextUrl?.searchParams;
+
     const page = Number(req.get("page")) || (1 as number);
-    const status = (req.get("status") as CourseStatus) || CourseStatus.DRAFT as CourseStatus;
+    const status =
+      (req.get("status") as CourseStatus) ||
+      (CourseStatus.DRAFT as CourseStatus);
     const folder = (req.get("folder") as string) || "all";
-    const order = (req.get("order") as CourseTitle) || CourseTitle.AZ as CourseTitle;
+    const order =
+      (req.get("order") as CourseTitle) || (CourseTitle.AZ as CourseTitle);
+    const date = (req.get("date") as CourseDate) || CourseDate.RECENT;
+
     let courses;
-    if (folder === "all") {
+    if (folder === "All") {
       courses = await prisma.$transaction([
         prisma.course.findMany({
           orderBy: [
+            {
+              createdAt: date === CourseDate.CREATED ? "desc" : "asc",
+            },
             {
               title: order === (CourseTitle.ZA as CourseTitle) ? "desc" : "asc",
             },
@@ -45,6 +56,12 @@ export async function GET(
           include: {
             author: true,
             folder: true,
+            tags: true,
+            user: {
+              select: {
+                Tag: true
+              }
+            }
           },
         }),
         prisma.course.count({
@@ -57,6 +74,9 @@ export async function GET(
       courses = await prisma.$transaction([
         prisma.course.findMany({
           orderBy: [
+            {
+              createdAt: date === CourseDate.CREATED ? "desc" : "asc",
+            },
             {
               title: order === (CourseTitle.ZA as CourseTitle) ? "desc" : "asc",
             },
@@ -74,6 +94,12 @@ export async function GET(
           include: {
             author: true,
             folder: true,
+            tags: true,
+            user: {
+              select: {
+                Tag: true
+              }
+            }
           },
         }),
         prisma.course.count({
@@ -91,6 +117,7 @@ export async function GET(
       status: "success",
       data: courses,
     };
+
     return new NextResponse(JSON.stringify(json_response), {
       status: 201,
       headers: { "Content-Type": "application/json" },
@@ -110,11 +137,11 @@ export async function GET(
 /**
  * Create a new course
  * @param request
- * @returns CourseResponse
+ * @returns CourseResponse | ErrorResponse
  */
 export async function POST(
   request: NextRequest
-): Promise<NextResponse<CourseResponse>> {
+): Promise<NextResponse<FetchResponse | ErrorResponse>> {
   const session = await getServerSession();
   if (!session?.user) {
     redirect(`/${ERoutes.SIGN}`);
@@ -122,17 +149,26 @@ export async function POST(
 
   try {
     const json = await request.json();
-
     const course = await prisma.course.create({
       data: json,
       include: {
         author: true,
+        folder:true
       },
     });
-   
+
+    const page = await prisma.page.create({
+      data: {
+        course: { connect: { id: course.id } },
+        index: 1,
+        title: "",
+        description: "",
+      },
+    });
+
     const json_response = {
       status: "success",
-      data:  course ,
+      data: { course: course, page: page },
     };
 
     return new NextResponse(JSON.stringify(json_response), {

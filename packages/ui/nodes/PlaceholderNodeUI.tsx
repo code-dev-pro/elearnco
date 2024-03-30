@@ -1,30 +1,33 @@
 import { getBlockColor } from "lib";
-import React from "react";
+import React, { CSSProperties } from "react";
 
 const MORE_SYLES = {
-  backgroundColor: "#c084fc1a",
+  backgroundColor: "#2a1c381a",
   backgroundSize: "7.07px 7.07px",
-  marginTop: "4px",
-  marginBottom: "4px",
-  
 };
 
 type Props = {
-  isVisible: boolean;
-  isExpanded: boolean;
-  onRef: (ref: HTMLDivElement) => void;
   index?: number;
-  type:string;
+  isExpanded: boolean;
+  IsInit?: boolean;
+  isVisible: boolean;
+  onRef: (ref: HTMLDivElement) => void;
+  type: string;
 };
 
-export const PlaceholderNodeUI = ({ type,isVisible, isExpanded, onRef }: Props) => {
- 
-  const backgroundColor= getBlockColor(type)
+export const PlaceholderNodeUI = ({
+  type,
+  isVisible,
+  isExpanded,
+  onRef,
+  IsInit,
+}: Props) => {
+  const backgroundColor = getBlockColor(type);
 
-  const setStyle = () => {
+  const setStyle = (): CSSProperties => {
     return {
-      height: isExpanded ? "50px" : "0px",
-      visibible: isVisible ? "visible" : "hidden",
+      height: isExpanded ? (IsInit ? "calc(100vh - 160px)" : "50px") : "0px",
+      visibility: isVisible ? "visible" : "hidden",
       transition: isVisible ? "height 200ms" : "none",
       backgroundImage: `linear-gradient(135deg, ${backgroundColor.color} 10%, #0000 0, #0000 50%, ${backgroundColor.color} 0, ${backgroundColor.color} 60%, #0000 0, #0000)`,
       ...MORE_SYLES,

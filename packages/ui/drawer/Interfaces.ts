@@ -30,11 +30,11 @@ export interface IDimensionConfig {
 type TPosition = "fixed" | "absolute";
 
 export interface IProps {
-  children?: React.ReactNode | null;
   position: TPosition;
   width: number;
   placeIn: string;
   classnames: string;
   hasOverlay: boolean;
   actionHandler: (state: boolean) => void;
+  initialOpen?: boolean;
 }

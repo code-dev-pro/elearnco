@@ -1,25 +1,25 @@
 {
   "auth": {
     "signin": {
-      "title": "Content de vous revoir !",
-      "message": "Bienvenue sur Elearnco !",
-      "info": "Elearnco une <b>plateforme gratuite</b> pour produire des <b>parcours pédagogiques engageants</b>."
+      "title": "Happy to see you again !",
+      "message": "Welcome to Elearnco!",
+      "info": "Elearnco a <b> Free platform </b> to produce <b> engaging educational journeys</b>."
     },
     "signup": {
       "title": "Super !",
-      "message": "Bienvenue sur Elearnco !",
-      "info": "Entrez le code à 6 chiffres reçu par email pour valider votre compte.",
-      "success": "Vous allez recevoir une email pour valider votre compte.<br/>Pensez à regarder dans vos spams..."
+      "message": "Welcome to Elearnco!",
+      "info": "Enter the code received by email to validate your account.",
+      "success": "You will receive an email to validate your account. <br/> Remember to look in your spam ..."
     },
     "resetpassword": {
-      "title": "Mot de passe oublié",
-      "message": "Mot de passe oublié ?",
-      "info": "Pas de panique ! On va vous aider."
+      "title": "Forgot your password ?",
+      "message": "Forgot your password ?",
+      "info": "Do not panic !We will help you."
     },
     "validation": {
-      "title": "Validation de votre compte",
-      "message": "Oh Oh, vous y êtes presque !",
-      "info": "Entrez le code à 6 chiffres reçu par email pour valider votre compte.",
+      "title": "Validation of your account",
+      "message": "Oh oh, you are almost there!",
+      "info": "Enter the code received by email to validate your account.",
       "errors": {
         "required": ""
       }
@@ -27,38 +27,38 @@
     "form": {
       "email": {
         "label": "Email*",
-        "placeholder": "Veuillez saisir votre e-mail",
+        "placeholder": "Please enter your email",
         "errors": {
-          "required": "Une adresse email doit être renseignée.",
-          "email": "Email invalide."
+          "required": "An email address must be completed.",
+          "email": "email invalid."
         },
         "help": ""
       },
       "firstname": {
-        "label": "Prénom*",
-        "placeholder": "Veuillez saisir votre prénom",
+        "label": "Firstname*",
+        "placeholder": "Please enter your first name",
         "errors": {
-          "required": "Ce champ est obligatoire.",
-          "min": "Trop court!",
-          "max": "Trop long!"
+          "required": "This field is required.",
+          "min": "Too short!",
+          "max": "Too long!"
         },
         "help": ""
       },
       "lastname": {
-        "label": "Nom*",
-        "placeholder": "Veuillez saisir votre nom",
+        "label": "Name*",
+        "placeholder": "Please enter your name",
         "errors": {
-          "required": "Ce champ est obligatoire.",
-          "min": "Trop court!",
-          "max": "Trop long!"
+          "required": "This field is required.",
+          "min": "Too short!",
+          "max": "too long!"
         },
         "help": ""
       },
       "password": {
-        "label": "Mot de passe*",
-        "placeholder": "Veuillez saisir votre mot de passe",
+        "label": "Password*",
+        "placeholder": "Please enter your password",
         "errors": {
-          "required": "Un mot de passe doit être renseigné.",
+          "required": "A password must be informed.",
           "password": "Mot de passe invalide.",
           "min": "Votre mot de passe doit contenir au moins 8 caractères.",
           "max": "Votre mot de passe doit contenir au plus 50 caractères.",
@@ -149,7 +149,9 @@
     "cancel": "Annuler",
     "confirm": "Confirmer",
     "preregister": "Pre-register",
-    "loading" : "Loading..."
+    "loading" : "Loading...",
+    "signin" : "Test it",
+    "test": "Test a course"
   },
   "tooltip": {
     "back": "Retour"

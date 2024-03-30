@@ -45,8 +45,28 @@ function Title(props: TitleProps) {
 
   const HeadingTag = `h${level}` as keyof JSX.IntrinsicElements;
 
+  const getHeading = () => {
+    if (level === 1) {
+      return "text-5xl";
+    }
+    if (level === 2) {
+      return "text-3xl";
+    }
+    if (level === 3) {
+      return "text-2xl";
+    }
+    if (level === 4) {
+      return "text-xl";
+    }
+    if (level === 5) {
+      return "text-lg";
+    }
+
+    return "text-xl";
+  };
+
   return (
-    <HeadingTag className={`${`h${level}`} ${className}`} style={style}>
+    <HeadingTag className={`${getHeading()} ${className}`} style={style}>
       {children}
     </HeadingTag>
   );
@@ -95,6 +115,7 @@ function Text(props: TextProps) {
               lineHeight: lineHeight,
             }
           : {}),
+
         ...style,
       }}
       className={`${className}`}
@@ -125,16 +146,16 @@ const Link = forwardRef<HTMLAnchorElement, LinkProps>(function Link(
   );
 });
 
-export default function Typography(props: TypographyProps) {
+function TypographyUI(props: TypographyProps) {
   const { children, className, style } = props;
 
   return (
-    <div style={style} className={` ${className}`}>
+    <div style={style} className={className}>
       {children}
     </div>
   );
 }
-
-Typography.Title = Title;
-Typography.Text = Text;
-Typography.Link = Link;
+export default TypographyUI;
+TypographyUI.Title = Title;
+TypographyUI.Text = Text;
+TypographyUI.Link = Link;

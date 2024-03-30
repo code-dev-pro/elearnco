@@ -1,5 +1,11 @@
 import type { Meta, StoryObj } from "@storybook/react";
-import { TotalCourse } from "schemas/courses/schemas";
+import {
+  CompleteAuthor,
+  CompleteCourse,
+  CompleteFolder,
+  CompleteUser,
+} from "schemas";
+
 import { CourseStatus, CourseMode, CourseType } from "schemas/menus";
 import { CardContentUI } from "ui";
 
@@ -40,7 +46,7 @@ export default meta;
 type Story = StoryObj<typeof meta>;
 type TActionHandler = { actionHandler: (action: string) => void };
 export const Card = {
-  render: (args: TotalCourse & TActionHandler) => (
+  render: (args: CompleteCourse & TActionHandler & { banner: string }) => (
     <div className="flex gap-4">
       <CardContentUI
         id=""
@@ -54,27 +60,35 @@ export const Card = {
         updatedAt={new Date()}
         createdAt={new Date()}
         authorId=""
-        folder={{
-          id: "",
-          userId: "",
-          updatedAt: new Date(),
-          createdAt: new Date(),
-          name: "test",
-        }}
+        folder={
+          {
+            id: "",
+            userId: "",
+            updatedAt: new Date(),
+            createdAt: new Date(),
+            name: "test",
+          } as CompleteFolder
+        }
         banner={
           args.image
             ? args.image
             : "https://images.unsplash.com/photo-1558244661-d248897f7bc4?q=80&w=435&auto=format&fit=crop&ixlib=rb-4.0.3&ixid=M3wxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8fA%3D%3D"
         }
-        author={{
-          id: "",
-          userId: "",
-          updatedAt: new Date(),
-          createdAt: new Date(),
-          image: "",
-          role: "TEACHER",
-          name: "loub",
-        }}
+        author={
+          {
+            id: "",
+            userId: "",
+            updatedAt: new Date(),
+            createdAt: new Date(),
+            image: "default",
+            role: "TEACHER",
+            name: "loub",
+          } as CompleteAuthor
+        }
+        user={{ name: "lh" } as CompleteUser}
+        pages={[]}
+        tags={args.tags || []}
+        image=""
       />
     </div>
   ),

@@ -1,5 +1,5 @@
 import type { Meta } from "@storybook/react";
-import { MediaBlockType, TextBlockType } from "schemas";
+import { DraggableBlockType, MediaBlockType, TextBlockType } from "schemas";
 import { BlockCardUI } from "ui";
 
 const meta = {
@@ -24,12 +24,13 @@ const meta = {
 export default meta;
 
 export const BlockCard = {
-  render: (args:{type:string}) => (
+  render: (args:{type:DraggableBlockType}) => (
     <BlockCardUI
       type={args.type}
       onMouseDown={() => void 0}
       draggedBlockType={undefined}
-      category=""
-    />
+      category="Category" 
+      blockType={TextBlockType.TITLE} 
+      section="Section"    />
   ),
 };

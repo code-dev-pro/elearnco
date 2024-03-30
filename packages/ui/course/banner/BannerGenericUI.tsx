@@ -3,7 +3,7 @@ import React from "react";
 
 import { BannerUI } from "./BannerUI";
 export const BannerGeneric = () => {
-  return <BannerUI isHidden={false} />;
+  return <BannerUI />;
 };
 
 export const BannerWithCollaboration = () => {
@@ -12,6 +12,6 @@ export const BannerWithCollaboration = () => {
     doc?.getMap("page"),
     "banner"
   ); */
- return <></>
+  return <></>;
   //return <BannerUI setBanner={setBanner} bannerT={banner} isHidden={false} />;
 };

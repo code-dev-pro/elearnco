@@ -1,4 +1,4 @@
-import { Role } from "@prisma/client"
+import { Role } from "@prisma/client";
 import bcrypt from "bcrypt";
 import { randomBytes } from "crypto";
 import { prisma } from "database";
@@ -10,7 +10,6 @@ import WelcomeEmail from "@/emails/welcome-email";
 interface IData {
   data: { email: string; name: string; password: string; role: Role };
 }
-
 
 export async function POST(request: Request) {
   const { data } = (await request.json()) as IData;

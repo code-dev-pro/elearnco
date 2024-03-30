@@ -9,6 +9,7 @@ import {
   Tabs,
 } from "@nextui-org/react";
 import { createCollectionFromEnums } from "lib";
+import React from "react";
 import {
   EActionsCourse,
   EActionskeysCourse,

@@ -1,7 +1,7 @@
 datasource db {
   provider = "postgresql"
   url      = env("POSTGRES_PRISMA_URL") // uses connection pooling
-  directUrl = env("POSTGRES_URL_NON_POOLING") // uses a direct connection
+  // directUrl = env("POSTGRES_URL_NON_POOLING") // uses a direct connection
 }
 
 generator client {
@@ -15,7 +15,7 @@ generator zod {
   modelCase             = "PascalCase"
   modelSuffix           = "Model"
   useDecimalJs          = true
- // imports               = null
+  // imports               = null
   prismaJsonNullability = true
 }
 
@@ -55,10 +55,10 @@ enum Role {
   TRAINER
 }
 
-model PreregisteredUser{
-   id                      String                   @id @default(cuid())
-   email                   String?                  @unique
-   locale                  String?
+model PreregisteredUser {
+  id     String  @id @default(cuid())
+  email  String? @unique
+  locale String?
 }
 
 model User {
@@ -82,7 +82,22 @@ model User {
   sessions                Session[]
   role                    Role                     @default(TEACHER)
   author                  Author[]
- 
+  resetToken              String?                  @unique
+  resetTokenExpiry        DateTime?
+  comments                Comment[]
+  Drawing                 Drawing[]
+  Tag                     TagUser[]
+}
+
+model TagUser {
+  id        String   @id @default(cuid())
+  user      User     @relation(fields: [userId], references: [id], onDelete: Cascade)
+  userId    String
+  updatedAt DateTime @updatedAt
+  createdAt DateTime @default(now())
+  label     String
+  color     String
+  uuid      String   @unique
 }
 
 model Collaborator {
@@ -139,20 +154,24 @@ model Folder {
   createdAt DateTime @default(now())
   Course    Course[]
 }
+
 enum CourseType {
   CLASSIC
   LIVE
   WORK
 }
+
 enum CourseStatus {
   DRAFT
   ARCHIVED
   ACTIVE
 }
+
 enum CourseMode {
   PUBLIC
   PRIVATE
 }
+
 model Author {
   id        String   @id @default(cuid())
   image     String
@@ -161,9 +180,8 @@ model Author {
   role      Role     @default(TEACHER)
   name      String?
   Course    Course[]
-  userId    String @unique
-  user      User   @relation(fields: [userId], references: [id])
-  
+  userId    String   @unique
+  user      User     @relation(fields: [userId], references: [id])
 }
 
 model Image {
@@ -174,7 +192,6 @@ model Image {
   y         String?
   updatedAt DateTime @updatedAt
   createdAt DateTime @default(now())
-  
 }
 
 model Course {
@@ -194,32 +211,101 @@ model Course {
   authorId    String
   image       String
   pages       Page[]
+  tags        TagCourse[]
 }
+
+model TagCourse {
+  id        String   @id @default(cuid())
+  course    Course   @relation(fields: [courseId], references: [id], onDelete: Cascade)
+  courseId  String
+  updatedAt DateTime @updatedAt
+  createdAt DateTime @default(now())
+  label     String
+  color     String
+  uuid      String   @unique
+}
+
+
+
 enum PageStatus {
   DRAFT
   VALID
 }
-model Page {
-  id String @id @default(cuid())
-  index Int
-  status PageStatus @default(DRAFT)
-  course Course @relation(fields: [courseId], references: [id], onDelete: Cascade)
-  courseId String
-  blocks Block[]
-  updatedAt DateTime @updatedAt
-  createdAt DateTime @default(now())
-}
-model Block {
-  id String @id @default(cuid())
-  type String
-  uuid String
-  groupId String
-  content Json
-  page Page @relation(fields: [pageId], references: [id], onDelete: Cascade)
-  pageId String
-  updatedAt DateTime @updatedAt
-  createdAt DateTime @default(now())
-  index Int
 
- 
+model Page {
+  id            String     @id @default(cuid())
+  index         Int
+  status        PageStatus @default(DRAFT)
+  course        Course     @relation(fields: [courseId], references: [id], onDelete: Cascade)
+  courseId      String
+  blocks        Block[]
+  updatedAt     DateTime   @updatedAt
+  createdAt     DateTime   @default(now())
+  title         String?
+  description   String?
+  cover         String?
+  graphPosition Json?
+}
+
+model TagBlock {
+  id        String   @id @default(cuid())
+  block     Block    @relation(fields: [blockId], references: [id], onDelete: Cascade)
+  blockId   String
+  updatedAt DateTime @updatedAt
+  createdAt DateTime @default(now())
+  content   String
+}
+
+model Block {
+  id            String      @id @default(cuid())
+  type          String
+  uuid          String      @unique
+  groupId       String
+  content       BlockNode[]
+  page          Page        @relation(fields: [pageId], references: [id], onDelete: Cascade)
+  pageId        String
+  updatedAt     DateTime    @updatedAt
+  createdAt     DateTime    @default(now())
+  index         Int
+  title         String?
+  description   String?
+  graphPosition Json?
+  tags          TagBlock[]
+}
+
+model BlockNode {
+  id          String    @id @default(cuid())
+  type        String
+  uuid        String    @unique
+  content     Json
+  block       Block     @relation(fields: [blockId], references: [id], onDelete: Cascade)
+  blockId     String
+  updatedAt   DateTime  @updatedAt
+  createdAt   DateTime  @default(now())
+  title       String?
+  description String?
+  comments    Comment[]
+  Drawing     Drawing[]
+}
+
+model Drawing {
+  id          String    @id @default(cuid())
+  content     Json
+  updatedAt   DateTime  @updatedAt
+  createdAt   DateTime  @default(now())
+  blockNode   BlockNode @relation(fields: [BlockNodeId], references: [id], onDelete: Cascade)
+  BlockNodeId String
+  userId      String
+  user        User      @relation(fields: [userId], references: [id], onDelete: Cascade)
+}
+
+model Comment {
+  id          String    @id @default(cuid())
+  content     String
+  updatedAt   DateTime  @updatedAt
+  createdAt   DateTime  @default(now())
+  blockNode   BlockNode @relation(fields: [BlockNodeId], references: [id], onDelete: Cascade)
+  BlockNodeId String
+  userId      String
+  user        User      @relation(fields: [userId], references: [id], onDelete: Cascade)
 }

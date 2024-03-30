@@ -8,6 +8,14 @@ button:focus {
 input:-webkit-autofill {
   -webkit-background-clip: text;
 }
+
+body {
+  overscroll-behavior: none;
+  -webkit-font-smoothing: antialiased;
+    -moz-osx-font-smoothing: grayscale;
+    text-rendering: optimizelegibility;
+}
+
 .w-\[300px\] {
   width: 300px;
 }
@@ -20,6 +28,15 @@ input:-webkit-autofill {
 .h-\[300px\] {
   height: 300px;
 }
+.max-h-\[300px\] {
+  max-height: 300px;
+}
+.h-\[600px\] {
+  height: 600px;
+}
+.w-\[600px\] {
+  width: 600px;
+}
 .h-\[200px\] {
   height: 200px;
 }
@@ -29,7 +46,9 @@ input:-webkit-autofill {
 .w-\[680px\] {
   width: 680px;
 }
-
+.w-\[450px\] {
+  width: 450px;
+}
 .col-span-2 {
   grid-column: span 2 / span 2;
 }
@@ -108,11 +127,6 @@ input:-webkit-autofill {
   }
 }
 
-/* .auto-rows-\[76px\] {
-  grid-auto-rows: auto;
-}
- */
-
 .grid-cols-2 {
   grid-template-columns: repeat(2, minmax(0, 1fr));
 }
@@ -124,4 +138,11 @@ input:-webkit-autofill {
 .no-scrollbar {
   -ms-overflow-style: none;
   scrollbar-width: none;
+}
+.overflow-y-scroll {
+  overflow-y: scroll;
+}
+
+.plyr--audio .plyr__controls {
+  background: rgba(0, 0, 0, 0.5) !important;
 }

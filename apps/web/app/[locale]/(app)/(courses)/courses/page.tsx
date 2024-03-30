@@ -1,6 +1,5 @@
 import FeatureCourses from "@/features/courses";
 import { getMessages } from "@/lib/messages";
-
 export async function generateMetadata({ params }) {
   const { locale } = params;
   const messages = (await getMessages(locale)) as {
@@ -18,6 +17,8 @@ export async function generateMetadata({ params }) {
   };
 }
 
-export default function CoursesPage() {
-  return <FeatureCourses />;
+export default async function Page({ searchParams }) {
+  const query = searchParams?.query || "";
+
+  return <FeatureCourses query={query} />;
 }

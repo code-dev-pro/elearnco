@@ -1,28 +1,91 @@
 import { prisma } from "database";
 import { redirect } from "next/navigation";
-import { NextResponse } from "next/server";
+import { NextRequest, NextResponse } from "next/server";
 import { getServerSession } from "next-auth";
 import { ERoutes } from "schemas";
 
-export async function GET(request) {
+const addPageAtIndex = async (courseId, json, index) => {
+  const newPage = await prisma.$transaction(async (tx) => {
+    await tx.page.updateMany({
+      where: { courseId, index: { gte: index } },
+      data: { index: { increment: 1 } },
+    });
+
+    return tx.page.create({
+      data: json,
+    });
+  });
+
+  return newPage;
+};
+
+const removePageAtIndex = async (courseId, id, index) => {
+  await prisma.$transaction(async (tx) => {
+    await prisma.page.delete({
+      where: { id: id },
+    });
+
+    await tx.page.updateMany({
+      where: { courseId, index: { gt: index } },
+      data: { index: { decrement: 1 } },
+    });
+  });
+};
+
+export async function GET(
+  _: NextRequest,
+  { params }: { params: { id: string } }
+) {
   const session = await getServerSession();
   if (!session?.user) {
     redirect(`/${ERoutes.SIGN}`);
   }
-  const pathname = request.nextUrl.pathname as string;
-  const n = pathname.lastIndexOf("/");
-  const idPage = pathname.substring(n + 1);
+  const idPage = params.id;
+  try {
+    const page = await prisma.page.findMany({
+      where: {
+        id: idPage,
+      },
+      include: {
+        blocks: {
+          orderBy: {
+            index: "asc",
+          },
+          include: {
+            content: true,
+          },
+        },
+      },
+    });
+    const json_response = {
+      status: "success",
+      data: { page },
+    };
 
-  const page = await prisma.page.findMany({
-    where: {
-      id: idPage,
-    },
-    include: {
-      blocks: true,
-    },
-  });
-
-  return NextResponse.json(page);
+    return new NextResponse(JSON.stringify(json_response), {
+      status: 201,
+      headers: { "Content-Type": "application/json" },
+    });
+  } catch (error: any) {
+    if (error.code === "P2025") {
+      const error_response = {
+        status: "fail",
+        message: "",
+      };
+      return new NextResponse(JSON.stringify(error_response), {
+        status: 404,
+        headers: { "Content-Type": "application/json" },
+      });
+    }
+    const error_response = {
+      status: "error",
+      message: error.message,
+    };
+    return new NextResponse(JSON.stringify(error_response), {
+      status: 500,
+      headers: { "Content-Type": "application/json" },
+    });
+  }
 }
 export async function POST(request: Request) {
   const session = await getServerSession();
@@ -32,9 +95,12 @@ export async function POST(request: Request) {
 
   try {
     const json = await request.json();
-    const page = await prisma.page.create({
-      data: json,
-    });
+
+    const page = await addPageAtIndex(json.courseID, json, json.index);
+    // We need to update all index page
+    // const page = await prisma.page.create({
+    //   data: json,
+    // });
 
     const json_response = {
       status: "success",
@@ -50,6 +116,7 @@ export async function POST(request: Request) {
       status: "fail",
       message: "",
     };
+
     return new NextResponse(JSON.stringify(error_response), {
       status: 409,
       headers: { "Content-Type": "application/json" },
@@ -69,18 +136,20 @@ export async function PATCH(
     const id = params.id;
     const json = await request.json();
 
-    const updated_feedback = await prisma.page.update({
+    const result = await prisma.page.update({
       where: { id },
       data: json,
     });
 
     const json_response = {
       status: "success",
-      data: {
-        feedback: updated_feedback,
-      },
+      data: result,
     };
-    return NextResponse.json(json_response);
+
+    return new NextResponse(JSON.stringify(json_response), {
+      status: 201,
+      headers: { "Content-Type": "application/json" },
+    });
   } catch (error: any) {
     if (error.code === "P2025") {
       const error_response = {
@@ -114,9 +183,9 @@ export async function DELETE(
 
   try {
     const id = params.id;
-    await prisma.page.delete({
-      where: { id: id },
-    });
+    const json = await request.json();
+
+    await removePageAtIndex(json.courseID, id, json.index);
 
     return new NextResponse(null, { status: 204 });
   } catch (error: any) {

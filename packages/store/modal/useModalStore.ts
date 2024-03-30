@@ -1,3 +1,4 @@
+import { GenericObject } from "schemas";
 import { create } from "zustand";
 
 export interface GlobalModalStore {
@@ -13,6 +14,6 @@ export const useGlobalModalStore = create<GlobalModalStore>((set) => ({
   action: "",
   data: {},
   onClose: () => set({ isOpen: false }),
-  onOpen: (action: string, data?: any) =>
+  onOpen: (action: string, data?: GenericObject) =>
     set({ isOpen: true, action: action, data: data }),
 }));

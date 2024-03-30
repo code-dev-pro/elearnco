@@ -1,0 +1,111 @@
+ .input {
+    opacity: 0;
+    width: 0;
+    height: 0;
+    margin: 0;
+} 
+
+.multiple-choice-radio-item {
+    height: 64px;
+}
+
+.letter-marker {
+    margin: -1px 0 -1px -1px;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    padding: 10px;
+    min-width: 64px;
+    height: 64px;
+    font-size: 20px;
+    font-weight: 700;
+    border-right: none;
+    color: #fff;
+    border-top-left-radius: 16px;
+    border-bottom-left-radius: 16px;
+    background-color: #919aa8;
+    font-family: inherit;
+
+
+    &.decimal {
+
+        &:before {
+            counter-increment: list-number;
+            text-transform: uppercase;
+            content: counter(list-number, decimal);
+        }
+    }
+
+    &.lower-latin {
+
+        &:before {
+            counter-increment: list-number;
+            text-transform: uppercase;
+            content: counter(list-number, lower-latin);
+        }
+    }
+
+    &.lower-roman {
+
+        &:before {
+            counter-increment: list-number;
+            text-transform: uppercase;
+            content: counter(list-number, lower-roman);
+        }
+    }
+
+    &.isSelected {
+        background-color: #02b99c;
+    }
+}
+
+.answer-marker {
+    border: none;
+    padding: 10px;
+    width: 100%;
+    background-color: transparent;
+}
+
+.label-marker {
+    padding: 10px !important;
+    margin: 0;
+    position: relative;
+    cursor: pointer;
+    height: 64px;
+    display: flex;
+    align-items: center;
+
+    .icon-marker {
+        min-width: 24px;
+        min-height: 24px;
+        width: 24px;
+        height: 24px;
+        cursor: pointer;
+
+        z-index: 100;
+
+        &.off {
+            display: none;
+            fill: #919aa8;
+
+            &.isSelected {
+                display: flex;
+            }
+        }
+
+        &.on {
+            display: none;
+
+            &.isSelected {
+                display: flex !important;
+                fill: #02b99c;
+            }
+        }
+
+        svg {
+            min-width: 24px;
+            min-height: 24px;
+            pointer-events: none;
+        }
+    }
+}

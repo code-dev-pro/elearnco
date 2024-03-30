@@ -1,26 +1,28 @@
 "use client";
-
 import { Button } from "@nextui-org/react";
+import React from "react";
 import { useDisabledStore, useLoadingStore } from "store";
 
-//TODO: ARCHIVE IN A OTHER FOLDER
+
 
 interface IProps {
-  onClose: () => void;
   action: string;
-  id: string;
-  children?: React.ReactNode;
+  onClose: () => void;
 }
 
 export const ModalFooterUI = (props: IProps) => {
-  const { onClose, action, id, children } = props;
+  const { action, onClose } = props;
   const { isLoading } = useLoadingStore();
   const { isDisabled } = useDisabledStore();
+
+
+
   return (
     <>
-      <Button color="danger" variant="light" onPress={onClose}>
+      <Button color="danger" variant="flat" onPress={onClose}>
         Close
       </Button>
+
       <Button
         isDisabled={isDisabled}
         isLoading={isLoading}

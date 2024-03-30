@@ -24,6 +24,8 @@ export const useAutoSave = <T>(
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, dependencies);
 
+  
+
   return useEffect(() => {
     handler();
     // eslint-disable-next-line react-hooks/exhaustive-deps

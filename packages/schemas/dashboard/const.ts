@@ -19,6 +19,21 @@ export const variants = cva(
 );
 export const GridItems: GridItemInterface[] = [
   {
+    id: "4pd6bcd0-4579-11ee-j9d1-0242ac47852d",
+    layout: "2x4",
+    type: "clock",
+    title: "",
+    description: "",
+    classNameImage: "",
+    className: "",
+    icon: "",
+    username: "",
+    buttonTitle: "",
+    buttonSecondaryText: "",
+    buttonLink: "",
+    color: "",
+  },
+  {
     id: "5bd6bcd0-8552-11ee-b9d1-0242ac120002",
     layout: "1x2",
     type: "news",

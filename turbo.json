@@ -17,9 +17,23 @@
     "NEXTAUTH_SECRET",
     "UNSPLASH_KEY",
     "RESEND_API_KEY",
-    "PORT"
+    "PORT",
+    "HUGGING_FACE_TOKEN",
+    "DIRECTORY_IMAGES_CERTIFICATES"
   ],
   "pipeline": {
+    "//#lint": {
+      "inputs": ["!.git/**", "!node_modules/**", "!packages/**"]
+    },
+    "//#lint:fix": {
+      "inputs": ["!.git/**", "!node_modules/**", "!packages/**"]
+    },
+    "//#format": {
+      "inputs": ["!.git/**", "!node_modules/**", "!packages/**"]
+    },
+    "//#format:fix": {
+      "inputs": ["!.git/**", "!node_modules/**", "!packages/**"]
+    },
     "build": {
       "dependsOn": ["^build"],
       "outputs": [
@@ -40,6 +54,8 @@
     "generate": {
       "dependsOn": ["^generate"]
     },
-    "lint": {}
+    "lint": {},
+   
+    "test": {}
   }
 }

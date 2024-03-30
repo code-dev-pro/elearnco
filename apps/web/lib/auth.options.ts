@@ -1,7 +1,6 @@
 import { PrismaAdapter } from "@next-auth/prisma-adapter";
 import { compare } from "bcrypt";
-import { prisma } from "database";
-import { User } from "database";
+import { prisma, User } from "database";
 import { redirect } from "next/navigation";
 import {
   getServerSession as oGetServerSession,
@@ -14,13 +13,11 @@ import { ERoutes } from "schemas/routes/enums";
 
 import { providers } from "./providers";
 
-//TODO - Add others providers
-
 export const authOptions: NextAuthOptions = {
   adapter: PrismaAdapter(prisma as any),
   session: {
     strategy: "jwt",
-    maxAge: 30 * 24 * 60 * 60, // 30 Days
+    maxAge: 30 * 24 * 60 * 60,
   },
   pages: {
     signIn: `/${ERoutes.SIGN}`,
@@ -29,17 +26,13 @@ export const authOptions: NextAuthOptions = {
   providers: [
     ...providers,
     CredentialsProvider({
-      name: "credentials",
+      name: "Credentials",
       credentials: {
-        email: {
-          label: "Email",
-          type: "email",
-          placeholder: "example@example.com",
-        },
+        email: { label: "Email", type: "email", placeholder: "email" },
         password: { label: "Password", type: "password" },
       },
       async authorize(credentials) {
-        if (!credentials?.email || !credentials.password) {
+        if (!credentials?.email || !credentials?.password) {
           throw new Error("invalid credentials");
         }
 
@@ -53,10 +46,7 @@ export const authOptions: NextAuthOptions = {
         });
 
         if (!user) throw new Error("no user found");
-        const _compare = (await compare(
-          credentials.password,
-          user.password
-        )) as boolean;
+        const _compare = await compare(credentials.password, user.password);
         if (_compare) {
           return user;
         } else {
@@ -103,10 +93,6 @@ export function getServerSession() {
   return oGetServerSession<typeof authOptions, UserSession>(authOptions);
 }
 
-/**
- * Returns the current authenticated User.
- * If the User does not exist, redirect to signin.
- */
 export async function getServerUser() {
   const session = await getServerSession();
   const user = session?.user as SafeUser;

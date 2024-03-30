@@ -1,75 +1,70 @@
 "use client";
 import dynamic from "next/dynamic";
-import { motion, stagger, useAnimate } from "framer-motion";
+import { stagger, useAnimate } from "framer-motion";
 import { useEffect, useMemo } from "react";
-import { useLockedBody } from "customhooks";
-import { cn } from "lib/utils";
-import { GridItemProps } from "schemas";
-import { GridItems, variants } from "schemas/dashboard/const";
-import { Spinner } from "@nextui-org/react";
+import { GridItemInterface, GridItemType } from "schemas";
+import { GridItems } from "schemas/dashboard/const";
+import { CardDashboardUI } from "ui/card/CardDashboardUI";
+import { LoadingSpinnerUI } from "ui";
+import GridItem from "./components/gridItem";
 
 const DynamicCardDashboardWelcome = dynamic(
   () => import("./components/cardDashboardWelcome"),
   {
-    loading: () => <Spinner />,
+    loading: () => (
+      <CardDashboardUI bodyChildren={<LoadingSpinnerUI isIndiv />} />
+    ),
   }
 );
 const DynamicCardDashboardProfil = dynamic(
-  () => import("./components/cardDashboardProfil"),
+  () => import("./components/cardProfil"),
   {
-    loading: () => <Spinner />,
+    loading: () => (
+      <CardDashboardUI bodyChildren={<LoadingSpinnerUI isIndiv />} />
+    ),
   }
 );
 const DynamicDashboardRecentCourse = dynamic(
-  () => import("./components/cardDashboardRecentCourse"),
+  () => import("./components/cardRecentCourse"),
   {
-    loading: () => <Spinner />,
+    loading: () => (
+      <CardDashboardUI bodyChildren={<LoadingSpinnerUI isIndiv />} />
+    ),
   }
 );
 const DynamicDashboardRecentNews = dynamic(
-  () => import("./components/cardLastNew"),
+  () => import("./components/cardNews"),
   {
-    loading: () => <Spinner />,
+    loading: () => (
+      <CardDashboardUI bodyChildren={<LoadingSpinnerUI isIndiv />} />
+    ),
   }
 );
-const DynamicDashboardTips = dynamic(() => import("./components/cardTips"), {
-  loading: () => <Spinner />,
+const DynamicDashboardTips = dynamic(() => import("./components/cardTip"), {
+  loading: () => (
+    <CardDashboardUI bodyChildren={<LoadingSpinnerUI isIndiv />} />
+  ),
 });
-const GridItem = ({ size, children }: GridItemProps) => {
-  return (
-    <motion.div
-      initial={{
-        scale: 0.2,
-        y: 120,
-        opacity: 0,
-      }}
-      className={cn(
-        variants({
-          size,
-          className: "bg-transparent",
-        })
-      )}
-    >
-      {children}
-    </motion.div>
-  );
-};
+const DynamicDashboardClock = dynamic(() => import("./components/cardClock"), {
+  loading: () => (
+    <CardDashboardUI bodyChildren={<LoadingSpinnerUI isIndiv />} />
+  ),
+});
 
-//NOTE - We present the dashboard like a bento, so we need to know what kind of information want uses a teacher / trainer
 
 const FeatureDashboard = () => {
-  const [_] = useLockedBody(true, "body");
   const [scope, animate] = useAnimate();
   const staggerGridItems = stagger(0.02, {
     startDelay: 0.5,
   });
 
-  const getCardTemplate = (type: string, item) => {
+  const getCardTemplate = (type: GridItemType, item:GridItemInterface) => {
     if (type === "social") return <DynamicCardDashboardWelcome />;
     if (type === "course") return <DynamicDashboardRecentCourse />;
     if (type === "user") return <DynamicCardDashboardProfil />;
     if (type === "news") return <DynamicDashboardRecentNews {...item} />;
     if (type === "tips") return <DynamicDashboardTips {...item} />;
+    if (type === "clock") return <DynamicDashboardClock />;
     return <div>Need to create new component for this type.</div>;
   };
 
@@ -92,13 +87,15 @@ const FeatureDashboard = () => {
     }
   }, [scope]);
 
-  const GRID_ITEMS = useMemo(() => { return GridItems.map((item) => {
-    return (
-      <GridItem key={item.id} size={item.layout}>
-        {getCardTemplate(item.type, item)}
-      </GridItem>
-    );
-  })},[])
+  const GRID_ITEMS = useMemo(() => {
+    return GridItems.map((item:GridItemInterface) => {
+      return (
+        <GridItem key={item.id} size={item.layout}>
+          {getCardTemplate(item.type, item)}
+        </GridItem>
+      );
+    });
+  }, []);
 
   return (
     <div

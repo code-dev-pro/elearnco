@@ -1,10 +1,6 @@
 import React from "react";
-const GRID = {
-  display: "grid",
-  justifyItems: "start",
-  gap: "1rem",
-  gridTemplateColumns: "repeat(auto-fill, minmax(300px, 1fr))",
-};
+
+import { GRID } from "./const";
 
 interface IProps {
   classnames?: string;

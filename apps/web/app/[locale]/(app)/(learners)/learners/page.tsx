@@ -1,4 +1,3 @@
-//TODO - Add Metas
-export default function LearnersPage() {
+export default function Page() {
   return <div className="p-5">This is the view of learners, so go !</div>;
 }

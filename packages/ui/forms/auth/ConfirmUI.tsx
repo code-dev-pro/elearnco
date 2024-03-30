@@ -2,11 +2,13 @@
 import { Card, CardBody, Spacer } from "@nextui-org/react";
 import { useTranslations } from "next-intl";
 import React, { useCallback } from "react";
+import { FetchResponse } from "schemas/api";
+import { AuthValidationFormData } from "schemas/forms";
 
 import { LogoSymbolUI } from "../../logo/LogoSymbolUI";
-import { AuthValidationFormData, ValidateUI } from "./ValidateUI";
+import {  ValidateUI } from "./ValidateUI";
 interface IProps {
-  authValidate?: (data: AuthValidationFormData) => void;
+  authValidate?: (data: AuthValidationFormData) => Promise<FetchResponse>;
   className?: string;
 }
 

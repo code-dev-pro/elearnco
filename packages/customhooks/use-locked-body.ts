@@ -23,10 +23,7 @@ export function useLockedBody(
 
     // Lock body scroll
     document.body.style.overflow = "hidden";
-    window.scrollTo({
-      top: 0,
-      behavior: "smooth",
-    });
+   
     // Get the scrollBar width
     const root = document.getElementById(rootId); // or root
     const scrollBarWidth = root ? root.offsetWidth - root.scrollWidth : 0;

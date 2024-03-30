@@ -33,6 +33,7 @@ export type FileType =
   | "audio/mp3"
   | "audio/ogg"
   | "audio/wav"
+  | "audio/mpeg"
   | "audio/aac"
   | "audio/flac"
   | "application/pdf"

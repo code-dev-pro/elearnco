@@ -1,41 +1,41 @@
-import { ERoutes } from "schemas";
-import { TotalCourse } from "schemas/courses";
+import { CourseService } from "lib";
+import { CompleteCourse, CompleteTagCourse } from "schemas";
 import { CourseDate, CourseStatus, CourseTitle } from "schemas/menus/dropdown";
 import { create } from "zustand";
 
 interface State {
-  courses: TotalCourse[];
+  courses: CompleteCourse[];
   totalCourses: number;
   isLoading: boolean;
   error: unknown;
   currentPage: number;
-  status: CourseStatus;
-  order: CourseTitle;
-  folder: string;
+  currentStatus: CourseStatus;
+  currentOrder: CourseTitle;
+  currentFolder: string;
 }
 
 interface Actions {
-  addCourse: (Item: TotalCourse) => void;
-  updateCourse: (courseID: string, data: Partial<TotalCourse>) => void;
+  addCourse: (data: Partial<CompleteCourse>) => void;
+  updateCourse: (courseID: string, data: Partial<CompleteCourse>) => void;
   deleteCourse: (courseID: string) => void;
   fetchData: (
-    numPage: number,
-    status: CourseStatus,
-    order: CourseTitle,
-    folder: string,
-    date: CourseDate
+    currentPage: number,
+    currentStatus: CourseStatus,
+    currentOrder: CourseTitle,
+    currentFolder: string,
+    currentDate: CourseDate
   ) => Promise<void>;
 }
 
 const INITIAL_STATE: State = {
   courses: [],
   totalCourses: 0,
-  isLoading: false,
+  isLoading: true,
   error: null,
   currentPage: 1,
-  status: CourseStatus.DRAFT,
-  order: CourseTitle.AZ,
-  folder: "all",
+  currentStatus: CourseStatus.DRAFT,
+  currentOrder: CourseTitle.AZ,
+  currentFolder: "All",
 };
 
 export const useCoursesStore = create<State & Actions>((set, get) => ({
@@ -44,65 +44,133 @@ export const useCoursesStore = create<State & Actions>((set, get) => ({
   isLoading: INITIAL_STATE.isLoading,
   error: INITIAL_STATE.error,
   currentPage: INITIAL_STATE.currentPage,
-  status: INITIAL_STATE.status,
-  order: INITIAL_STATE.order,
-  folder: INITIAL_STATE.folder,
+  currentStatus: INITIAL_STATE.currentStatus,
+  currentOrder: INITIAL_STATE.currentOrder,
+  currentFolder: INITIAL_STATE.currentFolder,
 
   fetchData: async (
-    numPage: number,
-    status: string,
-    order: string,
-    folder: string,
-    date: string
+    currentPage: number,
+    currentStatus: CourseStatus,
+    currentOrder: CourseTitle,
+    currentFolder: string,
+    currentDate: CourseDate
   ): Promise<void> => {
     try {
       set({ isLoading: true, error: null });
 
-      const response = await fetch(
-        `/api/${ERoutes.COURSES}?page=${numPage}&status=${status}&folder=${folder}&date=${date}&order=${order}`
+      const response = await CourseService.getCourses(
+        `?page=${currentPage}&status=${currentStatus}&folder=${currentFolder}&date=${currentDate}&order=${currentOrder}`
       );
-      const { data } = await response.json();
 
-      set({
-        courses: data[0],
-        isLoading: false,
-        totalCourses: data[1] || data[0].length,
-        order: (order as CourseTitle) || CourseTitle.AZ,
-        status: (status as CourseStatus) || CourseStatus.DRAFT,
-        folder: folder || "all",
-      });
+      const { status, data } = response as {
+        status: string;
+        data: [CompleteCourse[], number];
+      };
+
+      if (status === "success") {
+        set({
+          courses: data[0],
+          isLoading: false,
+          totalCourses: data[1] || data[0].length,
+          currentOrder: (currentOrder as CourseTitle) || CourseTitle.AZ,
+          currentStatus: (currentStatus as CourseStatus) || CourseStatus.DRAFT,
+          currentFolder: currentFolder || "all",
+          error: null,
+        });
+      } else {
+        set({ error: "error", isLoading: false });
+      }
     } catch (error) {
       set({ error, isLoading: false });
     }
   },
 
-  addCourse: (course: TotalCourse): void => {
-    set((state) => ({
-      courses: [...state.courses, course],
-      //.sort((a,b) => Date.parse(b.createdAt) - Date.parse(a.createdAt)),
-      totalCourses: state.totalCourses + 1,
-    }));
+  addCourse: async (newData: Partial<CompleteCourse>): Promise<void> => {
+    try {
+      const response = await CourseService.addCourse(newData);
+      const { status, data } = response;
+      const { course } = data as { course: CompleteCourse };
+
+      if (status === "success") {
+        set((state) => ({
+          courses: [...state.courses, course],
+          totalCourses: state.totalCourses + 1,
+        }));
+      } else {
+        const { message } = data as { message: string };
+        const error = message;
+        set({ error, isLoading: false });
+      }
+    } catch (error) {
+      set({ error, isLoading: false });
+    }
   },
 
-  updateCourse: (courseID: string, data: Partial<TotalCourse>): void => {
+  updateCourse: async (
+    courseID: string,
+    Coursedata: Partial<CompleteCourse>
+  ): Promise<void> => {
     const courses = get().courses;
-    const status = get().status;
-    const updateCourse = courses.map((course) =>
-      course.id === courseID ? { ...course, ...data } : course
-    );
+    const courseStatus = get().currentStatus;
+    const courseFolder = get().currentFolder;
 
-    const newStore = updateCourse.filter((course) => course.status === status);
+    try {
+      const response = await CourseService.updateCourse(courseID, Coursedata);
+      const { status, data } = response;
 
-    set(() => ({
-      courses: newStore,
-      totalCourses: newStore.length,
-    }));
+      if (status === "success") {
+        const updateCourse = courses.map((course) =>
+          course.id === courseID
+            ? { ...course, ...(data as CompleteCourse) }
+            : course
+        );
+
+        let newStore: CompleteCourse[] = [];
+        if (courseFolder === "All") {
+          newStore = updateCourse.filter(
+            (course) => course.status === courseStatus
+          );
+        } else {
+          newStore = updateCourse.filter(
+            (course) =>
+              course.status === courseStatus &&
+              course.folder?.name === courseFolder
+          );
+        }
+
+        set(() => ({
+          error: null,
+          courses: newStore,
+          totalCourses: newStore.length,
+        }));
+      } else {
+        const { message } = data as { message: string };
+        const error = message;
+        set({ error });
+      }
+    } catch (error) {
+      set({ error, isLoading: false });
+    }
   },
 
-  deleteCourse: (courseID: string): void => {
-    set((state) => ({
-      courses: state.courses.filter((item) => item.id !== courseID),
-      totalCourses: state.totalCourses - 1,
-    }));
+  deleteCourse: async (courseID: string): Promise<void> => {
+    try {
+      const response = await CourseService.deleteCourse(courseID);
+      const { status, data } = response;
+      const { message } = data as { message: string };
+
+      if (status === "success") {
+        set((state) => ({
+          courses: state.courses.filter((item) => item.id !== courseID),
+          totalCourses: state.totalCourses - 1,
+        }));
+      } else {
+        //set({ error, isLoading: false });
+      }
+    } catch (error) {
+      const message = error;
+
+      // set({ error, isLoading: false });
+    }
   },
 }));
