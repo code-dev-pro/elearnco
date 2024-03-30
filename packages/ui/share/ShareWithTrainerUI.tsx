@@ -8,7 +8,7 @@ import { TTagUI } from "../tag/types";
 
 const ShareWithTrainer = (props:TTagUI) => {
   const { callback, forUserEmail } = props;
-  return <TagUI callback={callback} forUserEmail={forUserEmail}/>
+  return <TagUI callback={callback} forUserEmail={forUserEmail} section={[]} all={[]}/>
     
   
 };

@@ -1,10 +1,10 @@
 import { Card, CardBody, CardFooter, CardHeader } from "@nextui-org/react";
-import React from "react";
+import React, { ReactElement } from "react";
 
 interface IProps {
-  headerChildren?: React.ReactNode;
-  footerChildren?: React.ReactNode;
-  bodyChildren?: React.ReactNode;
+  headerChildren?: ReactElement;
+  footerChildren?: ReactElement ;
+  bodyChildren?: ReactElement;
 }
 export const CardDashboardUI = (props: IProps) => {
   const {

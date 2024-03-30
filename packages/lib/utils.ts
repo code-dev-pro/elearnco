@@ -735,7 +735,7 @@ export const cleanBase64String = (base64String: string) => {
 };
 export const base64toBlob = (base64Data: string): Blob => {
   const byteCharacters = atob(cleanBase64String(base64Data));
-  const byteArrays = [];
+  const byteArrays: number[] = [];
 
   for (let i = 0; i < byteCharacters.length; i++) {
     byteArrays.push(byteCharacters.charCodeAt(i));

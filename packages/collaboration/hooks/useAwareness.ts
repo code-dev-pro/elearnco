@@ -65,7 +65,6 @@ export const useAwarenessStateField = <T>(key: string) => {
   const update = useCallback(
     (force?: boolean) => {
       // For performance purpose to avoid rerendering
-      // TODO : Create context to add in-memory cache to avoid doing this multiple time for the same key
       const newData = [...Array.from(awareness.getStates().entries())]
         .map(([clientId, state]) => [clientId, state[key]])
         // .filter(([clientId, state]) => !!state)

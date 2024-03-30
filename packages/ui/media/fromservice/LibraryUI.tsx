@@ -24,7 +24,7 @@ interface IProps {
 
 export const LibraryUI = (props: IProps) => {
   const { action, callback, onClose } = props;
-  //TODO REMOVE THIS DEPENDANCE AND ADD CALLBACK FOR NOT HAVING RELATIONSHIP
+
   const { updateBanner } = useCourseStore();
   const [isSearch, setSearch] = useLocalStorage<string>(
     "search_in_library",

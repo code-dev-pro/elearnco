@@ -22,7 +22,7 @@ const createBlockStore = (id: string) =>
     isLoading: false,
     error: "",
 
-    fetchData: async (uuid) => {
+    fetchData: async (uuid): Promise<void> => {
       try {
         set({ isLoading: true, error: null });
         const response = await CommentService.getComments(uuid);
@@ -41,7 +41,11 @@ const createBlockStore = (id: string) =>
       }
     },
 
-    addComment: async (content: string, uuid: string, userId: string) => {
+    addComment: async (
+      content: string,
+      uuid: string,
+      userId: string
+    ): Promise<void> => {
       try {
         const response = await CommentService.addComment({
           content: content,
@@ -51,7 +55,9 @@ const createBlockStore = (id: string) =>
         const { status, data } = response;
 
         if (status === "success") {
-          set((state) => ({ comments: [...state.comments, data] }));
+          set((state) => ({
+            comments: [...state.comments, data as CompleteComment],
+          }));
         } else {
           const { message } = data as { message: string };
           set({ error: message, isLoading: false });

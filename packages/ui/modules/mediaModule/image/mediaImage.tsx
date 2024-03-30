@@ -4,7 +4,7 @@ import { GenericObject, TModuleImage } from "schemas";
 import { LAYOUT } from "../../../const";
 import DrawinEditor from "../../../editor/drawing";
 import MediaTitle from "../mediaTitle";
-//TODO ADD MENU TOOLS
+
 const MediaImage = (props: TModuleImage) => {
   const {
     content,

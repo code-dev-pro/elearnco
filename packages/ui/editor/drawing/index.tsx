@@ -1,6 +1,6 @@
 import { nanoid } from "lib";
-import React, { useEffect, useRef,useState } from "react";
-import { POINT,TPoint } from "schemas";
+import React, { useEffect, useRef, useState } from "react";
+import { POINT, TPoint } from "schemas";
 
 import { LAYOUT } from "../../const";
 import { calculateBounds, getAveragePoint } from "../utils";
@@ -10,9 +10,9 @@ import Path from "./Shapes/Path";
 import Polygon from "./Shapes/Polygon";
 import Toolbar from "./Toolbar";
 import Tooltip from "./Tooltip";
-import { TBounds, TCanvas, TFreeHand,TShape } from "./types";
+import { TBounds, TCanvas, TFreeHand, TShape } from "./types";
 
-const WIDTH = LAYOUT.MEDIA
+const WIDTH = LAYOUT.MEDIA;
 export const SimpleDrawingSvg = (props: TCanvas) => {
   //Canvas props
   const { size } = props;
@@ -34,7 +34,7 @@ export const SimpleDrawingSvg = (props: TCanvas) => {
         { shape: "circle", x: 314, y: 283, id: "w2R5blA" },
         { shape: "circle", x: 164, y: 274, id: "PLJzBRu" },
       ],
-      content: "Bonjour lolo",
+      content: "Hello World!",
     },
   ]);
   //FreeHand Collection
@@ -48,7 +48,6 @@ export const SimpleDrawingSvg = (props: TCanvas) => {
     y: number;
   } | null>(null);
 
- 
   const [bounds, setBounds] = useState<TBounds | null>(null);
   const [activeTool, setActiveTool] = useState<string>("pen");
   const isDragging = useRef<boolean>(false);
@@ -148,8 +147,7 @@ export const SimpleDrawingSvg = (props: TCanvas) => {
     if (isDragging.current) return;
     event.preventDefault();
     if (bounds) setBounds(null);
-    //const target = event.target as HTMLElement;
-    // changeCursor("grabbing");
+
     let _event;
     let clientX = 0;
     let clientY = 0;
@@ -218,7 +216,9 @@ export const SimpleDrawingSvg = (props: TCanvas) => {
         path: clonePathText.current,
         id: nanoid(11),
         color: currentColor.current,
-        stroke: currentBrush.current,
+        stroke: String(currentBrush.current),
+        x: 0,
+        y: 0,
       });
 
       setCollectioncollectionFreeHand(_clones);
@@ -306,6 +306,11 @@ export const SimpleDrawingSvg = (props: TCanvas) => {
                   points={polygon.shape}
                   cursor=""
                   onSelect={onSelect}
+                  fill=""
+                  stroke=""
+                  shape=""
+                  x={0}
+                  y={0}
                 />
               </React.Fragment>
             );
@@ -333,6 +338,7 @@ export const SimpleDrawingSvg = (props: TCanvas) => {
                   fill="dodgerblue"
                   cursor="pointer"
                   onDoubleClick={_onDoubleClick}
+                  shape=""
                 />
                 {collection.length >= 2 && index >= 1 && (
                   <line
@@ -351,10 +357,13 @@ export const SimpleDrawingSvg = (props: TCanvas) => {
           {collectionFreeHand.map((hand) => (
             <React.Fragment key={hand.id}>
               <Path
-                strokeWidth={hand.stroke}
+                strokeWidth={hand.strokeWidth}
                 d={hand.path}
-                stroke={hand.color}
+                stroke={hand.stroke}
                 id={hand.id}
+                shape=""
+                x={0}
+                y={0}
               />
             </React.Fragment>
           ))}

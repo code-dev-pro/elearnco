@@ -12,7 +12,7 @@ import { CourseType } from "schemas";
 import { ICON_SIZE } from "../../const";
 import { IconUI } from "../../icon/IconUI";
 
-//TODO REFACTO BY USING ENUM
+
 
 interface IProps {
   selected: string;

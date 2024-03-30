@@ -18,18 +18,20 @@ export enum EDrawing {
 
 export type TShare = {
   stroke: string;
-  fill: string;
+  fill?: string;
   strokeWidth?: number;
   cursor?: string;
+  color?:string 
 } & TShape;
 
 export type TPath = {
   d: string;
 } & TShare;
-export type TShape = { shape: string; id: string } & TPoint;
+export type TShape = { shape?: string; id: string } & TPoint;
 export type TFreeHand = {
   shape: string;
   path: string;
+ 
 } & TShare;
 
 export type TCircle = {
@@ -40,8 +42,8 @@ export type TCircle = {
 } & TShare;
 
 export type TPolygon = {
-  //id:string
-  points: TShape[];
+ 
+  points?: TShape[];
   fill?:string;
   canva: SVGSVGElement | null;
   onMouseDown: (

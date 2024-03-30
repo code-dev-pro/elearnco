@@ -1,4 +1,4 @@
-import { Block,Page } from "@prisma/client";
+import { Block, Page } from "@prisma/client";
 import {
   CompleteBlock,
   CompleteComment,
@@ -437,7 +437,7 @@ export async function addBlock(
     return handleFailResponse(response);
   }
 }
-//TODO RENAME updateBlock TO updateBlockNode
+
 export async function updateBlockNode(
   blockData: Partial<Block>
 ): Promise<FetchResponse | ErrorResponse> {
@@ -611,9 +611,11 @@ export async function getComments(
     return handleFailResponse(response);
   }
 }
-export async function addComment(
-  data: Partial<CompleteComment>
-): Promise<FetchResponse | ErrorResponse> {
+export async function addComment(data: {
+  content: string;
+  blockNode: { connect: { uuid: string } };
+  user: { connect: { id: string } };
+}): Promise<FetchResponse | ErrorResponse> {
   const response = await fetch(`${SERVER_ENDPOINT}${pathApiComments}`, {
     method: "POST",
     headers: {
@@ -668,7 +670,7 @@ export async function deleteThread(
 }
 export async function updateComment(
   id: string,
-  content: CompleteComment[]
+  content:string
 ): Promise<FetchResponse | ErrorResponse> {
   const response = await fetch(`${SERVER_ENDPOINT}${pathApiComments}/${id}`, {
     method: "PATCH",

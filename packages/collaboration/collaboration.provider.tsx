@@ -10,6 +10,7 @@ import { useAwarenessStateField } from "./hooks/useAwareness";
 import { useYjs, YjsContextState } from "./yjs.provider";
 import { SafeUser } from "../schemas/auth/Auth";
 
+
 export type CollaborationContextState = YjsContextState & { isLeader: boolean };
 
 export const CollaborationContext = createContext<
@@ -18,7 +19,7 @@ export const CollaborationContext = createContext<
 
 export type CollaborationProviderProps = {
   children: ReactNode;
-  user: SafeUser & {color: string};
+  user: SafeUser & { color: string };
 } & CollaborationLayoutProps;
 
 export const CollaborationProvider = ({
@@ -26,8 +27,11 @@ export const CollaborationProvider = ({
   ...rest
 }: CollaborationProviderProps) => {
   const yjs = useYjs();
-  const [usernames, username, setUsername] =useAwarenessStateField<{}>("username");
-  const [leaders, isLeader, setLeader] = useAwarenessStateField<boolean>("leader");
+  const [usernames, username, setUsername] = useAwarenessStateField<{}>(
+    "username"
+  );
+  const [leaders, isLeader, setLeader] =
+    useAwarenessStateField<boolean>("leader");
 
   useEffect(() => {
     if (!yjs.connected) {
@@ -66,6 +70,5 @@ export const CollaborationProvider = ({
     </CollaborationContext.Provider>
   );
 };
-
-export const useCollaboration = () =>
-  useSafeContext(CollaborationContext, "CollaborationContext");
+//@ts-ignore
+export const useCollaboration = () =>useSafeContext(CollaborationContext, "CollaborationContext");

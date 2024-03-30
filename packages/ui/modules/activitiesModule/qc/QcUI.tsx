@@ -12,7 +12,7 @@ import ItemUI from "./item/ItemUI";
 import { IItem, IProps, TListItem } from "./types/types";
 import { TextBlockType } from "schemas";
 
-//TODO FEEDBACKS
+
 export const QcUI = (props: IProps) => {
   const { isReadOnly, data, onChange } = props;
 

@@ -3,7 +3,7 @@ import { Button } from "@nextui-org/react";
 import React from "react";
 import { useDisabledStore, useLoadingStore } from "store";
 
-//TODO: ARCHIVE IN A OTHER FOLDER
+
 
 interface IProps {
   action: string;

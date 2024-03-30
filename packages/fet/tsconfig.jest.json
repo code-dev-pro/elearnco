@@ -1,6 +1,0 @@
-{
-    "extends": "tsconfig/nextjs.json",
-    "compilerOptions": {
-      "jsx": "react-jsx"
-    }
-  }

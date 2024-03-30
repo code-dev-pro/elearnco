@@ -71,5 +71,5 @@ export const YjsProvider = ({ children }: { children: ReactNode }) => {
     </YjsContext.Provider>
   );
 };
-
+//@ts-ignore
 export const useYjs = () => useSafeContext(YjsContext, "YjsContext");

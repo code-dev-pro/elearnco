@@ -23,7 +23,7 @@ import {
   DynamicWheelModule,
   DynamicWriterModule,
 } from "./BlockNodeDynamicContent";
-//TODO UPDATE TYPES MODULES
+
 const BlockNodeModule = React.memo(
   ({ ino, type }: { ino: string; type: string }) => {
     const [isLoading, setIsLoading] = useState<boolean>(true);

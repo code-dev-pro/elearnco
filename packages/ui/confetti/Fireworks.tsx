@@ -68,14 +68,11 @@ function getAnimationCanon(angle: number, originX: number): confetti.Options {
     origin: { x: originX },
   };
 }
-//TODO: remove intervall and use requestAnimationFrame for performance
 const Fireworks = React.forwardRef(
   (props: any, ref: React.Ref<IRef> | null): JSX.Element => {
     const refAnimationInstance = useRef<TCanvasConfettiInstance | null>(null);
-
-    const [intervalId, setIntervalId] = useState<
-      string | number | Timeout | undefined
-    >(undefined);
+    const refTimeout = useRef<NodeJS.Timeout>();
+    //const [intervalId, setIntervalId] = useState<string | number | Timeout>();
     const refEffect = useRef<EAnimationEffect>(EAnimationEffect.snow);
 
     useImperativeHandle(
@@ -123,33 +120,34 @@ const Fireworks = React.forwardRef(
     }, []);
 
     const startAnimation = useCallback((): void => {
-      if (!intervalId) {
+      if (!refTimeout.current) {
         const DELAY = refEffect.current === EAnimationEffect.snow ? 50 : 400;
-        setIntervalId(setInterval(nextTickAnimation, DELAY));
+        refTimeout.current=setInterval(nextTickAnimation, DELAY);
       }
-    }, [intervalId, nextTickAnimation]);
+    }, [refTimeout, nextTickAnimation]);
 
     const pauseAnimation = useCallback((): void => {
-      clearInterval(intervalId);
-      setIntervalId(undefined);
-    }, [intervalId]);
+      if (refTimeout?.current) clearInterval(refTimeout.current);
+      //refTimeout.current
+      //setIntervalId(undefined);
+    }, []);
 
     const stopAnimation = useCallback((): void => {
-      clearInterval(intervalId);
-      setIntervalId(undefined);
+      if (refTimeout?.current) clearInterval(refTimeout.current);
+      //setIntervalId(undefined);
       refAnimationInstance?.current?.reset?.();
-    }, [intervalId]);
+    }, []);
 
     useEffect(() => {
       return (): void => {
-        clearInterval(intervalId);
+        if (refTimeout?.current) clearInterval(refTimeout.current);
       };
-    }, [intervalId]);
+    }, []);
 
     return <ReactCanvasConfetti onInit={onInit} style={canvasStyles} />;
   }
 );
 
-Fireworks.displayName="Fireworks"
+Fireworks.displayName = "Fireworks";
 
 export default Fireworks;

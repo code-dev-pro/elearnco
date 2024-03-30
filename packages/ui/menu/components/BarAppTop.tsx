@@ -1,9 +1,9 @@
 "use client";
 import { Link, NavbarBrand, NavbarContent } from "@nextui-org/react";
 import { useHotkeys } from "customhooks/use-hotkeys/use-hotkeys";
-import { usePathname,useRouter, useSearchParams } from "next/navigation";
+import { usePathname, useRouter, useSearchParams } from "next/navigation";
 import { signOut, useSession } from "next-auth/react";
-import React from "react";
+import React, { Suspense } from "react";
 import { ERoutes } from "schemas";
 import {
   EActionskeysUser,
@@ -62,7 +62,7 @@ const BarAppTop = () => {
 
   const _actionHandler = async (action: string): Promise<void> => {
     if (
-      action === EActionsUser.DELETE as string ||
+      action === (EActionsUser.DELETE as string) ||
       action === (EActionsUser.EDIT_PROFIL as string) ||
       action === (EActionsUser.SETTINGS as string) ||
       action === (EActionsUser.HELP as string)
@@ -101,10 +101,14 @@ const BarAppTop = () => {
             position="relative"
           />
           <div className="relative flex items-center ml-2">
-            <SaveStatusIndicator />
+            <Suspense>
+              <SaveStatusIndicator />
+            </Suspense>
           </div>
         </NavbarContent>
-      ) : <CourseTitle/>}
+      ) : (
+        <CourseTitle />
+      )}
       <NavbarContent as="div" className="items-center" justify="end">
         <DropdownUI
           actionHandler={_actionHandler}
