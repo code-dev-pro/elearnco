@@ -7,7 +7,7 @@ import { toast } from "sonner";
 import { AuthUI, LayoutUI, WallUI } from "ui";
 import { SafeUser } from "schemas/auth/Auth";
 
-//TODO - TRANSLATION
+
 const FeatureAuthSign = () => {
   const router = useRouter();
   const searchParams = useSearchParams();

@@ -41,7 +41,7 @@ export type ItemProps = HTMLAttributes<HTMLDivElement> & {
   withOpacity?: boolean;
   isDragging?: boolean;
 };
-//TODO ADD OTHER BLOCK TYPE RENDER
+
 const getBlock = (block) => {
   const type = block.type;
   const content = block.content?.[0]?.content;

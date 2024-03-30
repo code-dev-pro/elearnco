@@ -10,7 +10,7 @@ import { useUser } from "lib/providers/auth.provider";
 import { SafeUser } from "schemas/auth/Auth";
 import { PresenceBarTopUI } from "ui";
 import { useEffect } from "react";
-//TODO GET ID LESSON
+
 const CollaborationAvatars = () => {
   const { connect, doc, isLeader, connected, disconnect } = useCollaboration();
   const [usernames] = useAwarenessStateField<AwarenessState["username"]>("username");

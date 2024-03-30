@@ -3,8 +3,7 @@ import dynamic from "next/dynamic";
 import { IconUI } from "ui/icon/IconUI";
 import LinksShare from "./linksShare";
 import { IDataTag } from "ui/tag/types";
-
-//TODO - TRANSLATIONS
+import { Suspense } from "react";
 
 const DynamicShareWithTrainers = dynamic(
   () => import("ui/share/ShareWithTrainerUI"),
@@ -42,11 +41,15 @@ const ShareWith = () => {
           }
         >
           <div className="max-w-xl">
-            <LinksShare />
+            <Suspense>
+              <LinksShare />
+            </Suspense>
             <p className="text-xs mb-2 mt-2">Invite collaborators :</p>
             <DynamicShareWithTrainers
               callback={(data) => _sahreWithUsers(data)}
               forUserEmail
+              section={[]}
+              all={[]}
             />
           </div>
         </Tab>

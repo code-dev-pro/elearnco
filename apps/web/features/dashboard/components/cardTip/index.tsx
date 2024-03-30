@@ -8,8 +8,6 @@ import { ICON_SIZE } from "ui";
 import { CardDashboardUI } from "ui/card/CardDashboardUI";
 import { IconUI } from "ui/icon/IconUI";
 
-//TODO - Translation
-
 const HeaderChildren = () => {
   const modalStore = useGlobalModalStore();
 

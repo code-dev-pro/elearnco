@@ -1,5 +1,6 @@
 import FeatureAuthSign from "@/features/auth/featureAuthSign";
+import { Suspense } from "react";
 
 export default function Page() {
-  return <FeatureAuthSign />;
+  return <Suspense><FeatureAuthSign /></Suspense>;
 }

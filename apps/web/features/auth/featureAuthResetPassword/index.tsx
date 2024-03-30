@@ -2,9 +2,9 @@
 import { Button } from "@nextui-org/react";
 import { authResetPassword } from "lib/requests/api.request";
 import { useRouter } from "next/navigation";
-import { useState } from "react";
+import { Suspense, useState } from "react";
 import { ErrorResponse } from "resend";
-import { ERoutes, FetchResponse } from "schemas";
+import { ERoutes } from "schemas";
 import { toast } from "sonner";
 import { LayoutUI, ResetUI, WallUI } from "ui";
 const FeatureAuthReset = () => {
@@ -17,8 +17,7 @@ const FeatureAuthReset = () => {
     const res = await authResetPassword(data);
 
     if (res.status === "success") {
-     
-      toast.success('Reset password successfully');
+      toast.success("Reset password successfully");
     } else {
       const error = res.data as ErrorResponse;
       toast.error(
@@ -48,15 +47,17 @@ const FeatureAuthReset = () => {
               fullWidth
               color="primary"
             >
-              {"Send me a new link"}
+              "Send me a new link"
             </Button>
           </div>
         </div>
       ) : (
-        <ResetUI
-          authReset={_authReset}
-          className="w-full md:w-3/5 bg-foreground"
-        />
+        <Suspense>
+          <ResetUI
+            authReset={_authReset}
+            className="w-full md:w-3/5 bg-foreground"
+          />
+        </Suspense>
       )}
     </LayoutUI>
   );

@@ -1,7 +1,7 @@
 import { prisma } from "database";
 import { redirect } from "next/navigation";
 import { NextResponse } from "next/server";
-import { CourseResponse, ERoutes } from "schemas";
+import { ERoutes, FetchResponse } from "schemas";
 
 import { getServerSession } from "@/lib/auth.options";
 
@@ -11,7 +11,7 @@ import { getServerSession } from "@/lib/auth.options";
  * @returns CourseResponse
  */
 
-export async function GET(): Promise<NextResponse<CourseResponse>> {
+export async function GET(): Promise<NextResponse<FetchResponse>> {
   const session = await getServerSession();
   if (!session?.user) {
     redirect(`/${ERoutes.SIGN}`);

@@ -76,8 +76,8 @@ const CourseRecent = ({
 
   return (
     <CardDashboardUI
-      headerChildren={headerContent}
-      bodyChildren={bodyContent}
+      headerChildren={headerContent as JSX.Element}
+      bodyChildren={bodyContent as JSX.Element}
     />
   );
 };

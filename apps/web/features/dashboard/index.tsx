@@ -51,7 +51,7 @@ const DynamicDashboardClock = dynamic(() => import("./components/cardClock"), {
   ),
 });
 
-//NOTE - We present the dashboard like a bento
+
 const FeatureDashboard = () => {
   const [scope, animate] = useAnimate();
   const staggerGridItems = stagger(0.02, {

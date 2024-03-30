@@ -1,4 +1,4 @@
-import { SVGProps, useEffect, useRef, useState } from "react";
+import {  useEffect, useRef, useState } from "react";
 import { CardDashboardUI } from "ui/card/CardDashboardUI";
 
 // small circle radius

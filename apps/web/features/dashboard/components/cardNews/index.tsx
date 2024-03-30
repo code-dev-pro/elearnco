@@ -6,8 +6,6 @@ import { EActionsMenuShortcuts } from "schemas";
 import { useGlobalModalStore } from "store";
 import { LogoSymbolUI } from "ui";
 
-//TODO - Translation
-
 const HeaderChildren = () => {
   const modalStore = useGlobalModalStore();
   const openModal = useCallback(

@@ -1,16 +1,14 @@
 "use client";
 import { useCoursesParams } from "customhooks";
 import { getId } from "lib";
-import { useCallback } from "react";
-import {  SelectUI } from "ui";
+import { Suspense, useCallback } from "react";
+import { SelectUI } from "ui";
 import { DATA_DATE, DATA_STATUS, DATA_TITLE } from "@/const";
 import FolderFilter from "./folderFilter";
-import Search  from "./search"
-//TODO - TRANSLATION
+import Search from "./search";
 
 
 const CourseFilters = () => {
-  
   // Hooks & States
   const {
     currentPage,
@@ -20,8 +18,6 @@ const CourseFilters = () => {
     currentOrder,
     setNewSearchParamsInCurrentPage,
   } = useCoursesParams();
-  
-  
 
   const updateSearchParams = useCallback(
     (
@@ -77,7 +73,7 @@ const CourseFilters = () => {
     },
     [currentStatus, currentFolder, currentDate]
   );
-  const _changeHandlerDate = useCallback((value: string):void => {
+  const _changeHandlerDate = useCallback((value: string): void => {
     const course = DATA_DATE.filter((item) => value === item.id);
     if (course.length > 0) {
       updateSearchParams(
@@ -125,8 +121,9 @@ const CourseFilters = () => {
           selectedKey={getId(DATA_TITLE, currentOrder)}
         />
       </div>
-      <Search/>
-      
+      <Suspense>
+        <Search />
+      </Suspense>
     </div>
   );
 };

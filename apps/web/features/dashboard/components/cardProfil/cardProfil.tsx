@@ -1,12 +1,10 @@
-import { Button, Spinner, Image } from "@nextui-org/react";
+import { Button, Image } from "@nextui-org/react";
 import { useCallback } from "react";
 import { EActionsUser } from "schemas/actions/enums";
 import { SafeUser } from "schemas/auth/Auth";
 import { useGlobalModalStore } from "store/modal";
 import { CardDashboardUI } from "ui/card/CardDashboardUI";
 import { LoadingSpinnerUI } from "ui/loading";
-
-//TODO: Translation
 
 const HeaderChildren = (user) => {
   const modalStore = useGlobalModalStore();

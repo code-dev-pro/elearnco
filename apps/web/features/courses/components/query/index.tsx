@@ -6,7 +6,7 @@ import CourseAdd from "../add";
 import CourseLoading from "../loading";
 import { useCoursesParams } from "customhooks";
 
-// TODO: ERROR
+
 const CoursesQuery = ({ query }: { query: string }) => {
   const { fetchData, isLoading, error } = useCoursesStore();
   const {

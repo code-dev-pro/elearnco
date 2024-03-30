@@ -42,7 +42,7 @@ const DynamicModulePreviewVideo = dynamic(
     loading: () => <LoadingSpinnerUI />,
   }
 );
-//TODO REMOVE SCROLL ON BODY
+
 const STYLE = {
   flex: "0 0 auto",
   transition: "width .35s cubic-bezier(.22, 1, .36, 1)",

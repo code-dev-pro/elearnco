@@ -13,7 +13,7 @@ import { useIsCollaboration } from "customhooks";
 // import CollaborationAuth from "./editor/collaboration";
 import Collaboration from "./editor/collaboration";
 
-//TODO RENAME LayoutEditorUI TO AuthorEditor
+
 
 const DynamicAuthorEditor = dynamic(() => import("./editor/classic/author"), {
   loading: () => <></>,

@@ -6,7 +6,7 @@ import { useGlobalModalStore } from "store";
 import { ICON_SIZE } from "ui/const";
 import { IconUI } from "ui/icon/IconUI";
 
-//TODO - Translation
+
 
 export interface MenuOption {
   action: (ctrl: boolean) => void | Promise<void>;
