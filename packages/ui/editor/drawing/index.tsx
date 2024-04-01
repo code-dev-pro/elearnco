@@ -276,6 +276,8 @@ export const SimpleDrawingSvg = (props: TCanvas) => {
     };
   }, []);
 
+  console.log(collectionFreeHand);
+
   return size.width ? (
     <>
       {bounds ? (
@@ -354,14 +356,14 @@ export const SimpleDrawingSvg = (props: TCanvas) => {
             );
           })}
 
-          {collectionFreeHand.map((hand) => (
+          {collectionFreeHand.map((hand: TFreeHand) => (
             <React.Fragment key={hand.id}>
               <Path
-                strokeWidth={hand.strokeWidth}
+                strokeWidth={hand.stroke}
                 d={hand.path}
-                stroke={hand.stroke}
+                stroke={hand.color as string}
                 id={hand.id}
-                shape=""
+                shape="freehand"
                 x={0}
                 y={0}
               />

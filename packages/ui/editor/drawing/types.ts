@@ -19,9 +19,9 @@ export enum EDrawing {
 export type TShare = {
   stroke: string;
   fill?: string;
-  strokeWidth?: number;
+  strokeWidth?: string;
   cursor?: string;
-  color?:string 
+  color?: string;
 } & TShape;
 
 export type TPath = {
@@ -31,7 +31,6 @@ export type TShape = { shape?: string; id: string } & TPoint;
 export type TFreeHand = {
   shape: string;
   path: string;
- 
 } & TShare;
 
 export type TCircle = {
@@ -42,9 +41,8 @@ export type TCircle = {
 } & TShare;
 
 export type TPolygon = {
- 
   points?: TShape[];
-  fill?:string;
+  fill?: string;
   canva: SVGSVGElement | null;
   onMouseDown: (
     event:
@@ -54,14 +52,14 @@ export type TPolygon = {
         >
       | React.TouchEvent<HTMLDivElement | SVGSVGElement | SVGCircleElement>
   ) => void;
-  onSelect: (points: TShape[],id:string) => void;
+  onSelect: (points: TShape[], id: string) => void;
   positionInShape: any;
 } & TShare;
 
 export type TTooltip = {
   bounds: TBounds;
-  defaultValue:string
-  onChange?: (value:string) => void;
+  defaultValue: string;
+  onChange?: (value: string) => void;
 };
 
 export type TPalette = {
