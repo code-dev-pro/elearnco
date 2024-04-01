@@ -1,8 +1,4 @@
-import {
-  Popover,
-  PopoverContent,
-  PopoverTrigger,
-} from "@nextui-org/react";
+import { Popover, PopoverContent, PopoverTrigger } from "@nextui-org/react";
 import React, { useMemo, useState } from "react";
 
 import ButtonUI from "../../../button/ButtonUI";
@@ -131,7 +127,6 @@ const Toolbar = (props: TToolbar) => {
   };
 
   return (
-    // <ButtonGroup size="sm" radius="full">
     <div className="flex flex-col">
       <ButtonUI
         tooltip={{
@@ -139,14 +134,16 @@ const Toolbar = (props: TToolbar) => {
           placement: "right",
         }}
         button={{
-          handleClick: () => _setActiveTool("pen"),
+          handleClick: (): void => _setActiveTool("pen"),
           isIconOnly: true,
           label: "Draw",
           withTooltip: true,
           className: "",
           isDisabled: false,
           isActive: activeTool === "pen",
-          style: {borderBottomRightRadius: 0,borderBottomLeftRadius: 0 },
+          style: { borderBottomRightRadius: 0, borderBottomLeftRadius: 0 },
+          size: "sm",
+          variant: "solid",
         }}
         icon={{ iconSize: ICON_SIZE.width, iconName: "pen" }}
       />
@@ -171,7 +168,7 @@ const Toolbar = (props: TToolbar) => {
           placement: "right",
         }}
         button={{
-          handleClick: () => _setActiveTool("pentagon"),
+          handleClick: (): void => _setActiveTool("pentagon"),
           isIconOnly: true,
           label: "Poly",
           withTooltip: true,
@@ -179,6 +176,8 @@ const Toolbar = (props: TToolbar) => {
           isDisabled: false,
           isActive: activeTool === "pentagon",
           style: { borderRadius: 0 },
+          size: "sm",
+          variant: "solid",
         }}
         icon={{ iconSize: ICON_SIZE.width, iconName: "pentagon" }}
       />
@@ -188,13 +187,15 @@ const Toolbar = (props: TToolbar) => {
           placement: "right",
         }}
         button={{
-          handleClick: () => _setActiveTool("erase"),
+          handleClick: (): void => _setActiveTool("erase"),
           isIconOnly: true,
           label: "Erase",
           withTooltip: true,
           className: "",
           isDisabled: false,
           style: { borderRadius: 0 },
+          size: "sm",
+          variant: "solid",
         }}
         icon={{ iconSize: ICON_SIZE.width, iconName: "eraser" }}
       />
@@ -205,7 +206,7 @@ const Toolbar = (props: TToolbar) => {
         showArrow
         shouldBlockScroll
         shouldCloseOnBlur
-        onOpenChange={(open) => setIsOpenColor(open)}
+        onOpenChange={(open): void => setIsOpenColor(open)}
       >
         <PopoverTrigger>
           <span role="button">
@@ -215,13 +216,15 @@ const Toolbar = (props: TToolbar) => {
                 placement: "right",
               }}
               button={{
-                handleClick: () => _openColor(),
+                handleClick: (): void => _openColor(),
                 isIconOnly: true,
                 label: "Color",
                 withTooltip: true,
                 className: "",
                 isDisabled: false,
                 style: { borderRadius: 0 },
+                size: "sm",
+                variant: "solid",
               }}
               icon={{
                 iconSize: ICON_SIZE.width,
@@ -261,13 +264,15 @@ const Toolbar = (props: TToolbar) => {
                 placement: "right",
               }}
               button={{
-                handleClick: () => _openBrush(),
+                handleClick: (): void => _openBrush(),
                 isIconOnly: true,
                 label: "Brush",
                 withTooltip: true,
                 className: "",
                 isDisabled: false,
                 style: { borderRadius: 0 },
+                size: "sm",
+                variant: "solid",
               }}
               icon={{
                 iconSize: ICON_SIZE.width,
@@ -304,13 +309,14 @@ const Toolbar = (props: TToolbar) => {
           withTooltip: true,
           className: "",
           isDisabled: false,
-          style: {borderTopRightRadius: 0,borderTopLeftRadius: 0},
+          style: { borderTopRightRadius: 0, borderTopLeftRadius: 0 },
+          size: "sm",
+          variant: "solid",
         }}
         icon={{ iconSize: ICON_SIZE.width, iconName: "delete" }}
       />
-      </div>
-   
+    </div>
   );
 };
- {/* </ButtonGroup> */}
+
 export default Toolbar;
