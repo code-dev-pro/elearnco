@@ -1,6 +1,7 @@
 "use client";
 import { useSearchParams } from "next/navigation";
 import { useRouter } from "next13-progressbar";
+
 import { CourseDate, CourseStatus, CourseTitle, ERoutes } from "schemas";
 export function useCoursesParams() {
   const searchParams = useSearchParams();
@@ -42,6 +43,8 @@ export function useCoursesParams() {
       }/?page=${pageParam}&status=${getCurrentStatus()}&folder=${getCurrentFolder()}&date=${getCurrentDate()}&order=${getCurrentOrder()}`
     );
   };
+
+ 
 
   return {
     currentPage,

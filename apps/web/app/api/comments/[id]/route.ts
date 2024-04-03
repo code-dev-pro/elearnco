@@ -5,7 +5,6 @@ import { CompleteComment, ERoutes } from "schemas";
 
 import { getServerSession } from "@/lib/auth.options";
 
-
 export async function GET(
   _: NextRequest,
   { params }: { params: { id: string } }
@@ -17,7 +16,7 @@ export async function GET(
 
   try {
     const id = params.id;
-   
+
     if (!id) {
       throw new Error("BlocNodeId is missing in the request");
     }
@@ -29,12 +28,11 @@ export async function GET(
           select: {
             name: true,
             email: true,
-            image:true
+            image: true,
           },
         },
       },
     });
-  
 
     const json_response = {
       status: "success",
@@ -46,7 +44,6 @@ export async function GET(
       headers: { "Content-Type": "application/json" },
     });
   } catch (error) {
-    //console.log(error);
     const error_response = {
       status: "error",
       message: error.message,
@@ -84,7 +81,6 @@ export async function DELETE(
       headers: { "Content-Type": "application/json" },
     });
   } catch (error: any) {
-  
     if (error.code === "P2025") {
       const error_response = {
         status: "fail",
@@ -120,10 +116,9 @@ export async function PATCH(
     const id = params.id;
     const json = await request.json();
 
-   
     await prisma.comment.update({
-      where: { id:String(id) },
-      data: {content:json},
+      where: { id: String(id) },
+      data: { content: json },
     });
 
     const json_response = {

@@ -14,6 +14,7 @@ import NavigateBlock from "./navigateBlock";
 export const PaginationGeneric = (props) => {
   const { isReadOnly = false } = props;
   const isCollaboration = useIsCollaboration("collaboration");
+
   // States & Hooks
   const router = useRouter();
   const pathname = usePathname();
@@ -56,7 +57,7 @@ export const PaginationGeneric = (props) => {
       onChange={_gotoPage}
       isValidate={indexesValid}
     >
-      {!isReadOnly && (
+      {!isReadOnly && mode === EModeEditor.authoring && (
         <>
           <AddPageComponent />
           <AddPageCompletion />
