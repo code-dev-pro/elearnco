@@ -12,6 +12,8 @@ export const AVATARS: IAvatar[] = [
     rotation: -2,
     delay: 0.1,
     scale: 0.8,
+    name: "Dora",
+    designation : "The Explorer"
   },
   {
     id: "aer-dkllmos-455e",
@@ -22,6 +24,8 @@ export const AVATARS: IAvatar[] = [
     rotation: -7,
     delay: 0.2,
     scale: 1.0,
+    name: "Albert",
+    designation : "The Scientific"
   },
   {
     id: "akolmer-dplomlms-745e",
@@ -32,6 +36,8 @@ export const AVATARS: IAvatar[] = [
     rotation: -5,
     delay: 0.3,
     scale: 0.8,
+    name: "Doc",
+    designation : "The Traveler"
   },
   {
     id: "a5opr-dl4ms-7o755e",
@@ -42,6 +48,8 @@ export const AVATARS: IAvatar[] = [
     rotation: 5,
     delay: 0.3,
     scale: 0.9,
+    name: "Marie",
+    designation : "The Visionary"
   },
   {
     id: "aouiopr-dikllms-7o655e",
@@ -52,7 +60,10 @@ export const AVATARS: IAvatar[] = [
     rotation: 0,
     delay: 0.7,
     scale: 1,
+    name: "Niveen",
+    designation : "The Chemist"
   },
+
   {
     id: "aookpr-d756lilms-7ok55e",
     src: `${PATH}6`,
@@ -62,6 +73,8 @@ export const AVATARS: IAvatar[] = [
     rotation: 0,
     delay: 0.8,
     scale: 0.7,
+    name: "Elon",
+    designation : "The Genuis"
   },
   {
     id: "148-okpr-d756lilms-7ok55e",
@@ -72,5 +85,7 @@ export const AVATARS: IAvatar[] = [
     rotation: 0,
     delay: 0.8,
     scale: 0.7,
+    name: "Magellan",
+    designation : "The Navigator"
   },
 ];

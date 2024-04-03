@@ -7,6 +7,9 @@ export interface IAvatar {
     delay: number;
     rotation: number;
     scale: number;
+    name:string;
+    designation:string
+
   }
 
 
