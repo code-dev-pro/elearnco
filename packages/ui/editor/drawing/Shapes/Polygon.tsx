@@ -62,7 +62,7 @@ const Polygon = (props: TPolygon) => {
         }
         onMouseEnter={() => canDelete && setIsOver(true)}
         onMouseLeave={() => canDelete && setIsOver(false)}
-        opacity={isOver && canDelete ? 0.5 : 1}
+        opacity={isOver && canDelete ? 1 : 0.5}
       />
 
       {collectionPoints.map((shape) => {
