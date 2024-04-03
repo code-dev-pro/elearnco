@@ -20,7 +20,12 @@ export const SimpleDrawingSvg = (props: TCanvas) => {
   let collectionData: Partial<
     CompleteDrawing & {
       content: {
-        collectionPolygons: { id: string; shape: TShape[]; content: string }[];
+        collectionPolygons: {
+          id: string;
+          shape: TShape[];
+          content: string;
+          fill: string;
+        }[];
         collectionFreeHand: TFreeHand[];
       };
     }
@@ -37,6 +42,7 @@ export const SimpleDrawingSvg = (props: TCanvas) => {
             id: string;
             shape: TShape[];
             content: string;
+            fill: string;
           }[];
           collectionFreeHand: TFreeHand[];
         };
@@ -55,7 +61,7 @@ export const SimpleDrawingSvg = (props: TCanvas) => {
   const [collection, setCollection] = useState<TShape[]>([]);
   //Polygon Collection
   const [collectionPolygons, setCollectionPolygons] = useState<
-    { id: string; shape: TShape[]; content: string }[]
+    { id: string; shape: TShape[]; content: string; fill: string }[]
   >(collectionPolygonsInitialState);
   //FreeHand Collection
   const [collectionFreeHand, setCollectionFreeHand] = useState<TFreeHand[]>(
@@ -141,13 +147,23 @@ export const SimpleDrawingSvg = (props: TCanvas) => {
       const id = nanoid(10);
       setCollectionPolygons([
         ...collectionPolygons,
-        { id: id, shape: collection, content: "Add your text" },
+        {
+          id: id,
+          shape: collection,
+          content: "Add your text",
+          fill: currentColor.current,
+        },
       ]);
       saveData({
         collectionFreeHand: collectionFreeHand,
         collectionPolygons: [
           ...collectionPolygons,
-          { id: id, shape: collection, content: "Add your text" },
+          {
+            id: id,
+            shape: collection,
+            content: "Add your text",
+            fill: currentColor.current,
+          },
         ],
       });
       setCollection([]);
@@ -158,7 +174,12 @@ export const SimpleDrawingSvg = (props: TCanvas) => {
     ) {
       setCollection([
         ...collection,
-        { shape: "circle", x: x, y: y, id: nanoid(10) },
+        {
+          shape: "circle",
+          x: x,
+          y: y,
+          id: nanoid(10),
+        },
       ]);
     } else if (target.hasAttribute("is-handle-polygon")) {
       setPositionInShape({ id: target.id, x: x, y: y });
@@ -249,6 +270,7 @@ export const SimpleDrawingSvg = (props: TCanvas) => {
         id: nanoid(11),
         color: currentColor.current,
         stroke: String(currentBrush.current),
+        fill: String(currentBrush.current),
         x: 0,
         y: 0,
       });
@@ -363,8 +385,7 @@ export const SimpleDrawingSvg = (props: TCanvas) => {
         data: any;
       };
 
-      // if (status === "success") {
-      // }
+      // if (status === "success") {// }
     }
   };
 
@@ -393,7 +414,7 @@ export const SimpleDrawingSvg = (props: TCanvas) => {
           style={{ background: "transparent", opacity: 1 }}
           viewBox={`0 0 ${WIDTH} ${(WIDTH / size.width) * size.height}`}
         >
-          {collectionPolygons.map((polygon, index) => {
+          {collectionPolygons.map((polygon) => {
             return (
               <React.Fragment key={polygon.id}>
                 <Polygon
@@ -404,7 +425,7 @@ export const SimpleDrawingSvg = (props: TCanvas) => {
                   points={polygon.shape}
                   cursor=""
                   onSelect={onSelect}
-                  fill=""
+                  fill={polygon.fill}
                   stroke=""
                   shape=""
                   x={0}
@@ -466,6 +487,7 @@ export const SimpleDrawingSvg = (props: TCanvas) => {
                 y={0}
                 canDelete={activeTool === "erase"}
                 deleteDraw={deleteFreeHand}
+                fill=""
               />
             </React.Fragment>
           ))}
