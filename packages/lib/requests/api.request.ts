@@ -1,7 +1,6 @@
 import { Block, Page } from "@prisma/client";
 import {
   CompleteBlock,
-  CompleteComment,
   CompleteCourse,
   CompleteFolder,
   CompletePage,
@@ -19,6 +18,7 @@ const pathApiPage = `/${segment}/page`;
 const pathApiUser = `/${segment}/user`;
 const pathApiUserTags = `/${segment}/user/tags`;
 const pathApiComments = `/${segment}/comments`;
+const pathApiDrawing= `/${segment}/drawing`;
 export const getBaseUrl = (): string => {
   if (typeof window !== "undefined") return location.origin;
   if (process.env.VERCEL_URL) return `https://${process.env.VERCEL_URL}`;
@@ -571,26 +571,50 @@ export async function deleteBlockNode(
     return handleFailResponse(response);
   }
 }
-// export async function updateBlockNode(
-//   data: Partial<Block>
-// ): Promise<FetchResponse | ErrorResponse> {
-//   const response = await fetch(`${SERVER_ENDPOINT}${pathApiBlockNode}/:id`, {
-//     method: "PATCH",
-//     headers: {
-//       "Content-Type": "application/json",
-//     },
-//     body: JSON.stringify(data),
-//   });
 
-//   if (response.status === 201) {
-//     return handleResponse<FetchResponse | ErrorResponse>(response).then(
-//       (data) => data
-//     );
-//   } else {
-//     return handleFailResponse(response);
-//   }
-// }
 
+/**
+ * **************************************
+ * DRAWING
+ * **************************************
+ */
+
+export async function saveDrawing(
+  id: string | undefined,
+  blockNodeId:string,
+  data:any
+): Promise<FetchResponse | ErrorResponse> {
+  const response = await fetch(`${SERVER_ENDPOINT}${pathApiDrawing}/${id}`, {
+    method: "POST",
+    body: JSON.stringify({content:data,blockNodeId:blockNodeId}),
+  });
+
+  if (response.status === 201) {
+    return handleResponse<FetchResponse | ErrorResponse>(response).then(
+      (data) => data
+    );
+  } else {
+    return handleFailResponse(response);
+  }
+}
+export async function deleteDrawing(
+  id: string
+): Promise<FetchResponse | ErrorResponse> {
+  const response = await fetch(`${SERVER_ENDPOINT}${pathApiDrawing}/${id}`, {
+    method: "DELETE",
+    headers: {
+      "Content-Type": "application/json",
+    },
+  });
+
+  if (response.status === 201) {
+    return handleResponse<FetchResponse | ErrorResponse>(response).then(
+      (data) => data
+    );
+  } else {
+    return handleFailResponse(response);
+  }
+}
 /**
  * **************************************
  * COMMENTS

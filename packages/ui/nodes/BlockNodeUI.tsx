@@ -30,7 +30,7 @@ export const BlockNodeUI = (props: IProps) => {
     `state_${block.uuid}`,
     "open"
   );
-  // const [isOpen, setOpen] = useState<boolean>(true);
+
   const blockRef = useRef<HTMLDivElement | null>(null);
 
   const onDrag = (position: { absolute: TPoint; relative: TPoint }): void => {

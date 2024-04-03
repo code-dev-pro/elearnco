@@ -2,7 +2,7 @@ import MediaImage from "ui/modules/mediaModule/image/mediaImage";
 import Tool from "../tool";
 
 const ModulePreviewImage = (props) => {
-  const { content, title, description, copyright, id, uuid } = props;
+  const { content, title, description, copyright, id, uuid, drawing } = props;
 
   return (
     <>
@@ -14,6 +14,8 @@ const ModulePreviewImage = (props) => {
           description={description}
           copyright={copyright}
           isReadonly
+          drawing={drawing}
+          blockNodeId={uuid}
         />
       </div>
     </>

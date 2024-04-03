@@ -3,13 +3,12 @@ import React, {
   useEffect,
   useImperativeHandle,
   useRef,
-  useState,
 } from "react";
 import ReactCanvasConfetti from "react-canvas-confetti";
 import { TCanvasConfettiInstance } from "react-canvas-confetti/dist/types/";
 
 import { canvasStyles } from "./const";
-import { EAnimationEffect, IRef, Timeout } from "./types";
+import { EAnimationEffect, IRef } from "./types";
 
 function randomInRange(min: number, max: number) {
   return Math.random() * (max - min) + min;

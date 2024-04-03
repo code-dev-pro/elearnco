@@ -1,7 +1,15 @@
-import { TPoint } from "schemas";
+import { CompleteDrawing, TPoint } from "schemas";
+
+export type TCollectorDrawing = {
+  collectionPolygons: { id: string; shape: TShape[]; content: string }[];
+  collectionFreeHand: TFreeHand[];
+};
 
 export type TCanvas = {
   size: { width: number; height: number };
+  onChange: (c: TCollectorDrawing) => void;
+  data: Partial<CompleteDrawing>;
+  blockNodeId: string;
 };
 export type TBounds = {
   minX: number;
@@ -22,10 +30,13 @@ export type TShare = {
   strokeWidth?: string;
   cursor?: string;
   color?: string;
+  canDelete?: boolean;
+  deleteDraw?:(id:string)=> void
 } & TShape;
 
 export type TPath = {
   d: string;
+
 } & TShare;
 export type TShape = { shape?: string; id: string } & TPoint;
 export type TFreeHand = {
@@ -80,4 +91,5 @@ export type TToolbar = {
   clean: () => void;
   defaultColor: string;
   defaultBrush: number;
+  hasActiveClean:boolean
 };

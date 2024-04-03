@@ -40,7 +40,7 @@ export const sendEmail = async ({
       return Promise.resolve("Success");
     }
   } catch (error) {
-   // console.log("Error sending", error);
+  
     Promise.resolve(error);
   }
 };

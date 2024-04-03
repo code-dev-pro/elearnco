@@ -45,7 +45,9 @@ const DynamicMediaVideo = dynamic(() => import("./video/mediaVideo"), {
 });
 
 export const MediaModule = (
-  props: (TModuleImage | TModuleVideo) & { uuid: string; id: string }
+  props: (TModuleImage | TModuleVideo) & { uuid: string; id: string } & {
+    drawing: [];
+  }
 ) => {
   const {
     onChange,
@@ -57,6 +59,8 @@ export const MediaModule = (
     copyright,
     description,
     markers,
+    drawing,
+    
   } = props;
 
   /** States */
@@ -124,21 +128,24 @@ export const MediaModule = (
       >
         <ButtonGroup size="sm" radius="full">
           {type === "image" ? (
-            <ButtonUI
-              tooltip={{
-                content: "Add hotspot or draw",
-                placement: "top",
-              }}
-              button={{
-                handleClick: _clickHandler,
-                isIconOnly: true,
-                label: "Add hotspot",
-                withTooltip: true,
-                className: "",
-                isDisabled: false,
-              }}
-              icon={{ iconSize: ICON_SIZE.width, iconName: "location" }}
-            />
+            <></>
+            // <ButtonUI
+            //   tooltip={{
+            //     content: "Add hotspot or draw",
+            //     placement: "top",
+            //   }}
+            //   button={{
+            //     handleClick: _clickHandler,
+            //     isIconOnly: true,
+            //     label: "Add hotspot",
+            //     withTooltip: true,
+            //     className: "",
+            //     isDisabled: false,
+            //     size: "sm",
+            //     variant: "solid",
+            //   }}
+            //   icon={{ iconSize: ICON_SIZE.width, iconName: "location" }}
+            // />
           ) : (
             <ButtonUI
               tooltip={{
@@ -152,6 +159,8 @@ export const MediaModule = (
                 withTooltip: true,
                 className: "",
                 isDisabled: false,
+                size: "sm",
+                variant: "solid",
               }}
               icon={{ iconSize: ICON_SIZE.width, iconName: "clockaddplus" }}
             />
@@ -168,6 +177,8 @@ export const MediaModule = (
               withTooltip: true,
               className: "",
               isDisabled: false,
+              size: "sm",
+              variant: "solid",
             }}
             icon={{ iconSize: ICON_SIZE.width, iconName: "imageedit" }}
           />
@@ -190,6 +201,8 @@ export const MediaModule = (
               copyright={copyright}
               onChange={onChange}
               isReadonly={false}
+              drawing={drawing}
+              blockNodeId={uuid}
             />
           </div>
         </div>

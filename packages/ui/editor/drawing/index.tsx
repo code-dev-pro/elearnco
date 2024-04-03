@@ -1,6 +1,6 @@
-import { nanoid } from "lib";
+import { BlockDrawingService, nanoid, removeObjectById } from "lib";
 import React, { useEffect, useRef, useState } from "react";
-import { POINT, TPoint } from "schemas";
+import { CompleteDrawing, POINT, TPoint, TStatus } from "schemas";
 
 import { LAYOUT } from "../../const";
 import { calculateBounds, getAveragePoint } from "../utils";
@@ -11,36 +11,56 @@ import Polygon from "./Shapes/Polygon";
 import Toolbar from "./Toolbar";
 import Tooltip from "./Tooltip";
 import { TBounds, TCanvas, TFreeHand, TShape } from "./types";
+import { debounce } from "lodash";
 
 const WIDTH = LAYOUT.MEDIA;
 export const SimpleDrawingSvg = (props: TCanvas) => {
   //Canvas props
-  const { size } = props;
+  const { size, onChange, data, blockNodeId } = props;
+  let collectionData: Partial<
+    CompleteDrawing & {
+      content: {
+        collectionPolygons: { id: string; shape: TShape[]; content: string }[];
+        collectionFreeHand: TFreeHand[];
+      };
+    }
+  > = {
+    content: { collectionPolygons: [], collectionFreeHand: [] },
+  };
+
+  // Si des données sont disponibles, on les utilise
+  if (data?.id && data.content) {
+    collectionData = data as Partial<
+      CompleteDrawing & {
+        content: {
+          collectionPolygons: {
+            id: string;
+            shape: TShape[];
+            content: string;
+          }[];
+          collectionFreeHand: TFreeHand[];
+        };
+      }
+    >;
+  }
+
+  const collectionPolygonsInitialState =
+    collectionData?.content?.collectionPolygons || [];
+  const collectionFreeHandInitialState =
+    collectionData?.content?.collectionFreeHand || [];
+
   //Mouse Position
   const [position, setPosition] = useState<TPoint>(POINT);
   //Points Collection for poly
   const [collection, setCollection] = useState<TShape[]>([]);
   //Polygon Collection
-
   const [collectionPolygons, setCollectionPolygons] = useState<
     { id: string; shape: TShape[]; content: string }[]
-  >([
-    {
-      id: "hfMpj9gylc",
-      shape: [
-        { shape: "circle", x: 185, y: 175, id: "ARaNgOo" },
-        { shape: "circle", x: 348, y: 145, id: "JNCUiSF" },
-        { shape: "circle", x: 374, y: 187, id: "8XF0YDj" },
-        { shape: "circle", x: 314, y: 283, id: "w2R5blA" },
-        { shape: "circle", x: 164, y: 274, id: "PLJzBRu" },
-      ],
-      content: "Hello World!",
-    },
-  ]);
+  >(collectionPolygonsInitialState);
   //FreeHand Collection
-  const [collectionFreeHand, setCollectioncollectionFreeHand] = useState<
-    TFreeHand[]
-  >([]);
+  const [collectionFreeHand, setCollectionFreeHand] = useState<TFreeHand[]>(
+    collectionFreeHandInitialState
+  );
   //Point of polygon selected
   const [positionInShape, setPositionInShape] = useState<{
     id: string;
@@ -61,11 +81,15 @@ export const SimpleDrawingSvg = (props: TCanvas) => {
   const currentColor = useRef<string>(COLORS.BLUE.hex);
   const currentBrush = useRef<number>(2);
   const currentSelect = useRef<string>("");
+  const currentIdDrawing = useRef<string | undefined>(
+    data?.id ? data?.id : undefined
+  );
   const onSelect = (points: TShape[], id: string): void => {
     currentSelect.current = id;
     const bounds = calculateBounds(points);
     setBounds(bounds);
   };
+
   const handleMouseDown = (
     event:
       | React.MouseEvent<
@@ -83,6 +107,8 @@ export const SimpleDrawingSvg = (props: TCanvas) => {
     const target = event.target as HTMLElement | SVGSVGElement;
     const element = event.currentTarget as HTMLDivElement | SVGSVGElement;
     const rect = element.getBoundingClientRect();
+
+    if (activeTool === "erase") return;
 
     if (target.hasAttribute("is-polygon")) {
       return;
@@ -117,7 +143,13 @@ export const SimpleDrawingSvg = (props: TCanvas) => {
         ...collectionPolygons,
         { id: id, shape: collection, content: "Add your text" },
       ]);
-
+      saveData({
+        collectionFreeHand: collectionFreeHand,
+        collectionPolygons: [
+          ...collectionPolygons,
+          { id: id, shape: collection, content: "Add your text" },
+        ],
+      });
       setCollection([]);
     } else if (
       target.nodeName === "svg" &&
@@ -221,7 +253,11 @@ export const SimpleDrawingSvg = (props: TCanvas) => {
         y: 0,
       });
 
-      setCollectioncollectionFreeHand(_clones);
+      setCollectionFreeHand(_clones);
+      saveData({
+        collectionFreeHand: _clones,
+        collectionPolygons: collectionPolygons,
+      });
     }
     currentPathText.current = "";
     clonePathText.current = "";
@@ -231,11 +267,16 @@ export const SimpleDrawingSvg = (props: TCanvas) => {
   };
   const handleClean = (): void => {
     lastMousePoints.current = [];
+
     setFreeHandle("M0 0 ");
     setCollectionPolygons([]);
-    setCollectioncollectionFreeHand([]);
+    setCollectionFreeHand([]);
     setCollection([]);
     setBounds(null);
+    if (currentIdDrawing.current) {
+      deleteData(currentIdDrawing.current);
+      currentIdDrawing.current = undefined;
+    }
   };
   const _onDoubleClick = (id: string): void => {
     setCollection((prevState) => prevState.filter((shape) => shape.id !== id));
@@ -252,6 +293,15 @@ export const SimpleDrawingSvg = (props: TCanvas) => {
           return item;
         });
       });
+
+      const debouncedSaveData = debounce(() => {
+        saveData({
+          collectionFreeHand: collectionFreeHand,
+          collectionPolygons: collectionPolygons,
+        });
+      }, 500);
+
+      debouncedSaveData();
     }
   };
 
@@ -270,13 +320,59 @@ export const SimpleDrawingSvg = (props: TCanvas) => {
     refCanvas?.current?.removeEventListener("touchend", handleMouseUp);
   };
 
+  const saveData = async (collections: {
+    collectionFreeHand: TFreeHand[];
+    collectionPolygons: { id: string; shape: TShape[]; content: string }[];
+  }): Promise<void> => {
+    const { status, data } = (await BlockDrawingService.saveDrawing(
+      currentIdDrawing.current,
+      blockNodeId,
+      collections
+    )) as {
+      status: TStatus;
+      data: any;
+    };
+
+    if (status === "success") {
+      currentIdDrawing.current = data.id;
+    }
+  };
+
+  const deleteFreeHand = (id: string): void => {
+    const newCollection = removeObjectById(collectionFreeHand, id);
+    setCollectionFreeHand(newCollection);
+    saveData({
+      collectionFreeHand: newCollection,
+      collectionPolygons: collectionPolygons,
+    });
+  };
+
+  const deletePolygon = (id: string): void => {
+    const newCollection = removeObjectById(collectionPolygons, id);
+    setCollectionPolygons(newCollection);
+    saveData({
+      collectionFreeHand: collectionFreeHand,
+      collectionPolygons: newCollection,
+    });
+  };
+
+  const deleteData = async (id: string): Promise<void> => {
+    if (currentIdDrawing.current) {
+      const { status } = (await BlockDrawingService.deleteDrawing(id)) as {
+        status: TStatus;
+        data: any;
+      };
+
+      // if (status === "success") {
+      // }
+    }
+  };
+
   useEffect(() => {
     return () => {
       removeAllListeners();
     };
   }, []);
-
-  console.log(collectionFreeHand);
 
   return size.width ? (
     <>
@@ -313,6 +409,8 @@ export const SimpleDrawingSvg = (props: TCanvas) => {
                   shape=""
                   x={0}
                   y={0}
+                  canDelete={activeTool === "erase"}
+                  deleteDraw={deletePolygon}
                 />
               </React.Fragment>
             );
@@ -366,6 +464,8 @@ export const SimpleDrawingSvg = (props: TCanvas) => {
                 shape="freehand"
                 x={0}
                 y={0}
+                canDelete={activeTool === "erase"}
+                deleteDraw={deleteFreeHand}
               />
             </React.Fragment>
           ))}
@@ -390,6 +490,9 @@ export const SimpleDrawingSvg = (props: TCanvas) => {
           clean={handleClean}
           defaultColor={currentColor.current}
           defaultBrush={currentBrush.current}
+          hasActiveClean={
+            collectionPolygons.length > 0 || collectionFreeHand.length > 0
+          }
         />
       </div>
     </>

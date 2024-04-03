@@ -50,7 +50,6 @@ export async function DELETE(
     });
   }
 }
-
 export async function PATCH(
   request: Request,
   { params }: { params: { id: string } }

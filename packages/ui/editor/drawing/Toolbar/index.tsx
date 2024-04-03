@@ -88,6 +88,7 @@ const Toolbar = (props: TToolbar) => {
     clean,
     defaultColor = COLORS.BLUE.hex,
     defaultBrush = 2,
+    hasActiveClean=false
   } = props;
   const [isOpenColor, setIsOpenColor] = useState<boolean>(false);
   const [isOpenBrush, setIsOpenBrush] = useState<boolean>(false);
@@ -193,6 +194,7 @@ const Toolbar = (props: TToolbar) => {
           withTooltip: true,
           className: "",
           isDisabled: false,
+          isActive: activeTool === "erase",
           style: { borderRadius: 0 },
           size: "sm",
           variant: "solid",
@@ -308,7 +310,7 @@ const Toolbar = (props: TToolbar) => {
           label: "Erase all",
           withTooltip: true,
           className: "",
-          isDisabled: false,
+          isDisabled: !hasActiveClean,
           style: { borderTopRightRadius: 0, borderTopLeftRadius: 0 },
           size: "sm",
           variant: "solid",

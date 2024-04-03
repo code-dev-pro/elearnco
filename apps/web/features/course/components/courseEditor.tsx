@@ -13,8 +13,6 @@ import { useIsCollaboration } from "customhooks";
 // import CollaborationAuth from "./editor/collaboration";
 import Collaboration from "./editor/collaboration";
 
-
-
 const DynamicAuthorEditor = dynamic(() => import("./editor/classic/author"), {
   loading: () => <></>,
 });
