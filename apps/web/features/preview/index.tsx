@@ -61,8 +61,6 @@ const getBlock = (block): JSX.Element => {
   const drawing = block?.content?.[0]?.Drawing;
   const id = block?.id;
 
-
-
   if (type === ActivityBlockType.WHEEL && text) {
     return (
       <div className="bg-default-50 rounded-2xl">
@@ -114,7 +112,6 @@ const getBlock = (block): JSX.Element => {
               uuid={uuid}
               copyright={copyright}
               drawing={drawing}
-
             />
           </TypographyBlockUI.Definition>
         </TypographyBlockUI>
@@ -164,8 +161,6 @@ export const WrappedBlocks = ({ blocks }): JSX.Element => {
 
   blocks.forEach((block, index) => {
     const isTitleBlock = block.type === TextBlockType.TITLE;
-
-   
 
     if (isTitleBlock && currentSection.length > 0) {
       wrappedSections.push(
