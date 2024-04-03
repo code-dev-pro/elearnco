@@ -15,6 +15,8 @@ const Polygon = (props: TPolygon) => {
     deleteDraw,
   } = props;
 
+ 
+
   const groupRef = useRef<SVGGElement | null>(null);
   const [isOver, setIsOver] = useState<boolean>(false);
   const [collectionPoints, setPoints] = useState<TShape[]>(points);
@@ -42,6 +44,8 @@ const Polygon = (props: TPolygon) => {
       }
     }
   }, [positionInShape]);
+
+  
 
   return (
     <g ref={groupRef}>
@@ -71,7 +75,7 @@ const Polygon = (props: TPolygon) => {
             cy={shape.y}
             r="5"
             fill={fill}
-            stroke={fill}
+            stroke='black'
             is-handle-polygon="true"
             style={{ cursor: "pointer" }}
           />
