@@ -84,7 +84,7 @@ export async function DELETE(
       headers: { "Content-Type": "application/json" },
     });
   } catch (error: any) {
-    console.log(error)
+  
     if (error.code === "P2025") {
       const error_response = {
         status: "fail",

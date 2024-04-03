@@ -1,4 +1,4 @@
-import { CompleteCourse, TextBlockType } from "..";
+import { CompleteCourse, CompleteDrawing, TextBlockType } from "..";
 
 export type TPoint = { x: number; y: number };
 export type PointerType = 'mouse' | 'touch' | 'pen'
@@ -44,7 +44,7 @@ export type TContent = {
   instruction: string;
   markers?: { content: string; type: string }[];
 };
-export type TModuleContent = CompleteCourse & (TContent | undefined);
+export type TModuleContent = CompleteCourse & (TContent | undefined) &{ Drawing:[]};
 
 export type TModuleWriter = {
   content: string;
@@ -82,6 +82,8 @@ export type TModuleImage = {
   onChange?:(m:GenericObject)=>void
   isReadonly?:boolean
   description?:string
+  drawing: CompleteDrawing[] | []
+  blockNodeId:string
 
 };
 export type TModuleVideo = {

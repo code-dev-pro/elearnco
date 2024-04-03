@@ -53,6 +53,7 @@ export async function GET(
           },
           include: {
             content: true,
+         
           },
         },
       },

@@ -99,6 +99,9 @@ export async function GET(
       where: {
         uuid: id,
       },
+      include: {
+        Drawing:true
+      }
     });
 
     

@@ -163,6 +163,8 @@ const BlockNodeModule = React.memo(
               type={type}
               uuid={ino}
               id={block?.id as string}
+              drawing={block?.Drawing ? block?.Drawing : []}
+              blockNodeId={ino}
             />
           </>
         );
@@ -189,8 +191,6 @@ const BlockNodeModule = React.memo(
     const saveBlocksToDatabase = useCallback(async (): Promise<void> => {
       try {
         //onBeginLoading();
-
-        //Ajouter les condition pour save
         if (content) BlockNodeService.updateBlockNode(content);
       } catch (error) {
         console.error("Erreur : ", error);
@@ -199,7 +199,7 @@ const BlockNodeModule = React.memo(
     }, [content]);
 
     useEffect(() => {
-      const getData = async () => {
+      const getData = async (): Promise<void> => {
         await fetchData();
       };
       getData();
@@ -214,7 +214,7 @@ const BlockNodeModule = React.memo(
       [ino]
     );
 
-    if (isLoading) return <>loading content block...</>;
+    if (isLoading) return <>Loading...</>;
     return (
       <div
         // onMouseDown={(e)=>_onFocus(e)}

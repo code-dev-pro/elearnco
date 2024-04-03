@@ -4,6 +4,7 @@ import { GenericObject, TModuleImage } from "schemas";
 import { LAYOUT } from "../../../const";
 import DrawinEditor from "../../../editor/drawing";
 import MediaTitle from "../mediaTitle";
+import { TCollectorDrawing } from "../../../editor/drawing/types";
 
 const MediaImage = (props: TModuleImage) => {
   const {
@@ -12,6 +13,8 @@ const MediaImage = (props: TModuleImage) => {
     copyright = "copyright",
     onChange,
     isReadonly,
+    drawing,
+    blockNodeId,
   } = props;
 
   const [currentSize, setSize] = useState<{ width: number; height: number }>({
@@ -36,7 +39,12 @@ const MediaImage = (props: TModuleImage) => {
       className="select-none relative z-10"
       style={{ maxWidth: LAYOUT.MEDIA }}
     >
-      <DrawinEditor size={currentSize} />
+      <DrawinEditor
+        data={drawing?.[0]}
+        onChange={(c: TCollectorDrawing) => void 0}
+        size={currentSize}
+        blockNodeId={blockNodeId}
+      />
       <Image
         removeWrapper
         style={{

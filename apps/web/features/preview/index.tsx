@@ -58,7 +58,10 @@ const getBlock = (block): JSX.Element => {
   const copyright = content?.copyright;
   const markers = content?.markers;
   const uuid = block?.uuid;
+  const drawing = block?.content?.[0]?.Drawing;
   const id = block?.id;
+
+
 
   if (type === ActivityBlockType.WHEEL && text) {
     return (
@@ -110,6 +113,8 @@ const getBlock = (block): JSX.Element => {
               id={id}
               uuid={uuid}
               copyright={copyright}
+              drawing={drawing}
+
             />
           </TypographyBlockUI.Definition>
         </TypographyBlockUI>
@@ -159,6 +164,8 @@ export const WrappedBlocks = ({ blocks }): JSX.Element => {
 
   blocks.forEach((block, index) => {
     const isTitleBlock = block.type === TextBlockType.TITLE;
+
+   
 
     if (isTitleBlock && currentSection.length > 0) {
       wrappedSections.push(

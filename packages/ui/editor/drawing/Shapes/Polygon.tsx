@@ -1,7 +1,7 @@
-import React, {  useEffect, useRef, useState } from "react";
+import React, { useEffect, useRef, useState } from "react";
 
 import { serializeCoordinates } from "../../utils";
-import { TPolygon,TShape } from "../types";
+import { TPolygon, TShape } from "../types";
 
 const Polygon = (props: TPolygon) => {
   const {
@@ -11,13 +11,16 @@ const Polygon = (props: TPolygon) => {
     onMouseDown,
     onSelect,
     positionInShape,
+    canDelete = false,
+    deleteDraw,
   } = props;
 
-  const groupRef = useRef<SVGGElement|null>(null);
+  const groupRef = useRef<SVGGElement | null>(null);
+  const [isOver, setIsOver] = useState<boolean>(false);
   const [collectionPoints, setPoints] = useState<TShape[]>(points);
 
-  const _removePolygon = () => {
-    setPoints([]);
+  const _removePolygon = (): void => {
+    if (!canDelete) setPoints([]);
   };
 
   useEffect(() => {
@@ -46,12 +49,16 @@ const Polygon = (props: TPolygon) => {
         points={serializeCoordinates(collectionPoints)}
         fill={fill}
         stroke={fill}
-        opacity={0.5}
         cursor="pointer"
         is-polygon="true"
-        onMouseDown={() => onSelect(collectionPoints,id)}
         onDoubleClick={_removePolygon}
         id={id}
+        onClick={(): void =>
+          canDelete ? deleteDraw?.(id) : onSelect(collectionPoints, id)
+        }
+        onMouseEnter={() => canDelete && setIsOver(true)}
+        onMouseLeave={() => canDelete && setIsOver(false)}
+        opacity={isOver && canDelete ? 0.5 : 1}
       />
 
       {collectionPoints.map((shape) => {

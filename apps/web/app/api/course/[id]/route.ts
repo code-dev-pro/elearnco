@@ -4,7 +4,10 @@ import { NextRequest, NextResponse } from "next/server";
 import { getServerSession } from "next-auth";
 import { ERoutes } from "schemas";
 
-async function addTagsToUser(userId:string, tags: Prisma.TagUserCreateManyInput[]) {
+async function addTagsToUser(
+  userId: string,
+  tags: Prisma.TagUserCreateManyInput[]
+) {
   await prisma.tagUser.deleteMany({
     where: { userId: userId },
   });
@@ -22,7 +25,10 @@ async function addTagsToUser(userId:string, tags: Prisma.TagUserCreateManyInput[
     data: tagObjects,
   });
 }
-async function addTagsToCourse(courseId:string, tags: Prisma.TagUserCreateManyInput[]) {
+async function addTagsToCourse(
+  courseId: string,
+  tags: Prisma.TagUserCreateManyInput[]
+) {
   await prisma.course.findUnique({
     where: { id: courseId },
     include: { tags: true },
@@ -84,7 +90,11 @@ export async function GET(
             index: true,
             blocks: {
               include: {
-                content: true,
+                content: {
+                  include: {
+                    Drawing: true,
+                  },
+                },
               },
             },
           },

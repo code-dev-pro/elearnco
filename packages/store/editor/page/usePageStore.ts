@@ -90,6 +90,8 @@ export const usePageStore = create<State & Actions>((set, get) => ({
       const { page } = data as { page: CompletePage[] };
       const { blocks } = page[0] as CompletePage & { blocks: [] };
 
+    
+
       if (status === "success") {
         set(() => ({
           page: page[0],
