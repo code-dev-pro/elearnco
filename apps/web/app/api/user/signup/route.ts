@@ -59,7 +59,7 @@ export async function POST(request: Request) {
 
     const url = `${process.env.VERCEL_URL}/validate?token=${token}&id=${user.id}`;
 
-    await sendEmail({
+     sendEmail({
       email: data.email,
       subject: "Sign up to Elearnco",
       react: WelcomeEmail({
