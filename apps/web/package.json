@@ -70,7 +70,7 @@
     "react-mobile-cropper": "^0.10.0",
     "react-multi-ref": "^1.0.1",
     "reactflow": "^11.10.1",
-    "resend": "^2.0.0",
+    "resend": "^3.2.0",
     "schemas": "*",
     "store": "*",
     "svg-round-corners": "^0.4.3",
