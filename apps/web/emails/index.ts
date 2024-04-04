@@ -35,12 +35,13 @@ export const sendEmail = async ({
     });
    
     if (error) {
+      console.log("RESEND_EMAILS :",error);
       return Promise.resolve(error);
     } else {
       return Promise.resolve("Success");
     }
   } catch (error) {
-  
+    console.log("RESEND_EMAILS_CATCH :",error);
     Promise.resolve(error);
   }
 };
