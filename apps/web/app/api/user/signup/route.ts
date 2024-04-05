@@ -1,106 +1,89 @@
-// import { Role } from "@prisma/client";
-// import bcrypt from "bcrypt";
-//import { randomBytes } from "crypto";
-// import { prisma } from "database";
-// import { generateConfirmationCode } from "lib/utils";
+import { Role } from "@prisma/client";
+import bcrypt from "bcrypt";
+import { randomBytes } from "crypto";
+import { prisma } from "database";
+import { generateConfirmationCode } from "lib/utils";
 import { NextResponse } from "next/server";
-// import { sendEmail } from "@/emails";
-import { EmailTemplate } from "@/components/emailTemplate";
-import { Resend } from "resend";
 
-// import WelcomeEmail from "@/emails/welcome-email";
-// interface IData {
-//   data: { email: string; name: string; password: string; role: Role };
-// }
-const resend = new Resend(process.env.RESEND_API_KEY);
+import { sendEmail } from "@/emails";
+import WelcomeEmail from "@/emails/welcome-email";
+interface IData {
+  data: { email: string; name: string; password: string; role: Role };
+}
+
 export async function POST(request: Request) {
-  //const { data } = (await request.json()) as IData;
-  // const defaultLocale = request.headers.get("x-default-locale") ?? "fr";
-  // const HASH = await bcrypt.hash(data.password, 10);
+  const { data } = (await request.json()) as IData;
+
+  const defaultLocale = request.headers.get("x-default-locale") ?? "fr";
+  const HASH = await bcrypt.hash(data.password, 10);
 
   /** CREATE A NEW USER IN DB */
-  // const new_user = {
-  //   name: data.name,
-  //   email: data.email,
-  //   locale: defaultLocale,
-  //   image: "default",
-  //   password: HASH,
-  //   role: data.role || Role.TEACHER,
-  // };
+  const new_user = {
+    name: data.name,
+    email: data.email,
+    locale: defaultLocale,
+    image: "default",
+    password: HASH,
+    role: data.role || Role.TEACHER,
+  };
 
   /*   */
   try {
-    // const user = await prisma.user.create({
-    //   data: new_user,
-    // });
+    const user = await prisma.user.create({
+      data: new_user,
+    });
 
-    // await prisma.author.create({
-    //   data: {
-    //     name: data.name,
-    //     image: "default",
-    //     role: data.role || Role.TEACHER,
-    //     userId: user.id,
-    //   },
-    // });
+    await prisma.author.create({
+      data: {
+        name: data.name,
+        image: "default",
+        role: data.role || Role.TEACHER,
+        userId: user.id,
+      },
+    });
 
     /** CREATE A USER EMAIL CHECKED IN DB */
     const expiresAt = new Date();
     expiresAt.setDate(expiresAt.getDate() + 1);
-    //const token = randomBytes(32).toString("hex");
-    //const hashed = token;
-    //const code = generateConfirmationCode();
-    // await prisma.emailVerificationToken.create({
-    //   data: {
-    //     expiresAt,
-    //     token: hashed,
-    //     userId: user.id,
-    //     code: code,
-    //   },
-    // });
-
-    //const url = `${process.env.VERCEL_URL}/validate?token=${token}&id=${user.id}`;
-
-    const { data, error } = await resend.emails.send({
-      from: 'laurent.heneman@elearnco.io',
-      to: ['laurent.heneman@yahoo.fr'],
-      subject: 'Hello world',
-      react: EmailTemplate({ firstName: 'John' }),
-      text: 'Hello world'
+    const token = randomBytes(32).toString("hex");
+    const hashed = token;
+    const code = generateConfirmationCode();
+    await prisma.emailVerificationToken.create({
+      data: {
+        expiresAt,
+        token: hashed,
+        userId: user.id,
+        code: code,
+      },
     });
-    if (error) {
-      return Response.json({ error });
-    }
-   
-    // if (error) {
-    //   return res.status(400).json(error);
-    // }
 
-    // await sendEmail({
-    //   email: data.email,
-    //   subject: "Sign up to Elearnco",
-    //   react:WelcomeEmail({
-    //       name: data.name,
-    //       email: data.email,
-    //       code: code,
-    //       url: url,
-    //     }),
-     
-    //   marketing: false,
-    //   test: false,
-    // });
-    //const { password: _password, ...safeUser } = user;
+    const url = `${process.env.VERCEL_URL}/validate?token=${token}&id=${user.id}`;
 
-    // const json_response = {
-    //   status: "success",
-    //   data: { safeUser },
-    // };
+    await sendEmail({
+      email: data.email,
+      subject: "Sign up to Elearnco",
+      react: WelcomeEmail({
+        name: data.name,
+        email: data.email,
+        code: code,
+        url: url,
+      }),
+      marketing: false,
+      test: false,
+    });
+    const { password: _password, ...safeUser } = user;
 
-    // return new NextResponse(JSON.stringify(json_response), {
-    //   status: 201,
-    //   headers: { "Content-Type": "application/json" },
-    // });
+    const json_response = {
+      status: "success",
+      data: { safeUser },
+    };
+
+    return new NextResponse(JSON.stringify(json_response), {
+      status: 201,
+      headers: { "Content-Type": "application/json" },
+    });
   } catch (error) {
-   
+    console.log(error)
     const error_response = {
       status: "fail",
       message: error,

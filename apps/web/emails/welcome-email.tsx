@@ -40,9 +40,9 @@ const codeContainer = {
   width: "280px",
 };
 export default function WelcomeEmail({
-  name = "Laurent Heneman",
-  email = "laurent.heneman@edukeasy.com",
-  code = "DJZ-TLX",
+  name = "",
+  email = "",
+  code = "",
   url = "",
 }: {
   name: string | null;
