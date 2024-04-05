@@ -1,9 +1,8 @@
 import { JSXElementConstructor, ReactElement } from "react";
 import { Resend } from "resend";
 
-export const resend = process.env.RESEND_API_KEY
-  ? new Resend(process.env.RESEND_API_KEY)
-  : null;
+export const resend = process.env.RESEND_API_KEY ? new Resend(process.env.RESEND_API_KEY) : null
+ 
 const EMAIL_MARKETING = process.env.EMAIL_MARKETING ?? "";
 const EMAIL = process.env.EMAIL ?? "";
 export const sendEmail = async ({
@@ -32,15 +31,20 @@ export const sendEmail = async ({
       to: [email],
       subject,
       react,
-      text: "",
+      text : ''
     });
 
+
+   
+   
     if (error) {
+     
       return Promise.resolve(error);
     } else {
       return Promise.resolve("Success");
     }
   } catch (error) {
+  
     Promise.resolve(error);
   }
 };
