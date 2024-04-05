@@ -1,11 +1,13 @@
 "use client";
 import { Button, Spacer } from "@nextui-org/react";
+import confetti from "canvas-confetti";
 import { PinInputActions, usePinInput } from "customhooks";
 import { concatElementsToString } from "lib";
 import { useSearchParams } from "next/navigation";
 import React, { useState } from "react";
 import { FetchResponse } from "schemas";
 import { AuthValidationFormData } from "schemas/forms";
+import { toast } from "sonner";
 
 interface IProps {
   authValidate?: (data: AuthValidationFormData) => Promise<FetchResponse>;
@@ -38,17 +40,17 @@ export const ValidateUI = (props: IProps) => {
       const firstPart = _code.slice(0, 3);
       const secondPart = _code.slice(3);
       const transformedString = `${firstPart}-${secondPart}`;
-      authValidate?.({
+      // authValidate?.({
+      //   code: transformedString,
+      //   token: token as string,
+      //   id: id as string,
+      // });
+      setLoading(false);
+      const response = await authValidate?.({
         code: transformedString,
         token: token as string,
         id: id as string,
       });
-      setLoading(false);
-      /* const response = (await authValidate?.({
-        code: transformedString,
-        token: token,
-        id: id,
-      })) as unknown as UserResponse;
 
       if (response && response.status === "success") {
         confetti();
@@ -56,8 +58,10 @@ export const ValidateUI = (props: IProps) => {
         setLoading(false);
         toast.success("Great! You are now a Elearnco member");
       } else {
-        
-      } */
+        toast.error(
+          "Something went wrong ! Please contact team administrator."
+        );
+      }
     }
   };
   const { fields } = usePinInput({
