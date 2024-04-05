@@ -4,8 +4,8 @@ import { Resend } from "resend";
 export const resend = process.env.RESEND_API_KEY
   ? new Resend(process.env.RESEND_API_KEY)
   : null;
-const EMAIL_MARKETING = process.env.EMAIL_MARKETING || "";
-const EMAIL = process.env.EMAIL || "";
+const EMAIL_MARKETING = process.env.EMAIL_MARKETING ?? "";
+const EMAIL = process.env.EMAIL ?? "";
 export const sendEmail = async ({
   email,
   subject,
@@ -33,6 +33,8 @@ export const sendEmail = async ({
       subject,
       react,
     });
+
+    console.log("data sent: " + JSON.stringify(data));
    
     if (error) {
       console.log("RESEND_EMAILS :",error);
