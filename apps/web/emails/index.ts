@@ -29,7 +29,7 @@ export const sendEmail = async ({
   try {
     const { data, error } = await resend.emails.send({
       from: marketing ? EMAIL_MARKETING : EMAIL,
-      to: email,
+      to: [email],
       subject,
       react,
     });
