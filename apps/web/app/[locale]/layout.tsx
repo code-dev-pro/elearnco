@@ -5,6 +5,7 @@ import { ReactNode } from "react";
 import { getMessages } from "@/lib/messages";
 
 import { Providers } from "../providers";
+import {Feedbacks} from "@/components/feedbacks";
 
 type Props = {
   children: ReactNode;
@@ -35,6 +36,7 @@ export default async function LocaleLayout({
       suppressHydrationWarning
     >
       <body>
+        <Feedbacks/>
         <NextIntlClientProvider
           locale={locale}
           messages={messages as AbstractIntlMessages}
