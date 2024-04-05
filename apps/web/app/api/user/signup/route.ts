@@ -13,7 +13,7 @@ interface IData {
 
 export async function POST(request: Request) {
   const { data } = (await request.json()) as IData;
-
+  
   const defaultLocale = request.headers.get("x-default-locale") ?? "fr";
   const HASH = await bcrypt.hash(data.password, 10);
 
@@ -57,7 +57,7 @@ export async function POST(request: Request) {
       },
     });
 
-    const url = `${process.env.VERCEL_URL}/validate?token=${token}&id=${user.id}`;
+    const url = `${process.env.APP_URL}/validate?token=${token}&id=${user.id}`;
 
     await sendEmail({
       email: data.email,
