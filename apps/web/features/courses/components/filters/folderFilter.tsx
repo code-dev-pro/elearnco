@@ -24,7 +24,7 @@ const FolderFilter = (props: Iprops) => {
 
   if (isLoading) return <></>;
 
-  return (
+  return folders.length >0 ? 
     <SelectUI
       data={folders}
       label={`Filter by folder (${folders.length})`}
@@ -34,7 +34,7 @@ const FolderFilter = (props: Iprops) => {
       variant="flat"
       selectedKey={getId(folders, currentFolder)}
     />
-  );
+   :<></>
 };
 
 export default FolderFilter;
