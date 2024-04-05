@@ -226,7 +226,7 @@ export const computeNearestPlaceholderIndex = (
 
 export const getId = (data: GenericObject[], name: string): string => {
   const result = data.filter(
-    (item: GenericObject) => name === (item.value || item.name)
+    (item: GenericObject) => name === (item?.value ?? item?.name)
   );
 
   if (result.length > 0) {
@@ -722,7 +722,7 @@ export function compareCollections(
   return differentIndexObjects;
 }
 
-export const cleanBase64String = (base64String: string) => {
+export const cleanBase64String = (base64String: string): string => {
   const cleanString = base64String.replace(/^data:video\/mp4;base64,/, "");
   const validBase64Chars =
     "ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz0123456789+/=";
