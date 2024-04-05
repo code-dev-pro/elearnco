@@ -19,7 +19,8 @@
     "RESEND_API_KEY",
     "PORT",
     "HUGGING_FACE_TOKEN",
-    "DIRECTORY_IMAGES_CERTIFICATES"
+    "DIRECTORY_IMAGES_CERTIFICATES",
+    "RESEND_API_KEY"
   ],
   "pipeline": {
     "//#lint": {
