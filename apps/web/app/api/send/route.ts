@@ -13,7 +13,7 @@ export async function POST() {
       Authorization: `Bearer ${RESEND_API_KEY}`,
     },
     body: JSON.stringify({
-      from: "laurent.heneman@edukeasy.com",
+      from: "laurent.heneman@elearnco.io",
       to: ["laurent.heneman@yahoo.fr"],
       subject: "hello world",
       html: "<strong>it works!</strong>",
