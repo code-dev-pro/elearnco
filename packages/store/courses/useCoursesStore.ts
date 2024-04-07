@@ -91,6 +91,8 @@ export const useCoursesStore = create<State & Actions>((set, get) => ({
       const { status, data } = response;
       const { course } = data as { course: CompleteCourse };
 
+      
+
       if (status === "success") {
         set((state) => ({
           courses: [...state.courses, course],

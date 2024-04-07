@@ -8,6 +8,7 @@ import { Controller, useForm } from "react-hook-form";
 import { AuthDeleteAccountFormData, ERoutes, IModal } from "schemas";
 import { userAuthDeleteAccountSchema } from "schemas/auth/Auth";
 import { useDisabledStore, useLoadingStore } from "store";
+import { toast } from "sonner";
 
 const DeleteAccountUI = (props: IModal) => {
   const { onStopDisabled, onBeginDisabled } = useDisabledStore();
@@ -38,9 +39,10 @@ const DeleteAccountUI = (props: IModal) => {
 
   const onSubmit = async (): Promise<void> => {
     onBeginLoading();
-    const data = await AuthService.authDeleteUser(user.id);
-    const { status } = data;
-    if (status === "success") {
+    const response = await AuthService.authDeleteUser(user.id);
+    // const { status} = data;
+
+    if (response?.status === "success") {
       onStopLoading();
       reset();
 
@@ -49,10 +51,12 @@ const DeleteAccountUI = (props: IModal) => {
         callbackUrl,
       });
       onClose();
-      router.push(callbackUrl);
+      router.push(ERoutes.SIGN);
     } else {
       onStopLoading();
       reset();
+
+      toast.error(response as unknown as string);
     }
   };
 

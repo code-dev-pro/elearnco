@@ -133,6 +133,8 @@ export const AddCourse = (props: IProps & { user: { Tag: Tag[] } }) => {
       tagsUser: tagsUser.current,
     };
 
+   
+   
     if (action === EActionsCourse.EDIT) {
       courses.updateCourse(id as string, newData);
     } else {

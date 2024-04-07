@@ -66,6 +66,28 @@ export async function DELETE(
 
   try {
     const id = params.id;
+
+    const courses = await prisma.course.deleteMany({
+      where: {
+        userId: id,
+      },
+    });
+
+    const author = await prisma.author.delete({
+      where: {
+        userId: id,
+      },
+    });
+
+   
+
+    const folder = await prisma.folder.deleteMany({
+      where: {
+        userId: id,
+      },
+    });
+
+
     const user = await prisma.user.delete({
       where: {
         id: id,

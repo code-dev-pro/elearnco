@@ -16,6 +16,8 @@ const CoursesCollectionList = ({ query }: { query: string }) => {
     }
   };
 
+ 
+
   return filterCollection()?.map((course: CompleteCourse) => (
     <CardUI key={course.id} {...course} />
   ));

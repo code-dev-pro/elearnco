@@ -2,11 +2,11 @@ import { prisma } from "database";
 import { redirect } from "next/navigation";
 import { NextRequest, NextResponse } from "next/server";
 import { ERoutes, ErrorResponse, FetchResponse } from "schemas";
-import { CourseDate,CourseStatus, CourseTitle } from "schemas/menus/dropdown";
+import { CourseDate, CourseStatus, CourseTitle } from "schemas/menus/dropdown";
 
 import { MAX_CARDS } from "@/const";
 import { getServerSession } from "@/lib/auth.options";
-
+import { addTagsToCourse, addTagsToUser } from "../course/[id]/route";
 
 /**
  * Get user courses
@@ -59,9 +59,9 @@ export async function GET(
             tags: true,
             user: {
               select: {
-                Tag: true
-              }
-            }
+                Tag: true,
+              },
+            },
           },
         }),
         prisma.course.count({
@@ -92,14 +92,15 @@ export async function GET(
           take: MAX_CARDS,
 
           include: {
+           
             author: true,
             folder: true,
             tags: true,
             user: {
               select: {
-                Tag: true
-              }
-            }
+                Tag: true,
+              },
+            },
           },
         }),
         prisma.course.count({
@@ -149,17 +150,22 @@ export async function POST(
 
   try {
     const json = await request.json();
-    const course = await prisma.course.create({
-      data: json,
+    const { tags, tagsUser, ...course } = json;
+
+    const courseCreated = await prisma.course.create({
+      data: course,
       include: {
         author: true,
-        folder:true
+        folder: true,
       },
     });
 
+    await addTagsToCourse(courseCreated.id, tags);
+    await addTagsToUser(session.user.id, tagsUser);
+
     const page = await prisma.page.create({
       data: {
-        course: { connect: { id: course.id } },
+        course: { connect: { id: courseCreated.id } },
         index: 1,
         title: "",
         description: "",
@@ -168,7 +174,7 @@ export async function POST(
 
     const json_response = {
       status: "success",
-      data: { course: course, page: page },
+      data: { course: courseCreated, page: page },
     };
 
     return new NextResponse(JSON.stringify(json_response), {
