@@ -4,7 +4,7 @@ import { NextRequest, NextResponse } from "next/server";
 import { getServerSession } from "next-auth";
 import { ERoutes } from "schemas";
 
-export async function addTagsToUser(
+async function addTagsToUser(
   userId: string,
   tags: Prisma.TagUserCreateManyInput[]
 ) {
@@ -25,7 +25,7 @@ export async function addTagsToUser(
     data: tagObjects,
   });
 }
-export async function addTagsToCourse(
+async function addTagsToCourse(
   courseId: string,
   tags: Prisma.TagUserCreateManyInput[]
 ) {

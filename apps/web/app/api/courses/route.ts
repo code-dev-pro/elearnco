@@ -1,4 +1,4 @@
-import { prisma } from "database";
+import { Prisma, prisma } from "database";
 import { redirect } from "next/navigation";
 import { NextRequest, NextResponse } from "next/server";
 import { ERoutes, ErrorResponse, FetchResponse } from "schemas";
@@ -6,7 +6,55 @@ import { CourseDate, CourseStatus, CourseTitle } from "schemas/menus/dropdown";
 
 import { MAX_CARDS } from "@/const";
 import { getServerSession } from "@/lib/auth.options";
-import { addTagsToCourse, addTagsToUser } from "../course/[id]/route";
+
+async function addTagsToUser(
+  userId: string,
+  tags: Prisma.TagUserCreateManyInput[]
+) {
+  await prisma.tagUser.deleteMany({
+    where: { userId: userId },
+  });
+
+  const tagObjects: Prisma.TagUserCreateManyInput[] = tags.map(
+    (tag: Prisma.TagUserCreateManyInput) => ({
+      label: tag.label,
+      color: tag.color,
+      uuid: tag.uuid,
+      userId: userId,
+    })
+  );
+
+  await prisma.tagUser.createMany({
+    data: tagObjects,
+  });
+}
+async function addTagsToCourse(
+  courseId: string,
+  tags: Prisma.TagUserCreateManyInput[]
+) {
+  await prisma.course.findUnique({
+    where: { id: courseId },
+    include: { tags: true },
+  });
+
+  await prisma.tagCourse.deleteMany({
+    where: { courseId },
+  });
+
+  const tagObjects: Prisma.TagCourseCreateManyInput[] = tags.map(
+    (tag: Prisma.TagUserCreateManyInput) => ({
+      label: tag.label,
+      color: tag.color,
+      uuid: tag.uuid,
+      courseId: courseId,
+    })
+  );
+
+  await prisma.tagCourse.createMany({
+    data: tagObjects,
+  });
+}
+
 
 /**
  * Get user courses
