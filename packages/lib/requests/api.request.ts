@@ -140,7 +140,7 @@ export async function authUpdateUser(
   });
   return handleResponse<FetchResponse>(response).then((data) => data);
 }
-export async function authDeleteUser(id: string): Promise<FetchResponse> {
+export async function authDeleteUser(id: string): Promise<FetchResponse | ErrorResponse> {
   const response = await fetch(`${SERVER_ENDPOINT}${pathApiUser}/${id}`, {
     method: "DELETE",
   });
