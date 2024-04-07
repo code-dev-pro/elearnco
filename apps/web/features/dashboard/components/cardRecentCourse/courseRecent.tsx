@@ -74,12 +74,12 @@ const CourseRecent = ({
     bodyContent = <BodyChildren {...rest} />;
   }
 
-  return (
-    <CardDashboardUI
+ 
+  return rest?.id ? <CardDashboardUI
       headerChildren={headerContent as JSX.Element}
       bodyChildren={bodyContent as JSX.Element}
-    />
-  );
+    /> :<></>
+  
 };
 
 export default CourseRecent;
