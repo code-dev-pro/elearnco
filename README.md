@@ -1,4 +1,4 @@
-[![og:image](./apps/web/public/og-image.png)](https://elearnco-web.vercel.app/)
+[![og:image](./apps/web/public/og-image.png)](https://elearnco.io)
 
 
 ## Summary
