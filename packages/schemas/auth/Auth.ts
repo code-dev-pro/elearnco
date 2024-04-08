@@ -17,7 +17,10 @@ export const userAuthValidationSchema = z.object({
 export const userAuthSignupSchema = z
   .object({
     email: z.string().email(),
-    name: z.string().min(2, { message: "Name must be atleast 2 characters" }),
+    name: z.string().regex(
+      /^[a-zA-Z]+\s[a-zA-Z]+$/,
+      "Full name should contain both first name and last name separated by a space"
+    ).min(2, { message: "Name must be atleast 2 characters" }),
     password: z
       .string()
       .regex(new RegExp(".*[A-Z].*"), "One uppercase character")
