@@ -161,7 +161,11 @@ const WriterModule = (props: TBlockModule) => {
                   ? titleEditor?.commands.setContent(msg)
                   : contentEditor?.commands.setContent(msg);
               }}
-              endIA={() => void 0}
+              endIA={(msg: string): void => {
+                type === TextBlockType.TITLE
+                  ? titleEditor?.commands.setContent(msg)
+                  : contentEditor?.commands.setContent(msg);
+              }}
             />
             <Button
               onClick={(): boolean | undefined =>
