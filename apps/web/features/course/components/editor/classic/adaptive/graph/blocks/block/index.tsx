@@ -19,6 +19,7 @@ import BlockPoint from "../blockPoint";
 import { useEndpoints } from "../../provider/endpointsProvider";
 import {
   capitalizeFirstLetterOfEachWord,
+  checkHttps,
   clean,
   getBlockColor,
   isFileImage,
@@ -67,11 +68,15 @@ const Block = (
   }
 ) => {
   const { kindOfVue } = useGraph();
-  const { id, index = 1, type = "", graphScale = 1, content, banner,uuid } = props;
-
- 
-  // const { getCurrentPage } = useCoursesParams();
-  // const currentPage = getCurrentPage();
+  const {
+    id,
+    index = 1,
+    type = "",
+    graphScale = 1,
+    content,
+    banner,
+    uuid,
+  } = props;
 
   const _content = content?.[0]?.content as GenericObject;
   const contentBlock = _content?.content?.data ? "" : _content?.content;
@@ -212,7 +217,11 @@ const Block = (
           <img
             draggable="false"
             style={{ width: "100%", height: "auto" }}
-            src={banner}
+            src={
+              checkHttps(banner)
+                ? banner.split("?")?.[0]
+                : `/patterns/${banner}.svg`
+            }
           />
         ) : isFileImage(contentBlock) ? (
           <img
@@ -262,7 +271,7 @@ const Block = (
             }}
             className="absolute right-0 z-1 pb-2"
           >
-            <ToolBlock  id={id}  uuid={uuid} showBlock={():void => void 0} />
+            <ToolBlock id={id} uuid={uuid} showBlock={(): void => void 0} />
           </div>,
           groupRef.current
         )}
