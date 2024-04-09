@@ -275,6 +275,7 @@ export const BannerUI = (props: IProps) => {
                 }
                 orientation="horizontal"
                 onClickHandler={clickHandler}
+                isBanner
               />
             )}
           </div>
@@ -349,8 +350,6 @@ export const BannerUI = (props: IProps) => {
                 <img
                   style={{
                     height: "100%",
-                    /*  objectFit: "contain",
-                    maxWidth: "unset", */
                   }}
                   src={BANNER_COURSE?.split("?")?.[0]}
                   className="photo-image absolute w-full top-0 bottom-0 object-contain max-w-fit left-auto"
