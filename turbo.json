@@ -20,7 +20,14 @@
     "PORT",
     "HUGGING_FACE_TOKEN",
     "DIRECTORY_IMAGES_CERTIFICATES",
-    "RESEND_API_KEY"
+    "RESEND_API_KEY",
+    "KV_REST_API_URL",
+    "KV_REST_API_TOKEN",
+    "KV_REST_API_URL",
+    "KV_REST_API_TOKEN",
+    "GROQ_API_KEY",
+    "OPENAI_API_KEY",
+    "NEXT_PUBLIC_OPENAI_API_KEY"
    
   ],
   "pipeline": {
