@@ -124,7 +124,8 @@ const IAModule = (props: IAM) => {
     };
   }, []);
 
-  
+  console.log('INPUT: ', input,typeof input)
+ 
 
   return (
     <Popover
@@ -179,7 +180,7 @@ const IAModule = (props: IAM) => {
               </p>
               <div className="flex justify-end gap-2 mb-2">
                 <Button
-                  isDisabled={input.length >= 0 ? false : true}
+                  isDisabled={input==="" ? false : true}
                   // onClick={callIa}
                   isLoading={isLoading}
                   size="sm"
