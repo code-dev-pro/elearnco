@@ -17,6 +17,7 @@ interface IProps {
   blockID?: string;
   blockUUID?: string;
   placementTooltip?: TPlacement;
+  isBanner?: boolean;
 }
 export const GoupeButtonUI = React.memo((props: IProps) => {
   const {
@@ -26,6 +27,7 @@ export const GoupeButtonUI = React.memo((props: IProps) => {
     blockID = "",
     blockUUID = "",
     placementTooltip = "bottom",
+    isBanner=false
   } = props;
 
   return (
@@ -50,7 +52,7 @@ export const GoupeButtonUI = React.memo((props: IProps) => {
           icon={{ iconSize: ICON_SIZE.width, iconName: item.icon }}
         />
       ))}
-      <Comments uuid={blockUUID} id={blockID} />
+     { isBanner ? <></> : <Comments uuid={blockUUID} id={blockID} />}
     </ButtonGroup>
   );
 });
