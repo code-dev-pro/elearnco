@@ -191,6 +191,9 @@ export async function GET(
 export async function POST(
   request: NextRequest
 ): Promise<NextResponse<FetchResponse | ErrorResponse>> {
+  
+  
+  
   const session = await getServerSession();
   if (!session?.user) {
     redirect(`/${ERoutes.SIGN}`);
@@ -230,6 +233,7 @@ export async function POST(
       headers: { "Content-Type": "application/json" },
     });
   } catch (error) {
+   
     if (error.code === "P2002") {
       const error_response = {
         status: "fail",

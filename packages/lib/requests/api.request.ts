@@ -18,7 +18,7 @@ const pathApiPage = `/${segment}/page`;
 const pathApiUser = `/${segment}/user`;
 const pathApiUserTags = `/${segment}/user/tags`;
 const pathApiComments = `/${segment}/comments`;
-const pathApiDrawing= `/${segment}/drawing`;
+const pathApiDrawing = `/${segment}/drawing`;
 export const getBaseUrl = (): string => {
   if (typeof window !== "undefined") return location.origin;
   if (process.env.VERCEL_URL) return `https://${process.env.VERCEL_URL}`;
@@ -140,7 +140,9 @@ export async function authUpdateUser(
   });
   return handleResponse<FetchResponse>(response).then((data) => data);
 }
-export async function authDeleteUser(id: string): Promise<FetchResponse | ErrorResponse> {
+export async function authDeleteUser(
+  id: string
+): Promise<FetchResponse | ErrorResponse> {
   const response = await fetch(`${SERVER_ENDPOINT}${pathApiUser}/${id}`, {
     method: "DELETE",
   });
@@ -261,7 +263,7 @@ export async function getCourse(
   return handleResponse<FetchResponse>(response).then((data) => data);
 }
 export async function addCourse(
-  courseData: any
+  courseData: Partial<CompleteCourse>
 ): Promise<FetchResponse | ErrorResponse> {
   const response = await fetch(`${SERVER_ENDPOINT}${pathApiCourses}`, {
     method: "POST",
@@ -572,7 +574,6 @@ export async function deleteBlockNode(
   }
 }
 
-
 /**
  * **************************************
  * DRAWING
@@ -581,12 +582,12 @@ export async function deleteBlockNode(
 
 export async function saveDrawing(
   id: string | undefined,
-  blockNodeId:string,
-  data:any
+  blockNodeId: string,
+  data: any
 ): Promise<FetchResponse | ErrorResponse> {
   const response = await fetch(`${SERVER_ENDPOINT}${pathApiDrawing}/${id}`, {
     method: "POST",
-    body: JSON.stringify({content:data,blockNodeId:blockNodeId}),
+    body: JSON.stringify({ content: data, blockNodeId: blockNodeId }),
   });
 
   if (response.status === 201) {
@@ -694,7 +695,7 @@ export async function deleteThread(
 }
 export async function updateComment(
   id: string,
-  content:string
+  content: string
 ): Promise<FetchResponse | ErrorResponse> {
   const response = await fetch(`${SERVER_ENDPOINT}${pathApiComments}/${id}`, {
     method: "PATCH",

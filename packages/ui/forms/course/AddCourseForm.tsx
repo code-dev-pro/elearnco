@@ -23,7 +23,9 @@ import { SelectUI } from "../../select/SelecUI";
 import { TagUI } from "../../tag/TagUI";
 import { Tag } from "../../tag/types";
 import CourseTypeSelection from "./CourseTypeSelection";
-
+function nonAll(element: any) {
+  return element.name !== "All";
+}
 const DynamicAddFolderUI = dynamic(() => import("./AddFolderFormUI"), {
   loading: () => <Spinner />,
 });
@@ -47,6 +49,13 @@ export const AddCourse = (props: IProps & { user: { Tag: Tag[] } }) => {
   // User
   const user = useUser();
 
+  // Const
+  const FOLDER_DEFAULT = props.folder as TFolder;
+  const TITLE_DEFAULT = props?.title ?? "";
+  const DESCRIPTION_DEFAULT = props?.description ?? "";
+  const TAGS_SECTION_DEFAULT = props?.tags ?? [];
+  const TAGS_USER_DEFAULT = props?.user?.Tag ?? [];
+
   // Datas
   const { id, onClose, switchView, action } = props;
   const folders = useFoldersStore((state) => state.folders);
@@ -57,16 +66,15 @@ export const AddCourse = (props: IProps & { user: { Tag: Tag[] } }) => {
     props?.type ?? CourseType.CLASSIC
   );
   const [banner, setBanner] = useState<string>(props?.image ?? "Aare");
-  // Const
-  const FOLDER_DEFAULT = props.folder as TFolder;
-  const TITLE_DEFAULT = props?.title ?? "";
-  const DESCRIPTION_DEFAULT = props?.description ?? "";
-  const TAGS_SECTION_DEFAULT = props?.tags ?? [];
-  const TAGS_USER_DEFAULT = props?.user?.Tag ?? [];
-  // Refs
-  const folderIdRef = useRef<string>(
-    FOLDER_DEFAULT?.id ?? folders?.[0]?.id ?? ""
+
+  const [currentFolder, setCurrentFolder] = useState<string>(
+    FOLDER_DEFAULT?.id ?? folders?.[1]?.id ?? ""
   );
+
+  // Refs
+  // const folderIdRef = useRef<string>(
+  //   FOLDER_DEFAULT?.id ?? folders?.[1]?.id ?? ""
+  // );
   const imageIdRef = useRef<string>(patternsObjects[0].id);
   const tagsSection = useRef<Tag[]>(TAGS_SECTION_DEFAULT);
   const tagsUser = useRef<Tag[]>(TAGS_USER_DEFAULT);
@@ -81,7 +89,8 @@ export const AddCourse = (props: IProps & { user: { Tag: Tag[] } }) => {
   });
 
   const _changeHandlerFolders = (value: string): void => {
-    folderIdRef.current = value;
+    //folderIdRef.current = value;
+    setCurrentFolder(value);
   };
   const _changeHandlerBanner = (value: string): void => {
     const _banner = patternsObjects.filter((pattern) => pattern.id === value);
@@ -116,6 +125,7 @@ export const AddCourse = (props: IProps & { user: { Tag: Tag[] } }) => {
 
   const onSubmit = async (data: FormData): Promise<void> => {
     onBeginLoading();
+
     const image_name = checkHttps(banner)
       ? banner
       : _getImageById[0]?.name || "Aare";
@@ -123,7 +133,7 @@ export const AddCourse = (props: IProps & { user: { Tag: Tag[] } }) => {
     const newData = {
       ...data,
       userId: user.id,
-      folderId: folderIdRef.current,
+      folderId: currentFolder,
       status: CourseStatus.DRAFT,
       type: selected as CourseType,
       mode: CourseMode.PRIVATE,
@@ -133,8 +143,6 @@ export const AddCourse = (props: IProps & { user: { Tag: Tag[] } }) => {
       tagsUser: tagsUser.current,
     };
 
-   
-   
     if (action === EActionsCourse.EDIT) {
       courses.updateCourse(id as string, newData);
     } else {
@@ -144,11 +152,21 @@ export const AddCourse = (props: IProps & { user: { Tag: Tag[] } }) => {
     onClose();
   };
 
+  const foldersWithoutAll = useMemo(()=> {
+   return folders.filter(element => element.name !== 'All')},[folders]
+  )
+
+  useEffect(() => {
+    const firstElement = folders.find(nonAll);
+    setCurrentFolder(FOLDER_DEFAULT?.id ?? firstElement?.id ?? "");
+    onStopLoading();
+  }, [folders]);
+
   useEffect(() => {
     onStopLoading();
   }, []);
 
-  return folders?.length === 0 || folders?.length === 1 ? (
+  return folders?.length <= 1 ? (
     <>
       <p>
         You have no folder. Before creating a course, create a defaut folder
@@ -261,12 +279,12 @@ export const AddCourse = (props: IProps & { user: { Tag: Tag[] } }) => {
         </div>
 
         <SelectUI
-          data={folders}
+          data={foldersWithoutAll}
           label="Select your folder"
           placeholder="Default"
           labelPlacement="inside"
           onChange={_changeHandlerFolders}
-          selectedKey={folderIdRef.current ?? "All"}
+          selectedKey={currentFolder ?? "All"}
         />
       </form>
       <Button size="sm" className="cursor-pointer" onClick={switchView}>
