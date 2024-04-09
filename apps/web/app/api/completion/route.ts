@@ -14,9 +14,12 @@ const ratelimit =
         analytics: true,
       })
     : false;
-
+const apiKey = process.env.GROQ_API_KEY ?? "sk-";
+if (!apiKey) {
+    throw new Error("OpenAI API key is missing");
+}
 const groq = new OpenAI({
-  apiKey: process.env.GROQ_API_KEY!,
+  apiKey: apiKey,
   baseURL: "https://api.groq.com/openai/v1",
 });
 
