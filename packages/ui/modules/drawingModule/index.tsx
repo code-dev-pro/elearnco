@@ -26,7 +26,7 @@ const DrawingEditor = (props: {
 
   return (
     <>
-      {/* <WriterModule blockID={blockID} type="consigne" /> */}
+      
       <div
         style={{ minHeight: 400, height: 400 }}
         className="w-full relative flex overflow-hidden"
