@@ -42,14 +42,14 @@ const IAModule = (props: IAM) => {
     onError: (error) => toast.error(error.message),
   });
 
-  const _onValueChange = (txt: string) => {
+  const _onValueChange = (txt: string):void => {
     if (txt.length > PROMPT_SIZE) {
       return;
     }
     //handleInputChange(txt)
     //setValue(txt);
   };
-  const cancelRequest = () => {
+  const cancelRequest = ():void => {
     if (abortControllerRef.current) {
       refIsCancel.current = true;
       abortControllerRef.current.abort();
@@ -124,6 +124,9 @@ const IAModule = (props: IAM) => {
     };
   }, []);
 
+  console.log('INPUT: ', input,typeof input)
+ 
+
   return (
     <Popover
       shouldFlip
@@ -177,7 +180,7 @@ const IAModule = (props: IAM) => {
               </p>
               <div className="flex justify-end gap-2 mb-2">
                 <Button
-                  isDisabled={value.length > 0 ? false : true}
+                  isDisabled={input==="" ? false : true}
                   // onClick={callIa}
                   isLoading={isLoading}
                   size="sm"

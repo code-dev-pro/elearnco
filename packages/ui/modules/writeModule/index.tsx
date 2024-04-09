@@ -48,6 +48,8 @@ const WriterModule = (props: TBlockModule) => {
 
   const contentType = content || type;
 
+  
+
   const testContent = isBlockIsDev.every(
     (term: string) => contentType !== term
   );
@@ -162,6 +164,7 @@ const WriterModule = (props: TBlockModule) => {
                   : contentEditor?.commands.setContent(msg);
               }}
               endIA={(msg: string): void => {
+                onChange?.({ content: msg, type: type as TextBlockType });
                 type === TextBlockType.TITLE
                   ? titleEditor?.commands.setContent(msg)
                   : contentEditor?.commands.setContent(msg);

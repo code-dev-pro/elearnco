@@ -41,6 +41,9 @@ const BlockNodeModule = React.memo(
     // };
 
     const _onchange = (prop: TPropModule | GenericObject): void => {
+      
+     
+      
       if (BLOCK_TEXT_LIST.includes(type as TextBlockType)) {
         const dataContent = {
           content: prop?.content ? prop.content : content?.content,
@@ -180,6 +183,8 @@ const BlockNodeModule = React.memo(
           data: TModuleContent;
         };
 
+       
+
         if (status === "success") {
           setIblock(data);
           setContent(data?.content);
@@ -191,6 +196,7 @@ const BlockNodeModule = React.memo(
     const saveBlocksToDatabase = useCallback(async (): Promise<void> => {
       try {
         //onBeginLoading();
+     
         if (content) BlockNodeService.updateBlockNode(content);
       } catch (error) {
         console.error("Erreur : ", error);
